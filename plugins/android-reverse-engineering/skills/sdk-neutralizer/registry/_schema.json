@@ -4,8 +4,10 @@
   "title": "SDK Neutralization Registry Entry",
   "description": "Defines which public API methods of a third-party SDK can be safely neutralized (stubbed) in a decompiled Android APK.",
   "type": "object",
-  "required": ["sdk_id", "display_name", "vendor", "category", "packages", "targets"],
+  "required": ["sdk_id", "display_name", "vendor", "category", "packages"],
   "additionalProperties": false,
+  "if": { "not": { "required": ["targets"] } },
+  "then": { "not": { "anyOf": [ { "required": ["manifest_components"] }, { "required": ["protected_patterns"] } ] } },
   "properties": {
     "$schema": {
       "type": "string"
@@ -13,11 +15,12 @@
     "sdk_id": {
       "type": "string",
       "pattern": "^[a-z0-9-]+$",
-      "description": "Unique lowercase identifier for this SDK (used as filename stem)"
+      "description": "Unique lowercase identifier for this SDK. Equals the file name stem, except consent-umptcf.json -> google-ump-consent (historical). Consumers always use sdk_id, never the file name."
     },
     "display_name": {
       "type": "string",
-      "description": "Human-readable SDK name"
+      "pattern": "^[^:|\\n\\r\\t]+$",
+      "description": "Human-readable SDK name. Must not contain ':', '|', tab or newline (registry-scan.py and neutralize.sh use ':' and '|' as separators)."
     },
     "description": {
       "type": "string"
@@ -64,6 +67,7 @@
     },
     "targets": {
       "type": "object",
+      "description": "OPTIONAL. ABSENT = detection-only entry: registry-scan.py and neutralize.sh ignore it completely (a detection-only entry must not carry manifest_components or protected_patterns). Never null.",
       "additionalProperties": false,
       "properties": {
         "entry_points": {

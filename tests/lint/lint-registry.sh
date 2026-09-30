@@ -16,7 +16,12 @@
 #       manifest_components / protected_patterns (a detection-only entry must not
 #       carry neutralizer instructions)
 #   SCHEMA  full JSON-schema validation against _schema.json, only when
-#       `python3 -c 'import jsonschema'` works (dev convenience; otherwise skipped)
+#       `python3 -c 'import jsonschema'` works (dev convenience; otherwise skipped).
+#       Message: `<instance path> [<schema path>]: <jsonschema message, cut at 200>`;
+#       the schema path (e.g. `then/not`, `properties/display_name/pattern`) names
+#       the failing constraint independently of the jsonschema version (3.x and 4.x
+#       word the messages differently, and a long instance repr can push the
+#       distinguishing text past the cut)
 # L2-L4 and SCHEMA apply to entry files only (names not starting with `_`).
 #
 # Output: one line per finding, `<rule> ERROR|WARN <file>: <message>`, then a summary.
@@ -152,7 +157,8 @@ for path in sorted(glob.glob(os.path.join(d, "*.json"))):
         continue  # already reported by L1
     for e in sorted(validator.iter_errors(doc), key=lambda e: list(e.absolute_path)):
         loc = "/".join(str(p) for p in e.absolute_path) or "(root)"
-        print("%s\t%s: %s" % (name, loc, e.message.replace("\n", " ")[:200]))
+        spath = "/".join(str(p) for p in e.schema_path)
+        print("%s\t%s [%s]: %s" % (name, loc, spath, e.message.replace("\n", " ")[:200]))
 PY
   while IFS="$(printf '\t')" read -r f msg; do
     [ -n "$f" ] && report SCHEMA ERROR "$f" "$msg"

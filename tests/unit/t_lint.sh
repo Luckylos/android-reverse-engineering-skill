@@ -16,10 +16,10 @@ assert_eq 0 "$rc" "real registry passes lint"
 base=$REG/mixpanel.json
 [ -f "$base" ] || die "fixture source missing: $base"
 
-# case <name> <expected-rule> <file-name> : content on stdin
+# case <name> <expected-rule> <file-name> [<message-substring>] : content on stdin
 case_n=0
 lint_case() {
-  name=$1 rule=$2 fname=$3
+  name=$1 rule=$2 fname=$3 msg=${4:-}
   case_n=$((case_n + 1))
   d=$tmp/case$case_n; mkdir -p "$d"
   cp "$REG/_schema.json" "$d/"
@@ -27,8 +27,8 @@ lint_case() {
   out=$(bash "$LINT" "$d" 2>&1); rc=$?
   assert_eq 1 "$rc" "$name: lint exits 1"
   _T_CHECKS=$((_T_CHECKS + 1))
-  if printf '%s\n' "$out" | grep -q "^$rule ERROR $fname: "; then pass_check "$name: $rule reported"; else
-    fail_check "$name: expected a '$rule ERROR $fname' finding"; printf '%s\n' "$out" | sed 's/^/    /' | head -10; fi
+  if printf '%s\n' "$out" | grep "^$rule ERROR $fname: " | grep -qF -e "$msg"; then pass_check "$name: $rule reported"; else
+    fail_check "$name: expected a '$rule ERROR $fname: ...$msg' finding"; printf '%s\n' "$out" | sed 's/^/    /' | head -10; fi
 }
 mut() { jq "$1" "$base"; } # pretty-printed, LF, final newline
 
@@ -60,5 +60,28 @@ mut '.category = "push"' >"$tmp/in"; lint_case "category outside the enum" L3 mi
 mut '.targets = null' >"$tmp/in"; lint_case "targets null" L4 mixpanel.json <"$tmp/in"
 mut 'del(.targets) | .manifest_components = [{"type":"service","class":"com.mixpanel.android.X","action":"disable"}]' >"$tmp/in"; lint_case "detection-only entry with manifest_components" L4 mixpanel.json <"$tmp/in"
 mut 'del(.targets) | del(.manifest_components) | .protected_patterns = [{"pattern":"*.x()*","reason":"r"}]' >"$tmp/in"; lint_case "detection-only entry with protected_patterns" L4 mixpanel.json <"$tmp/in"
+
+# targets is optional (DESIGN 2.1, commit 1): a detection-only entry is clean, schema included
+d=$tmp/detonly; mkdir -p "$d"; cp "$REG/_schema.json" "$d/"
+mut 'del(.targets) | del(.manifest_components) | del(.protected_patterns)' >"$d/mixpanel.json"
+out=$(bash "$LINT" "$d" 2>&1); rc=$?
+assert_eq 0 "$rc" "detection-only entry (no targets) passes lint"
+[ "$rc" = 0 ] || printf '%s\n' "$out" | sed 's/^/    /' | head -10
+
+# the schema itself (only when python jsonschema is available): if/then and display_name
+# pattern; the substring is the failing schema path printed by lint (`[<schema path>]`),
+# which makes sure it is the new constraint that fires (with the old schema a missing
+# `targets` was reported at `[required]`) and, unlike the message text, does not depend on
+# the jsonschema version (3.x: `[if/then/not]` "... is not allowed for ..."; 4.x:
+# `[then/not]` "... should not be valid under ...", cut before that text by the 200-char limit)
+if python3 -c 'import jsonschema' >/dev/null 2>&1; then
+  mut 'del(.targets) | del(.protected_patterns) | .manifest_components = [{"type":"service","class":"com.mixpanel.android.X","action":"disable"}]' >"$tmp/in"
+  lint_case "schema if/then: detection-only entry with manifest_components" SCHEMA mixpanel.json "then/not]:" <"$tmp/in"
+  mut 'del(.targets) | del(.manifest_components) | .protected_patterns = [{"pattern":"*.x()*","reason":"r"}]' >"$tmp/in"
+  lint_case "schema if/then: detection-only entry with protected_patterns" SCHEMA mixpanel.json "then/not]:" <"$tmp/in"
+  mut '.display_name = "Mix:panel"' >"$tmp/in"; lint_case "schema pattern: display_name with colon" SCHEMA mixpanel.json "[properties/display_name/pattern]:" <"$tmp/in"
+  mut '.display_name = "Mix\tpanel"' >"$tmp/in"; lint_case "schema pattern: display_name with tab" SCHEMA mixpanel.json "[properties/display_name/pattern]:" <"$tmp/in"
+  mut '.targets = null' >"$tmp/in"; lint_case "schema: targets null" SCHEMA mixpanel.json "[properties/targets/type]:" <"$tmp/in"
+fi
 
 t_done

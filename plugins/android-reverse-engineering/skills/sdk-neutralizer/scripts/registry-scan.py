@@ -91,6 +91,7 @@ def load_registry(registry_dir):
         try:
             with open(json_file, "r", encoding="utf-8") as f:
                 sdk = json.load(f)
+            if isinstance(sdk, dict) and "targets" not in sdk: continue  # detection-only entry
             sdks.append(sdk)
         except (json.JSONDecodeError, IOError) as e:
             print(f"Warning: Skipping {json_file.name}: {e}", file=sys.stderr)
