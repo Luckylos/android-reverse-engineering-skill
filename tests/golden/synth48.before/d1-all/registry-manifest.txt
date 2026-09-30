@@ -1,0 +1,152 @@
+com.adcolony.sdk.AdColonyInterstitialActivity|AdColony
+com.adcolony.sdk.AdColonyAdViewActivity|AdColony
+com.adjust.sdk.AdjustReferrerReceiver|Adjust
+com.amazon.device.ads.DTBAdActivity|Amazon Ads
+com.applovin.adview.AppLovinFullscreenActivity|AppLovin / MAX
+com.applovin.adview.AppLovinFullscreenImmersiveActivity|AppLovin / MAX
+com.applovin.sdk.AppLovinWebViewActivity|AppLovin / MAX
+com.applovin.impl.adview.activity.FullscreenAdService|AppLovin / MAX
+com.applovin.mediation.hybridAds.MaxHybridMRecAdActivity|AppLovin / MAX
+com.applovin.mediation.hybridAds.MaxHybridNativeAdActivity|AppLovin / MAX
+com.applovin.sdk.AppLovinInitProvider|AppLovin / MAX
+io.appmetrica.analytics.internal.AppMetricaService|AppMetrica (Yandex)
+io.appmetrica.analytics.internal.PreloadInfoContentProvider|AppMetrica (Yandex)
+com.yandex.metrica.MetricaService|AppMetrica (Yandex)
+com.yandex.metrica.PreloadInfoContentProvider|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationService|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationJobService|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationServiceReceiver|AppMetrica (Yandex)
+com.yandex.metrica.MetricaEventHandler|AppMetrica (Yandex)
+com.appodeal.ads.ApdContentProvider|Appodeal
+com.appodeal.ads.VideoPlayerActivity|Appodeal
+com.appodeal.ads.TestActivity|Appodeal
+com.appodeal.ads.AppodealPackageAddedReceiver|Appodeal
+com.explorestack.iab.mraid.MraidActivity|Appodeal
+com.explorestack.iab.mraid.MraidDialogActivity|Appodeal
+com.explorestack.iab.vast.activity.VastActivity|Appodeal
+com.appsflyer.MultipleInstallBroadcastReceiver|AppsFlyer
+com.appsflyer.SingleInstallBroadcastReceiver|AppsFlyer
+com.appsflyer.internal.AFSingleInstallBroadcastReceiver|AppsFlyer
+io.bidmachine.BidMachineInitProvider|BidMachine
+com.braze.push.BrazeFirebaseMessagingService|Braze
+com.bugsnag.android.internal.BugsnagContentProvider|Bugsnag
+com.chartboost.sdk.CBImpressionActivity|Chartboost
+com.clevertap.android.sdk.pushnotification.CTPushNotificationReceiver|CleverTap
+com.clevertap.android.sdk.pushnotification.CTNotificationIntentService|CleverTap
+com.facebook.internal.FacebookInitProvider|Facebook SDK
+com.google.firebase.provider.FirebaseInitProvider|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementService|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementReceiver|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementContentProvider|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementJobService|Firebase Analytics
+com.google.firebase.iid.FirebaseInstanceIdReceiver|Firebase Analytics
+com.google.android.gms.ads.MobileAdsInitProvider|Google AdMob
+com.google.android.gms.ads.AdActivity|Google AdMob
+com.google.android.gms.ads.AdService|Google AdMob
+com.google.android.gms.analytics.AnalyticsReceiver|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.AnalyticsService|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.AnalyticsJobService|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.CampaignTrackingReceiver|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.CampaignTrackingService|Google Analytics (Universal/legacy)
+com.google.android.gms.tagmanager.TagManagerService|Google Tag Manager
+com.google.android.gms.tagmanager.TagManagerPreviewActivity|Google Tag Manager
+com.google.android.gms.tagmanager.PreviewActivity|Google Tag Manager
+com.google.android.gms.tagmanager.InstallReferrerReceiver|Google Tag Manager
+com.google.android.gms.tagmanager.InstallReferrerService|Google Tag Manager
+com.google.tagmanager.PreviewActivity|Google Tag Manager
+com.google.tagmanager.InstallReferrerReceiver|Google Tag Manager
+com.google.tagmanager.InstallReferrerService|Google Tag Manager
+com.hyprmx.android.sdk.activity.HyprMXOfferViewerActivity|HyprMX
+com.hyprmx.android.sdk.activity.HyprMXRequiredInformationActivity|HyprMX
+com.hyprmx.android.sdk.activity.HyprMXNoOffersActivity|HyprMX
+com.hyprmx.android.sdk.overlay.HyprMXBrowserActivity|HyprMX
+com.hyprmx.android.sdk.videoplayer.HyprMXVideoPlayerActivity|HyprMX
+com.ironsource.sdk.controller.InterstitialActivity|IronSource / LevelPlay
+com.ironsource.sdk.controller.ControllerActivity|IronSource / LevelPlay
+com.ironsource.sdk.controller.OpenUrlActivity|IronSource / LevelPlay
+com.unity3d.ironsourceads.internal.services.InlineStoreActivity|IronSource / LevelPlay
+com.ironsource.mediationsdk.testSuite.TestSuiteActivity|IronSource / LevelPlay
+com.ironsource.lifecycle.IronsourceLifecycleProvider|IronSource / LevelPlay
+com.ironsource.lifecycle.LevelPlayActivityLifecycleProvider|IronSource / LevelPlay
+jp.maio.sdk.android.AdFullscreenActivity|maio
+jp.maio.sdk.android.HtmlBasedAdActivity|maio
+jp.maio.sdk.android.v2.AdActivity|maio
+jp.maio.sdk.android.v2.PlayableActivity|maio
+com.facebook.ads.AudienceNetworkActivity|Meta Audience Network
+com.facebook.ads.InterstitialAdActivity|Meta Audience Network
+com.facebook.ads.AudienceNetworkContentProvider|Meta Audience Network
+com.mbridge.msdk.activity.MBCommonActivity|Mintegral
+com.mbridge.msdk.reward.player.MBRewardVideoActivity|Mintegral
+com.mbridge.msdk.newreward.player.MBRewardVideoActivity|Mintegral
+com.mbridge.msdk.out.LoadingActivity|Mintegral
+com.mbridge.msdk.foundation.same.broadcast.NetWorkChangeReceiver|Mintegral
+com.mixpanel.android.mpmetrics.MixpanelFCMMessagingService|Mixpanel
+com.mobilefuse.sdk.MobileFuseSdkInitProvider|MobileFuse
+com.mobilefuse.sdk.MobileFuseFullscreenActivity|MobileFuse
+com.mobilefuse.sdk.MobileFuseFullscreenTransparentActivity|MobileFuse
+com.mobilefuse.sdk.experimental.NativeInterstitialActivity|MobileFuse
+com.mobilefuse.sdk.ad.rendering.splashad.MobileFuseSplashAdActivity|MobileFuse
+com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.templates.renderer.fullscreen.FullscreenWebviewActivity|Moloco
+com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.vast.VastActivity|Moloco
+com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.staticrenderer.StaticAdActivity|Moloco
+com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.mraid.MraidActivity|Moloco
+com.my.target.common.MyTargetActivity|myTarget
+com.my.target.common.MyTargetContentProvider|myTarget
+io.presage.core.service.SdkService|Ogury
+io.presage.core.service.SdkJobService|Ogury
+io.presage.core.service.SMJobService|Ogury
+io.presage.core.activity.SBActivity|Ogury
+io.presage.common.profig.schedule.ProfigAlarmReceiver|Ogury
+io.presage.core.receiver.AlarmReceiver|Ogury
+io.presage.core.receiver.BootCompletedReceiver|Ogury
+io.presage.core.receiver.UserPresentReceiver|Ogury
+io.presage.core.receiver.TimeSetReceiver|Ogury
+io.presage.core.receiver.CarrierConfigChangedReceiver|Ogury
+io.presage.core.receiver.NextAlarmClockChangedReceiver|Ogury
+io.presage.core.receiver.EventReminderReceiver|Ogury
+io.presage.core.receiver.BluetoothReceiver|Ogury
+io.presage.core.receiver.PackageFullyRemovedReceiver|Ogury
+com.bytedance.sdk.openadsdk.activity.TTFullScreenVideoActivity|Pangle
+com.bytedance.sdk.openadsdk.activity.TTRewardVideoActivity|Pangle
+com.bytedance.sdk.openadsdk.activity.TTInterstitialActivity|Pangle
+com.bytedance.sdk.openadsdk.activity.TTAdActivity|Pangle
+com.bytedance.sdk.openadsdk.activity.TTDelegateActivity|Pangle
+com.pubmatic.sdk.webrendering.mraid.POBVideoPlayerActivity|PubMatic OpenWrap
+com.pubmatic.sdk.webrendering.ui.POBFullScreenActivity|PubMatic OpenWrap
+com.pubmatic.sdk.common.browser.POBInternalBrowserActivity|PubMatic OpenWrap
+com.rovio.beacon.ads.AdsActivity|Rovio Beacon (in-house ads/analytics)
+io.sentry.android.core.SentryInitProvider|Sentry
+io.sentry.android.core.SentryPerformanceProvider|Sentry
+com.singular.sdk.SingularInstallReceiver|Singular
+com.smaato.sdk.core.SmaatoBroadcastReceiver|Smaato
+tv.superawesome.sdk.publisher.SAVideoActivity|SuperAwesome AwesomeAds
+tv.superawesome.sdk.publisher.SAInterstitialAd|SuperAwesome AwesomeAds
+tv.superawesome.sdk.publisher.managed.SAManagedAdActivity|SuperAwesome AwesomeAds
+com.tapjoy.TJAdUnitActivity|Tapjoy (Offerwall)
+com.tapjoy.TJWebViewActivity|Tapjoy (Offerwall)
+com.tapjoy.TJContentActivity|Tapjoy (Offerwall)
+com.tapjoy.mraid.view.ActionHandler|Tapjoy (Offerwall)
+com.tapjoy.mraid.view.Browser|Tapjoy (Offerwall)
+com.tapjoy.InstallReferrerReceiver|Tapjoy (Offerwall)
+com.tapjoy.TapjoyReceiver|Tapjoy (Offerwall)
+com.tapjoy.GCMReceiver|Tapjoy (Offerwall)
+com.tapjoy.internal.AppUsageForegroundService|Tapjoy (Offerwall)
+com.tradplus.ads.mgr.interstitial.views.InterNativeActivity|TradPlus
+com.tradplus.ads.mgr.interstitial.views.InterNativeAPI26Activity|TradPlus
+com.tradplus.crosspro.ui.CPAdActivity|TradPlus
+com.tradplus.crosspro.ui.ApkConfirmDialogActivity|TradPlus
+com.tradplus.crosspro.ui.ApkConfirmDialogCNActivity|TradPlus
+com.unity3d.ads.adunit.AdUnitActivity|Unity Ads
+com.unity3d.ads.adunit.AdUnitTransparentActivity|Unity Ads
+com.unity3d.services.ads.adunit.AdUnitActivity|Unity Ads
+com.vungle.ads.internal.ui.VungleActivity|Vungle / Liftoff
+com.vungle.warren.ui.VungleActivity|Vungle / Liftoff
+com.vungle.warren.utility.VungleProvider|Vungle / Liftoff
+com.vungle.warren.NetworkProviderReceiver|Vungle / Liftoff
+com.vungle.publisher.VideoFullScreenAdActivity|Vungle / Liftoff
+com.vungle.publisher.MraidFullScreenAdActivity|Vungle / Liftoff
+com.vungle.publisher.FlexViewAdActivity|Vungle / Liftoff
+com.yandex.mobile.ads.core.initializer.YandexAdsInitializeProvider|Yandex Mobile Ads
+com.yandex.mobile.ads.core.initializer.MobileAdsInitializeProvider|Yandex Mobile Ads
+com.yandex.mobile.ads.common.AdActivity|Yandex Mobile Ads

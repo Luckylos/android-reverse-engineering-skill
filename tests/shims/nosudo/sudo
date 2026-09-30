@@ -1,0 +1,4 @@
+#!/bin/sh
+# tests/shims/nosudo/sudo -- a sudo that always fails (HAS_SUDO=false paths).
+echo "sudo: a password is required (tests/shims/nosudo)" >&2
+exit 1

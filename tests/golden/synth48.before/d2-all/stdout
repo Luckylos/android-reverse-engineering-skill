@@ -1,0 +1,52 @@
+MATCHED:adcolony:AdColony:ads:7
+MATCHED:adjust:Adjust:attribution:5
+MATCHED:amazon-ads:Amazon Ads:ads:7
+MATCHED:amplitude:Amplitude:analytics:25
+MATCHED:applovin:AppLovin / MAX:ads_mediation:30
+MATCHED:appmetrica:AppMetrica (Yandex):analytics:72
+MATCHED:appodeal:Appodeal:ads_mediation:10
+MATCHED:appsflyer:AppsFlyer:attribution:19
+MATCHED:backtrace:Backtrace:crash_reporting:16
+MATCHED:bidmachine:BidMachine:ads:7
+MATCHED:braze:Braze:analytics:7
+MATCHED:bugsnag:Bugsnag:crash_reporting:23
+MATCHED:chartboost:Chartboost:ads:8
+MATCHED:clevertap:CleverTap:analytics:7
+MATCHED:google-ump-consent:Google UMP / IAB TCF Consent:consent:4
+MATCHED:facebook:Facebook SDK:social:22
+MATCHED:firebase-analytics:Firebase Analytics:analytics:8
+MATCHED:firebase-crashlytics:Firebase Crashlytics:crash_reporting:7
+MATCHED:fyber:Fyber / Digital Turbine:ads:2
+MATCHED:google-admob:Google AdMob:ads:13
+MATCHED:google-analytics:Google Analytics (Universal/legacy):analytics:15
+MATCHED:google-tag-manager:Google Tag Manager:analytics:10
+MATCHED:guru-fusion:Guru Fusion Ads:ads_mediation:20
+MATCHED:hyprmx:HyprMX:ads:4
+MATCHED:inmobi:InMobi:ads:6
+MATCHED:ironsource:IronSource / LevelPlay:ads_mediation:76
+MATCHED:maio:maio:ads:13
+MATCHED:meta-audience-network:Meta Audience Network:ads:14
+MATCHED:mintegral:Mintegral:ads:22
+MATCHED:mixpanel:Mixpanel:analytics:10
+MATCHED:mobilefuse:MobileFuse:ads:12
+MATCHED:moloco:Moloco:ads:1
+MATCHED:mytarget:myTarget:ads:7
+MATCHED:ogury:Ogury:ads:24
+MATCHED:pangle:Pangle:ads:6
+MATCHED:pubmatic:PubMatic OpenWrap:ads:7
+MATCHED:pubnative:PubNative / HyBid:ads:7
+MATCHED:rovio-beacon:Rovio Beacon (in-house ads/analytics):ads:22
+MATCHED:sentry:Sentry:crash_reporting:22
+MATCHED:singular:Singular:attribution:22
+MATCHED:smaato:Smaato:ads:7
+MATCHED:superawesome:SuperAwesome AwesomeAds:ads:12
+MATCHED:sybo:SYBO (in-house analytics):analytics:3
+MATCHED:tapjoy:Tapjoy (Offerwall):ads:15
+MATCHED:tradplus:TradPlus:ads_mediation:7
+MATCHED:unity-ads:Unity Ads:ads:5
+MATCHED:vungle:Vungle / Liftoff:ads:25
+MATCHED:yandex-ads:Yandex Mobile Ads:ads:35
+UNKNOWN_PACKAGE:com/google/android:23
+UNKNOWN_PACKAGE:com/yandex/mobile:19
+REGISTRY_TARGETS:<OUT>/registry-targets.txt
+REGISTRY_MANIFEST:<OUT>/registry-manifest.txt

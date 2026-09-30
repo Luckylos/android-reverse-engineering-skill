@@ -1,0 +1,41 @@
+com.adjust.sdk.AdjustReferrerReceiver|Adjust
+io.appmetrica.analytics.internal.AppMetricaService|AppMetrica (Yandex)
+io.appmetrica.analytics.internal.PreloadInfoContentProvider|AppMetrica (Yandex)
+com.yandex.metrica.MetricaService|AppMetrica (Yandex)
+com.yandex.metrica.PreloadInfoContentProvider|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationService|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationJobService|AppMetrica (Yandex)
+com.yandex.metrica.ConfigurationServiceReceiver|AppMetrica (Yandex)
+com.yandex.metrica.MetricaEventHandler|AppMetrica (Yandex)
+com.appsflyer.MultipleInstallBroadcastReceiver|AppsFlyer
+com.appsflyer.SingleInstallBroadcastReceiver|AppsFlyer
+com.appsflyer.internal.AFSingleInstallBroadcastReceiver|AppsFlyer
+com.braze.push.BrazeFirebaseMessagingService|Braze
+com.bugsnag.android.internal.BugsnagContentProvider|Bugsnag
+com.clevertap.android.sdk.pushnotification.CTPushNotificationReceiver|CleverTap
+com.clevertap.android.sdk.pushnotification.CTNotificationIntentService|CleverTap
+com.facebook.internal.FacebookInitProvider|Facebook SDK
+com.google.firebase.provider.FirebaseInitProvider|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementService|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementReceiver|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementContentProvider|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver|Firebase Analytics
+com.google.android.gms.measurement.AppMeasurementJobService|Firebase Analytics
+com.google.firebase.iid.FirebaseInstanceIdReceiver|Firebase Analytics
+com.google.android.gms.analytics.AnalyticsReceiver|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.AnalyticsService|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.AnalyticsJobService|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.CampaignTrackingReceiver|Google Analytics (Universal/legacy)
+com.google.android.gms.analytics.CampaignTrackingService|Google Analytics (Universal/legacy)
+com.google.android.gms.tagmanager.TagManagerService|Google Tag Manager
+com.google.android.gms.tagmanager.TagManagerPreviewActivity|Google Tag Manager
+com.google.android.gms.tagmanager.PreviewActivity|Google Tag Manager
+com.google.android.gms.tagmanager.InstallReferrerReceiver|Google Tag Manager
+com.google.android.gms.tagmanager.InstallReferrerService|Google Tag Manager
+com.google.tagmanager.PreviewActivity|Google Tag Manager
+com.google.tagmanager.InstallReferrerReceiver|Google Tag Manager
+com.google.tagmanager.InstallReferrerService|Google Tag Manager
+com.mixpanel.android.mpmetrics.MixpanelFCMMessagingService|Mixpanel
+io.sentry.android.core.SentryInitProvider|Sentry
+io.sentry.android.core.SentryPerformanceProvider|Sentry
+com.singular.sdk.SingularInstallReceiver|Singular

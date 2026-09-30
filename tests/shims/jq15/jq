@@ -1,0 +1,43 @@
+#!/bin/sh
+# tests/shims/jq15/jq -- pretends to be jq 1.5 (old distros):
+#   --version                      -> jq-1.5
+#   a program using limit/2 or IN  -> jq 1.5 style compile error, exit 3
+#   anything else                  -> delegated to the next real jq on PATH
+# The limit/IN check covers the version probe of registry-query
+# (jq -nr '[limit(1;1,2)] | IN(.[]; 1) | tostring', DESIGN 4.3), which must fail.
+self_dir=$(cd "$(dirname "$0")" && pwd)
+real=""
+IFS_save=$IFS; IFS=:
+for d in $PATH; do
+  [ -n "$d" ] || continue
+  dd=$(cd "$d" 2>/dev/null && pwd) || continue
+  [ "$dd" = "$self_dir" ] && continue
+  case "$dd" in */tests/shims/*) continue ;; esac
+  if [ -x "$dd/jq" ]; then real="$dd/jq"; break; fi
+done
+IFS=$IFS_save
+prog_uses_new() { # $1 = program text
+  case "$1" in *limit\(*|*IN\(*) return 0 ;; esac
+  return 1
+}
+next_is_file=0
+for a in "$@"; do
+  if [ "$next_is_file" = 1 ]; then
+    next_is_file=0
+    if [ -f "$a" ] && prog_uses_new "$(cat "$a")"; then bad=1; fi
+    continue
+  fi
+  case "$a" in
+    --version) echo "jq-1.5"; exit 0 ;;
+    -f|--from-file) next_is_file=1 ;;
+    -*) ;;
+    *) if prog_uses_new "$a"; then bad=1; fi ;;
+  esac
+done
+if [ "${bad:-0}" = 1 ]; then
+  echo "jq: error: limit/2 is not defined at <top-level>, line 1:" >&2
+  echo "jq: 1 compile error" >&2
+  exit 3
+fi
+[ -n "$real" ] || { echo "jq: command not found (tests/shims/jq15: no real jq to delegate to)" >&2; exit 127; }
+exec "$real" "$@"

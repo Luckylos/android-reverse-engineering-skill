@@ -1,0 +1,22 @@
+MATCHED:adjust:Adjust:attribution:5
+MATCHED:amplitude:Amplitude:analytics:25
+MATCHED:appmetrica:AppMetrica (Yandex):analytics:72
+MATCHED:appsflyer:AppsFlyer:attribution:19
+MATCHED:backtrace:Backtrace:crash_reporting:16
+MATCHED:braze:Braze:analytics:7
+MATCHED:bugsnag:Bugsnag:crash_reporting:23
+MATCHED:clevertap:CleverTap:analytics:7
+MATCHED:facebook:Facebook SDK:social:22
+MATCHED:firebase-analytics:Firebase Analytics:analytics:8
+MATCHED:firebase-crashlytics:Firebase Crashlytics:crash_reporting:7
+MATCHED:google-analytics:Google Analytics (Universal/legacy):analytics:15
+MATCHED:google-tag-manager:Google Tag Manager:analytics:10
+MATCHED:mixpanel:Mixpanel:analytics:10
+MATCHED:sentry:Sentry:crash_reporting:22
+MATCHED:singular:Singular:attribution:22
+MATCHED:sybo:SYBO (in-house analytics):analytics:3
+UNKNOWN_PACKAGE:com/google/android:23
+UNKNOWN_PACKAGE:com/yandex/mobile:19
+UNKNOWN_PACKAGE:guru/ads/fusion:13
+REGISTRY_TARGETS:<OUT>/registry-targets.txt
+REGISTRY_MANIFEST:<OUT>/registry-manifest.txt

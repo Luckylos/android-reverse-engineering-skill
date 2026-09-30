@@ -1,0 +1,3 @@
+#!/bin/sh
+# tests/shims/awk-mawk/awk -- mawk (Debian/Ubuntu default awk).
+exec mawk "$@"

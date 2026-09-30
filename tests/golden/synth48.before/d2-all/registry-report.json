@@ -1,0 +1,774 @@
+{
+  "scan_config": {
+    "depth": 2,
+    "category": "all"
+  },
+  "matched_sdks": [
+    {
+      "sdk_id": "adcolony",
+      "display_name": "AdColony",
+      "category": "ads",
+      "matched_packages": [
+        "com.adcolony.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "adjust",
+      "display_name": "Adjust",
+      "category": "attribution",
+      "matched_packages": [
+        "com.adjust.sdk"
+      ],
+      "targets_count": 5,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 5,
+        "ad_operations": 0,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "amazon-ads",
+      "display_name": "Amazon Ads",
+      "category": "ads",
+      "matched_packages": [
+        "com.amazon.device.ads"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 6,
+        "ad_operations": 1,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "amplitude",
+      "display_name": "Amplitude",
+      "category": "analytics",
+      "matched_packages": [
+        "com.amplitude.api",
+        "com.amplitude.android",
+        "com.amplitude.core"
+      ],
+      "targets_count": 25,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 25,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "applovin",
+      "display_name": "AppLovin / MAX",
+      "category": "ads_mediation",
+      "matched_packages": [
+        "com.applovin.sdk",
+        "com.applovin.mediation",
+        "com.applovin.impl",
+        "com.applovin.adview"
+      ],
+      "targets_count": 30,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 2,
+        "ad_operations": 28,
+        "deep_patterns": 2
+      }
+    },
+    {
+      "sdk_id": "appmetrica",
+      "display_name": "AppMetrica (Yandex)",
+      "category": "analytics",
+      "matched_packages": [
+        "io.appmetrica.analytics",
+        "com.yandex.metrica"
+      ],
+      "targets_count": 72,
+      "manifest_components_count": 8,
+      "depth_breakdown": {
+        "entry_points": 66,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "appodeal",
+      "display_name": "Appodeal",
+      "category": "ads_mediation",
+      "matched_packages": [
+        "com.appodeal.ads",
+        "com.explorestack"
+      ],
+      "targets_count": 10,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 2,
+        "ad_operations": 8,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "appsflyer",
+      "display_name": "AppsFlyer",
+      "category": "attribution",
+      "matched_packages": [
+        "com.appsflyer"
+      ],
+      "targets_count": 19,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 19,
+        "ad_operations": 0,
+        "deep_patterns": 3
+      }
+    },
+    {
+      "sdk_id": "backtrace",
+      "display_name": "Backtrace",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "backtraceio"
+      ],
+      "targets_count": 16,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 16,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "bidmachine",
+      "display_name": "BidMachine",
+      "category": "ads",
+      "matched_packages": [
+        "io.bidmachine"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "braze",
+      "display_name": "Braze",
+      "category": "analytics",
+      "matched_packages": [
+        "com.braze",
+        "com.appboy"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "bugsnag",
+      "display_name": "Bugsnag",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "com.bugsnag"
+      ],
+      "targets_count": 23,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 23,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "chartboost",
+      "display_name": "Chartboost",
+      "category": "ads",
+      "matched_packages": [
+        "com.chartboost.sdk"
+      ],
+      "targets_count": 8,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 7,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "clevertap",
+      "display_name": "CleverTap",
+      "category": "analytics",
+      "matched_packages": [
+        "com.clevertap.android.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "google-ump-consent",
+      "display_name": "Google UMP / IAB TCF Consent",
+      "category": "consent",
+      "matched_packages": [
+        "com.google.android.ump",
+        "com.google.android.gms.internal.consent_sdk"
+      ],
+      "targets_count": 4,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "facebook",
+      "display_name": "Facebook SDK",
+      "category": "social",
+      "matched_packages": [
+        "com.facebook",
+        "com.facebook.ads",
+        "com.facebook.login",
+        "com.facebook.share",
+        "com.facebook.appevents",
+        "com.facebook.gamingservices",
+        "com.facebook.bolts",
+        "com.facebook.internal",
+        "com.facebook.unity"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 18,
+        "ad_operations": 4,
+        "deep_patterns": 8
+      }
+    },
+    {
+      "sdk_id": "firebase-analytics",
+      "display_name": "Firebase Analytics",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.firebase.analytics"
+      ],
+      "targets_count": 8,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 8,
+        "ad_operations": 0,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "firebase-crashlytics",
+      "display_name": "Firebase Crashlytics",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "com.google.firebase.crashlytics"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "fyber",
+      "display_name": "Fyber / Digital Turbine",
+      "category": "ads",
+      "matched_packages": [
+        "com.fyber.inneractive.sdk"
+      ],
+      "targets_count": 2,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 1,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "google-admob",
+      "display_name": "Google AdMob",
+      "category": "ads",
+      "matched_packages": [
+        "com.google.android.gms.ads"
+      ],
+      "targets_count": 13,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 2,
+        "ad_operations": 11,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "google-analytics",
+      "display_name": "Google Analytics (Universal/legacy)",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.android.gms.analytics",
+        "com.google.android.apps.analytics"
+      ],
+      "targets_count": 15,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 15,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "google-tag-manager",
+      "display_name": "Google Tag Manager",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.android.gms.tagmanager",
+        "com.google.tagmanager"
+      ],
+      "targets_count": 10,
+      "manifest_components_count": 8,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "guru-fusion",
+      "display_name": "Guru Fusion Ads",
+      "category": "ads_mediation",
+      "matched_packages": [
+        "guru.ads.fusion"
+      ],
+      "targets_count": 20,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 16,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "hyprmx",
+      "display_name": "HyprMX",
+      "category": "ads",
+      "matched_packages": [
+        "com.hyprmx.android"
+      ],
+      "targets_count": 4,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 3,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "inmobi",
+      "display_name": "InMobi",
+      "category": "ads",
+      "matched_packages": [
+        "com.inmobi.sdk",
+        "com.inmobi.ads"
+      ],
+      "targets_count": 6,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 5,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "ironsource",
+      "display_name": "IronSource / LevelPlay",
+      "category": "ads_mediation",
+      "matched_packages": [
+        "com.unity3d.ironsourceads",
+        "com.unity3d.mediation",
+        "com.ironsource.unity",
+        "com.ironsource.mediationsdk",
+        "com.ironsource.sdk",
+        "com.ironsource.adapters"
+      ],
+      "targets_count": 76,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 26,
+        "ad_operations": 50,
+        "deep_patterns": 3
+      }
+    },
+    {
+      "sdk_id": "maio",
+      "display_name": "maio",
+      "category": "ads",
+      "matched_packages": [
+        "jp.maio"
+      ],
+      "targets_count": 13,
+      "manifest_components_count": 4,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 12,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "meta-audience-network",
+      "display_name": "Meta Audience Network",
+      "category": "ads",
+      "matched_packages": [
+        "com.facebook.ads"
+      ],
+      "targets_count": 14,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 2,
+        "ad_operations": 12,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "mintegral",
+      "display_name": "Mintegral",
+      "category": "ads",
+      "matched_packages": [
+        "com.mbridge.msdk"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 18,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "mixpanel",
+      "display_name": "Mixpanel",
+      "category": "analytics",
+      "matched_packages": [
+        "com.mixpanel.android"
+      ],
+      "targets_count": 10,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 10,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "mobilefuse",
+      "display_name": "MobileFuse",
+      "category": "ads",
+      "matched_packages": [
+        "com.mobilefuse.sdk"
+      ],
+      "targets_count": 12,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 2,
+        "ad_operations": 10,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "moloco",
+      "display_name": "Moloco",
+      "category": "ads",
+      "matched_packages": [
+        "com.moloco.sdk"
+      ],
+      "targets_count": 1,
+      "manifest_components_count": 4,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 0,
+        "deep_patterns": 2
+      }
+    },
+    {
+      "sdk_id": "mytarget",
+      "display_name": "myTarget",
+      "category": "ads",
+      "matched_packages": [
+        "com.my.target"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "ogury",
+      "display_name": "Ogury",
+      "category": "ads",
+      "matched_packages": [
+        "com.ogury.sdk",
+        "com.ogury.ed",
+        "com.ogury.cm",
+        "com.ogury.core",
+        "io.presage"
+      ],
+      "targets_count": 24,
+      "manifest_components_count": 14,
+      "depth_breakdown": {
+        "entry_points": 5,
+        "ad_operations": 19,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "pangle",
+      "display_name": "Pangle",
+      "category": "ads",
+      "matched_packages": [
+        "com.bytedance.sdk.openadsdk"
+      ],
+      "targets_count": 6,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 5,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "pubmatic",
+      "display_name": "PubMatic OpenWrap",
+      "category": "ads",
+      "matched_packages": [
+        "com.pubmatic.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "pubnative",
+      "display_name": "PubNative / HyBid",
+      "category": "ads",
+      "matched_packages": [
+        "net.pubnative.lite.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "rovio-beacon",
+      "display_name": "Rovio Beacon (in-house ads/analytics)",
+      "category": "ads",
+      "matched_packages": [
+        "com.rovio.beacon"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 18,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "sentry",
+      "display_name": "Sentry",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "io.sentry"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 22,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "singular",
+      "display_name": "Singular",
+      "category": "attribution",
+      "matched_packages": [
+        "com.singular.sdk"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 22,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "smaato",
+      "display_name": "Smaato",
+      "category": "ads",
+      "matched_packages": [
+        "com.smaato.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "superawesome",
+      "display_name": "SuperAwesome AwesomeAds",
+      "category": "ads",
+      "matched_packages": [
+        "tv.superawesome.sdk.publisher",
+        "tv.superawesome.lib"
+      ],
+      "targets_count": 12,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 11,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "sybo",
+      "display_name": "SYBO (in-house analytics)",
+      "category": "analytics",
+      "matched_packages": [
+        "com.sybo.analytics"
+      ],
+      "targets_count": 3,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 3,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "tapjoy",
+      "display_name": "Tapjoy (Offerwall)",
+      "category": "ads",
+      "matched_packages": [
+        "com.tapjoy",
+        "com.moat.analytics.mobile.tjy"
+      ],
+      "targets_count": 15,
+      "manifest_components_count": 9,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 11,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "tradplus",
+      "display_name": "TradPlus",
+      "category": "ads_mediation",
+      "matched_packages": [
+        "com.tradplus.ads"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 2
+      }
+    },
+    {
+      "sdk_id": "unity-ads",
+      "display_name": "Unity Ads",
+      "category": "ads",
+      "matched_packages": [
+        "com.unity3d.ads",
+        "com.unity3d.services"
+      ],
+      "targets_count": 5,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 1,
+        "ad_operations": 4,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "vungle",
+      "display_name": "Vungle / Liftoff",
+      "category": "ads",
+      "matched_packages": [
+        "com.vungle.ads",
+        "com.vungle.warren",
+        "com.vungle.publisher"
+      ],
+      "targets_count": 25,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 3,
+        "ad_operations": 22,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "yandex-ads",
+      "display_name": "Yandex Mobile Ads",
+      "category": "ads",
+      "matched_packages": [
+        "com.yandex.mobile.ads",
+        "com.monetization.ads",
+        "yads"
+      ],
+      "targets_count": 35,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 31,
+        "deep_patterns": 0
+      }
+    }
+  ],
+  "unknown_packages": [
+    {
+      "package": "com/google/android",
+      "class_count": 23
+    },
+    {
+      "package": "com/yandex/mobile",
+      "class_count": 19
+    }
+  ]
+}

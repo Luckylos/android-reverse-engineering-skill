@@ -1,0 +1,34 @@
+MATCHED:adcolony:AdColony:ads:7
+MATCHED:amazon-ads:Amazon Ads:ads:7
+MATCHED:applovin:AppLovin / MAX:ads_mediation:32
+MATCHED:appodeal:Appodeal:ads_mediation:10
+MATCHED:bidmachine:BidMachine:ads:7
+MATCHED:chartboost:Chartboost:ads:9
+MATCHED:fyber:Fyber / Digital Turbine:ads:2
+MATCHED:google-admob:Google AdMob:ads:14
+MATCHED:guru-fusion:Guru Fusion Ads:ads_mediation:21
+MATCHED:hyprmx:HyprMX:ads:4
+MATCHED:inmobi:InMobi:ads:6
+MATCHED:ironsource:IronSource / LevelPlay:ads_mediation:79
+MATCHED:maio:maio:ads:13
+MATCHED:meta-audience-network:Meta Audience Network:ads:15
+MATCHED:mintegral:Mintegral:ads:23
+MATCHED:mobilefuse:MobileFuse:ads:13
+MATCHED:moloco:Moloco:ads:3
+MATCHED:mytarget:myTarget:ads:7
+MATCHED:ogury:Ogury:ads:24
+MATCHED:pangle:Pangle:ads:7
+MATCHED:pubmatic:PubMatic OpenWrap:ads:8
+MATCHED:pubnative:PubNative / HyBid:ads:7
+MATCHED:rovio-beacon:Rovio Beacon (in-house ads/analytics):ads:22
+MATCHED:smaato:Smaato:ads:7
+MATCHED:superawesome:SuperAwesome AwesomeAds:ads:12
+MATCHED:tapjoy:Tapjoy (Offerwall):ads:15
+MATCHED:tradplus:TradPlus:ads_mediation:9
+MATCHED:unity-ads:Unity Ads:ads:6
+MATCHED:vungle:Vungle / Liftoff:ads:25
+MATCHED:yandex-ads:Yandex Mobile Ads:ads:35
+UNKNOWN_PACKAGE:com/google/android:23
+UNKNOWN_PACKAGE:com/yandex/mobile:19
+REGISTRY_TARGETS:<OUT>/registry-targets.txt
+REGISTRY_MANIFEST:<OUT>/registry-manifest.txt

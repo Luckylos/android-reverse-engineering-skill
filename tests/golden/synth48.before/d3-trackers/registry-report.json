@@ -1,0 +1,291 @@
+{
+  "scan_config": {
+    "depth": 3,
+    "category": "trackers"
+  },
+  "matched_sdks": [
+    {
+      "sdk_id": "adjust",
+      "display_name": "Adjust",
+      "category": "attribution",
+      "matched_packages": [
+        "com.adjust.sdk"
+      ],
+      "targets_count": 6,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 5,
+        "ad_operations": 0,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "amplitude",
+      "display_name": "Amplitude",
+      "category": "analytics",
+      "matched_packages": [
+        "com.amplitude.api",
+        "com.amplitude.android",
+        "com.amplitude.core"
+      ],
+      "targets_count": 25,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 25,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "appmetrica",
+      "display_name": "AppMetrica (Yandex)",
+      "category": "analytics",
+      "matched_packages": [
+        "io.appmetrica.analytics",
+        "com.yandex.metrica"
+      ],
+      "targets_count": 72,
+      "manifest_components_count": 8,
+      "depth_breakdown": {
+        "entry_points": 66,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "appsflyer",
+      "display_name": "AppsFlyer",
+      "category": "attribution",
+      "matched_packages": [
+        "com.appsflyer"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 3,
+      "depth_breakdown": {
+        "entry_points": 19,
+        "ad_operations": 0,
+        "deep_patterns": 3
+      }
+    },
+    {
+      "sdk_id": "backtrace",
+      "display_name": "Backtrace",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "backtraceio"
+      ],
+      "targets_count": 16,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 16,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "braze",
+      "display_name": "Braze",
+      "category": "analytics",
+      "matched_packages": [
+        "com.braze",
+        "com.appboy"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "bugsnag",
+      "display_name": "Bugsnag",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "com.bugsnag"
+      ],
+      "targets_count": 23,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 23,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "clevertap",
+      "display_name": "CleverTap",
+      "category": "analytics",
+      "matched_packages": [
+        "com.clevertap.android.sdk"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "facebook",
+      "display_name": "Facebook SDK",
+      "category": "social",
+      "matched_packages": [
+        "com.facebook",
+        "com.facebook.ads",
+        "com.facebook.login",
+        "com.facebook.share",
+        "com.facebook.appevents",
+        "com.facebook.gamingservices",
+        "com.facebook.bolts",
+        "com.facebook.internal",
+        "com.facebook.unity"
+      ],
+      "targets_count": 30,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 18,
+        "ad_operations": 4,
+        "deep_patterns": 8
+      }
+    },
+    {
+      "sdk_id": "firebase-analytics",
+      "display_name": "Firebase Analytics",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.firebase.analytics"
+      ],
+      "targets_count": 9,
+      "manifest_components_count": 7,
+      "depth_breakdown": {
+        "entry_points": 8,
+        "ad_operations": 0,
+        "deep_patterns": 1
+      }
+    },
+    {
+      "sdk_id": "firebase-crashlytics",
+      "display_name": "Firebase Crashlytics",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "com.google.firebase.crashlytics"
+      ],
+      "targets_count": 7,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 7,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "google-analytics",
+      "display_name": "Google Analytics (Universal/legacy)",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.android.gms.analytics",
+        "com.google.android.apps.analytics"
+      ],
+      "targets_count": 15,
+      "manifest_components_count": 5,
+      "depth_breakdown": {
+        "entry_points": 15,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "google-tag-manager",
+      "display_name": "Google Tag Manager",
+      "category": "analytics",
+      "matched_packages": [
+        "com.google.android.gms.tagmanager",
+        "com.google.tagmanager"
+      ],
+      "targets_count": 10,
+      "manifest_components_count": 8,
+      "depth_breakdown": {
+        "entry_points": 4,
+        "ad_operations": 6,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "mixpanel",
+      "display_name": "Mixpanel",
+      "category": "analytics",
+      "matched_packages": [
+        "com.mixpanel.android"
+      ],
+      "targets_count": 10,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 10,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "sentry",
+      "display_name": "Sentry",
+      "category": "crash_reporting",
+      "matched_packages": [
+        "io.sentry"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 2,
+      "depth_breakdown": {
+        "entry_points": 22,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "singular",
+      "display_name": "Singular",
+      "category": "attribution",
+      "matched_packages": [
+        "com.singular.sdk"
+      ],
+      "targets_count": 22,
+      "manifest_components_count": 1,
+      "depth_breakdown": {
+        "entry_points": 22,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    },
+    {
+      "sdk_id": "sybo",
+      "display_name": "SYBO (in-house analytics)",
+      "category": "analytics",
+      "matched_packages": [
+        "com.sybo.analytics"
+      ],
+      "targets_count": 3,
+      "manifest_components_count": 0,
+      "depth_breakdown": {
+        "entry_points": 3,
+        "ad_operations": 0,
+        "deep_patterns": 0
+      }
+    }
+  ],
+  "unknown_packages": [
+    {
+      "package": "com/google/android",
+      "class_count": 23
+    },
+    {
+      "package": "com/yandex/mobile",
+      "class_count": 19
+    },
+    {
+      "package": "guru/ads/fusion",
+      "class_count": 13
+    }
+  ]
+}

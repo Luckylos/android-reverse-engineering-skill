@@ -1,0 +1,4 @@
+#!/bin/sh
+# tests/shims/nojq/jq -- simulates a machine without jq (the "no jq" code paths).
+echo "jq: command not found (tests/shims/nojq)" >&2
+exit 127
