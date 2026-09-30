@@ -17,6 +17,7 @@
 #                  `# awk-matrix` header line always run that way. The shim goes first
 #                  on PATH and its name is in $ARE_AWK_SHIM.
 #   -v             print the full output of every test, not only of failures
+#   (with `full`, tests see ARE_FULL=1: e.g. t_parity then adds its 8-app corpus part)
 #
 # One line per test: PASS / FAIL / SKIP / SKIP(requires), then a summary listing the
 # SKIPs. Exit 0 when nothing failed, 1 otherwise, 2 on bad usage.
@@ -27,7 +28,8 @@
 # <dir>/bash32.sh (DESIGN 9.1 I18).
 #
 # Test protocol (tests/lib/common.sh): exit 0 = PASS, 77 = SKIP, other = FAIL.
-# Preconditions: `# requires: <token>...` lines in the first 20 lines of a test.
+# Preconditions: `# requires: <token>...` lines in the leading comment block of a test
+# (every line up to the first one that does not start with `#`; same for `# awk-matrix`).
 #   NS/x, S/x, PL/x, REG/x, TESTS/x   the file must exist (NS = sdk-neutralizer/scripts,
 #                                     S = skills, PL = plugin root, REG = registry)
 #   cmd: <shell command>              must succeed (rest of the line; evaluated with
@@ -38,7 +40,7 @@ set -uo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib/common.sh"
 
-usage() { sed -n '2,40p' "$0"; }
+usage() { sed -n '2,38p' "$0"; }
 
 # suite -> test scripts (relative to tests/)
 suite_tests() {
@@ -116,7 +118,7 @@ while [ $# -gt 0 ]; do
     -*) echo "run.sh: unknown option $1" >&2; usage >&2; exit 2 ;;
     *) names_seen=1
        check_name "$1"
-       [ "$1" = full ] && awk_matrix=1
+       [ "$1" = full ] && { awk_matrix=1; ARE_FULL=1; export ARE_FULL; }
        if [ "$mode" = expect ]; then note_empty "$1" 1; else note_empty "$1" 0; fi
        for t in $(resolve_names "$1"); do
          add_unique run_list "$t"
@@ -161,7 +163,7 @@ for t in $run_list; do
   # awk matrix: tests with an `# awk-matrix` header line (and, with --awk-matrix / full,
   # every unit test) run once per available awk shim (DESIGN 4.4, risk 6)
   variants=-
-  if sed -n '1,20p' "$TESTS_DIR/$t" | grep -q '^# awk-matrix' ||
+  if header_block "$TESTS_DIR/$t" | grep -q '^# awk-matrix' ||
      { [ "$awk_matrix" = 1 ] && case "$t" in unit/*) true ;; *) false ;; esac; }; then
     variants=$(awk_shims | tr '\n' ' ')
     [ -n "$variants" ] || variants=-

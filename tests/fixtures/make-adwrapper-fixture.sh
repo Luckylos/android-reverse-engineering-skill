@@ -4,11 +4,11 @@
 # in_house_wrapper annotation) and of registry-scan (package matching, including
 # single-segment and non-`com` prefixes). Port of
 # registry-unification/scratch/contract/make-fixture.sh.
-# Expected detect-adwrapper lines (ADWRAPPER_* only): tests/fixtures/expected/adwrapper-fixture.txt,
-# captured with the product of 4c166fe. Planned changes (DESIGN 6): with the .packages
-# reader (commit 3) tv.superawesome.lib, yads.core.impl and backtraceio.library.sub
-# disappear (they are registry packages the legacy grep missed); with the `segment`
-# entry (commit 7a) com.segment.analytics disappears too.
+# Expected detect-adwrapper lines (ADWRAPPER_* only): tests/fixtures/expected/adwrapper-fixture.txt
+# (checked by tests/unit/t_adwrapper.sh). History (DESIGN 6): captured with the product of
+# 4c166fe; since the .packages reader (commit 3) tv.superawesome.lib, yads.core.impl and
+# backtraceio.library.sub are gone (registry packages the legacy grep missed); with the
+# `segment` entry (commit 7a) com.segment.analytics disappears too.
 set -euo pipefail
 D="${1:?usage: make-adwrapper-fixture.sh <dir>}"; rm -rf "$D"; mkdir -p "$D"
 cat >"$D/AndroidManifest.xml" <<'XML'

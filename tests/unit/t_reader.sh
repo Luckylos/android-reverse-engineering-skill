@@ -2,10 +2,10 @@
 # t_reader.sh -- registry-query.sh contract (DESIGN 4.1-4.4, invariants I13/I21 sh side):
 # rows/shared/packages on tests/fixtures/registry-{mini,edge,bad} against the committed
 # expected outputs (tests/fixtures/expected/registry-query/); strict = exit 1 + ERROR
-# lines, --lenient = WARN lines + exit 0; without jq (nojq, jq15 shims) rows/shared/
-# check-jq exit 2 + INSTALL_REQUIRED:jq while packages falls back to awk; registry
-# resolution (--registry > SDK_REGISTRY_DIR > <script dir>/../registry); usage errors;
-# the real registry; source rules (ASCII-only .ps1, no regex in the jq program,
+# lines, --lenient = WARN lines + exit 0 (also for a chmod-000 entry); without jq (nojq,
+# jq15 shims) rows/shared/check-jq exit 2 + INSTALL_REQUIRED:jq while packages falls
+# back to awk; registry resolution (--registry > SDK_REGISTRY_DIR > <script dir>/../registry);
+# usage errors; the real registry; source rules (ASCII-only .ps1, no regex in the jq program,
 # function-only registry-lib.ps1). Product scripts run with $BASH32 when set.
 # requires: NS/registry-query.sh NS/registry-query.jq
 # requires: cmd: have_jq16
@@ -83,6 +83,14 @@ done
 mkdir -p "$tmp/awkbad"
 for f in c-empty d-blank f-noid g-numid i-good j-dup k-good; do cp "$FIX/registry-bad/$f.json" "$tmp/awkbad/"; done
 cp "$FIX/registry-edge/a-bom.json" "$tmp/awkbad/"
+# + an unreadable entry file (chmod 000; awk must not abort on it, message in file order)
+unread=0
+cp "$FIX/registry-bad/k-good.json" "$tmp/awkbad/e-unreadable.json"; chmod 000 "$tmp/awkbad/e-unreadable.json"
+if [ -r "$tmp/awkbad/e-unreadable.json" ]; then
+  rm -f "$tmp/awkbad/e-unreadable.json"; echo "note: chmod 000 does not make files unreadable here (root?): unreadable-file cases skipped"
+else
+  unread=1
+fi
 for m in "" --lenient; do
   rq "awkbad.jq$m" --registry "$tmp/awkbad" packages $m
   PATH="$TESTS_DIR/shims/nojq:$PATH" run_bash "$RQ" --registry "$tmp/awkbad" packages $m >"$tmp/awkbad.awk$m.out" 2>"$tmp/awkbad.awk$m.err"
@@ -91,6 +99,24 @@ for m in "" --lenient; do
   assert_files_eq "$tmp/awkbad.jq$m.err" "$tmp/awkbad.awk$m.err" "awk vs jq packages $m: same messages"
   assert_files_eq "$tmp/awkbad.jq$m.out" "$tmp/awkbad.awk$m.out" "awk vs jq packages $m: same output"
 done
+if [ "$unread" = 1 ]; then
+  assert_true "unreadable entry: strict ERROR" grep -qxF 'registry-query: ERROR e-unreadable.json: unreadable file' "$tmp/awkbad.jq.err"
+  assert_true "unreadable entry: lenient WARN" grep -qxF 'registry-query: WARN skipping e-unreadable.json: unreadable file' "$tmp/awkbad.jq--lenient.err"
+  assert_eq 0 "$(rc_of awkbad.jq--lenient)" "unreadable entry: --lenient exit 0"
+  mkdir -p "$tmp/unrrows"; cp "$FIX/registry-mini/"*.json "$tmp/unrrows/"; chmod 000 "$tmp/unrrows/beta.json"
+  rq unread.rows --registry "$tmp/unrrows" rows --lenient
+  assert_eq 0 "$(rc_of unread.rows)" "unreadable entry: rows --lenient exit 0"
+  assert_eq "registry-query: WARN skipping beta.json: unreadable file" "$(cat "$tmp/unread.rows.err")" "unreadable entry: rows --lenient WARN"
+  awk -F '\t' '$4 == "beta.json" && $3 == "file" { print $1 }' "$EXP/mini.rows.tsv" >"$tmp/beta.id"
+  assert_eq "$(awk -F '\t' -v id="$(cat "$tmp/beta.id")" '$1 != id' "$EXP/mini.rows.tsv")" "$(cat "$tmp/unread.rows.out")" \
+    "unreadable entry: rows --lenient == mini rows without beta.json's entry"
+  mkdir -p "$tmp/sharedunr"
+  cp "$FIX/registry-mini/alpha.json" "$FIX/registry-mini/_audit-shared.json" "$tmp/sharedunr/"
+  chmod 000 "$tmp/sharedunr/_audit-shared.json"
+  rq sharedunr --registry "$tmp/sharedunr" rows --lenient
+  assert_eq 1 "$(rc_of sharedunr)" "an unreadable _audit-shared.json is fatal even with --lenient"
+  assert_eq "registry-query: ERROR _audit-shared.json: unreadable file" "$(cat "$tmp/sharedunr.err")" "shared unreadable message"
+fi
 
 # ---- version / check-jq -------------------------------------------------------------------
 rq version version

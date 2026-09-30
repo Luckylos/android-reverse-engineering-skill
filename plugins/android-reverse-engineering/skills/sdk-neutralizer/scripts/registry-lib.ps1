@@ -198,14 +198,18 @@ function Test-RegistryMultiDocument {
 }
 
 function Test-RegistryFile {
-  # Integrity of one registry file, in the order of the sh twin: BOM, empty file,
+  # Integrity of one registry file, in the order of the sh twin: unreadable, BOM, empty file,
   # invalid JSON / more than one document, root not an object, case-colliding keys,
   # then (entries only) sdk_id and targets: null.
   param([string]$Path, [bool]$RequireSdkId = $true)
   $ErrorActionPreference = 'Stop'
   Set-StrictMode -Version 2.0
   $res = [pscustomobject]@{ Ok = $false; Message = ''; Data = $null; SdkId = $null }
-  $bytes = [System.IO.File]::ReadAllBytes($Path)
+  # an unreadable file (access denied, locked, I/O error) is a per-file problem like
+  # the others (sh twin: [ -r ]), so --lenient skips just this file
+  $bytes = $null
+  try { $bytes = [System.IO.File]::ReadAllBytes($Path) } catch { $bytes = $null }
+  if ($null -eq $bytes) { $res.Message = 'unreadable file'; return $res }
   if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
     $res.Message = 'BOM not allowed'; return $res
   }

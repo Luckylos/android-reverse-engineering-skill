@@ -2,6 +2,9 @@
 # t_runner.sh -- tests/run.sh semantics on a throw-away copy of the harness (DESIGN 9.2,
 # 10 "Suite che devono PASSARE"): --expect-pass turns SKIP, SKIP(requires) and an empty
 # suite into FAIL; corpus/bash32 discovery follows the DESIGN 9.2 script names.
+# Directives (`# requires:`, `# awk-matrix`) are honoured anywhere in the leading comment
+# block (also past line 20) and every real test keeps them there (none further down,
+# where they would be silently ignored).
 set -uo pipefail
 . "$(cd "$(dirname "$0")/.." && pwd)/lib/common.sh"
 
@@ -55,4 +58,26 @@ assert_eq 0 "$(run --expect-pass marker-verify)" "a corpus script by name"
 mk unit/bash32.sh 'echo b32-ok'
 assert_eq 0 "$(run --expect-pass bash32)" "bash32 suite finds <dir>/bash32.sh"
 assert_eq 2 "$(run nosuch)" "unknown suite or test name: rc 2"
+
+# directives deep in a long header block are honoured; after the block they are not
+hdr=$(i=0; while [ $i -lt 30 ]; do echo "# filler header line $i"; i=$((i + 1)); done)
+printf '#!/usr/bin/env bash\n%s\n# requires: TESTS/does-not-exist\nexit 1\n' "$hdr" >"$fk/unit/t_deepreq.sh"
+assert_eq 0 "$(run t_deepreq)" "# requires: on line 32 of the header is honoured: rc 0"
+assert_true "deep # requires: prints SKIP(requires)" has '^SKIP(requires) t_deepreq '
+mkdir -p "$fk/shims/awk-gawk-posix" "$fk/shims/awk-mawk" "$fk/shims/awk-busybox"
+printf '#!/usr/bin/env bash\n%s\n# awk-matrix\necho "shim=${ARE_AWK_SHIM:-none}"\n' "$hdr" >"$fk/unit/t_deepawk.sh"
+n_shims=$(awk_shims | wc -l | tr -d ' ')
+if [ "$n_shims" -gt 0 ]; then
+  assert_eq 0 "$(run t_deepawk)" "# awk-matrix on line 32 of the header: rc 0"
+  assert_eq "$n_shims" "$(grep -c '^PASS  t_deepawk\[awk-' "$tmp/out")" "deep # awk-matrix runs once per awk shim"
+fi
+printf '#!/usr/bin/env bash\n# short header\nset -u\n# requires: TESTS/does-not-exist\necho body\n' >"$fk/unit/t_bodyreq.sh"
+assert_eq 0 "$(run t_bodyreq)" "# requires: after the header block is not a directive: rc 0"
+assert_true "body # requires: is ignored (PASS)" has '^PASS  t_bodyreq '
+assert_eq "$fk/unit/t_bodyreq.sh:4: # requires: TESTS/does-not-exist" \
+  "$(directives_outside_header "$fk/unit/t_bodyreq.sh")" "directives_outside_header flags it"
+
+# lint of the real tree: no test keeps a directive where run.sh would not read it
+stray=$(directives_outside_header "$TESTS_DIR"/*/*.sh "$TESTS_DIR"/run.sh)
+assert_eq "" "$stray" "no # requires: / # awk-matrix line outside a leading comment block"
 t_done

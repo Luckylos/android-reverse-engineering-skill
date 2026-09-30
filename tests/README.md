@@ -14,7 +14,9 @@ tests/run.sh --expect-pass lint golden snapshot   # SKIP counts as FAIL for thes
 
 One line per test: `PASS`, `FAIL`, `SKIP` (tool or corpus missing) or `SKIP(requires)`
 (the feature the test covers is not in the tree yet: see the `# requires:` header of each
-test). A suite with no test script yet prints `SKIP <suite> no tests found`. Under
+test). Directives (`# requires:`, `# awk-matrix`) are read only from the leading comment
+block of a test (up to the first line that does not start with `#`); `t_runner` fails
+when one sits further down, where it would be ignored. A suite with no test script yet prints `SKIP <suite> no tests found`. Under
 `--expect-pass` every SKIP, SKIP(requires) and empty suite of the named suites/tests is a
 FAIL. Exit 0 = nothing failed.
 
@@ -33,9 +35,10 @@ any `<dir>/bash32.sh`. A single script also runs by name (`tests/run.sh marker-v
 | `fixtures/` | generators of synthetic trees (synth48, adwrapper fixture, pitfalls) and expected outputs; no proprietary code |
 | `shims/` | `nojq`, `jq15` (fake jq 1.5), `nosudo`, `awk-{gawk-posix,mawk,busybox}` for the portability paths |
 | `parity/ps.sh` | runs a `.ps1` with Windows PowerShell 5.1 from WSL (`-File`, Windows paths) |
-| `parity/t_parity.sh` | sh/ps1 byte parity (`--only <section>`; today: `registry-query`, incl. the in-process case) |
+| `parity/t_parity.sh` | sh/ps1 byte parity (`--only <section>`; today: `registry-query` and `adwrapper`, both incl. the in-process case; the 8-app corpus part of `adwrapper` runs with `--only adwrapper` or under `run.sh full`, which exports `ARE_FULL=1`) |
 | `fixtures/registry-{mini,edge,bad}/`, `fixtures/expected/registry-query/` | registry-query fixtures (clean; BOM + case-colliding keys; every integrity error) and their expected outputs |
-| `unit/` | unit tests (`t_*.sh`; `t_runner.sh` covers run.sh itself; `t_reader`, `t_pkg_parity` (T-PKG-PARITY, always per awk shim), `t_categories` (T-CAT), `t_libroots` (T-LIBROOTS), `t_format` (T-FORMAT) cover registry-query and `_audit-shared.json`) |
+| `unit/` | unit tests (`t_*.sh`; `t_runner.sh` covers run.sh itself; `t_reader`, `t_pkg_parity` (T-PKG-PARITY, always per awk shim), `t_categories` (T-CAT), `t_libroots` (T-LIBROOTS), `t_format` (T-FORMAT) cover registry-query and `_audit-shared.json`; `t_adwrapper` (fixture, jq/nojq/jq15, malformed registries, `--dump-exclusions`, decode-apk.sh exit code; per awk shim) and `t_network_roots` (T-NETROOTS: the frozen NETWORK_ROOTS/COMMON_ROOTS tables, sh == ps1, covered by the registry) cover detect-adwrapper) |
+| `corpus/exclusions-superset.sh` | I11: the `.packages`-based exclusions cover the legacy ones (legacy script of `$ARE_BASE_COMMIT` patched at test time to dump them), in the jq/nojq/jq15 modes; nojq/jq15 detect-adwrapper output on the 8 apps == G |
 
 Tests follow a tiny protocol (see `lib/common.sh`): exit 0 = PASS, 77 = SKIP, anything
 else = FAIL. Each test can also be run on its own: `bash tests/unit/t_lint.sh`.

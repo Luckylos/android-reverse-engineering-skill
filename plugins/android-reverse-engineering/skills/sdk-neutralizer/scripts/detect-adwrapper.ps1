@@ -17,13 +17,19 @@
 # Same heuristic, exclusion lists and output as detect-adwrapper.sh; keep the
 # two in sync. PowerShell 5.1 compatible.
 #
+# The registry is read with registry-lib.ps1 (Get-RegistryPackages -Lenient: only
+# the "packages" arrays, the same rows as registry-query.sh packages). A registry
+# that cannot be read only costs the registry exclusions: a warning goes to stderr
+# and the check still runs and exits 0.
+#
 # Exit codes:
-#   0 - check completed (informational)
+#   0 - check completed (informational), also when the registry is unreadable
 #   1 - error (invalid input, unknown option)
 param(
     [Parameter(Position=0)]
     [string]$DecodedDir,
     [string]$Registry,
+    [switch]$DumpExclusions,
     [Alias('h')]
     [switch]$Help
 )
@@ -49,7 +55,11 @@ Arguments:
 
 Options:
   -Registry <dir>   SDK registry directory (default: <script-dir>\..\registry).
-                    Used to exclude known third-party SDK packages.
+                    Used to exclude known third-party SDK packages (only the
+                    "packages" arrays are read).
+  -DumpExclusions   Debug: print the exclusion set (EXCL:<root>, sorted) and the
+                    in-house wrapper map (INHOUSE:<root>|<sdk_id>, lookup order),
+                    then exit 0. No <decoded-dir> needed.
   -Help             Show this help message
 
 Output:
@@ -65,26 +75,30 @@ Exit codes: 0 = check completed (informational), 1 = error
 
 if ($Help) { Show-Usage; exit 0 }
 
-if (-not $DecodedDir) {
-    Write-Host "Error: No decoded directory specified." -ForegroundColor Red
-    Show-Usage
-    exit 1
-}
-if (-not (Test-Path -LiteralPath $DecodedDir -PathType Container)) {
-    Write-Host "Error: Not a directory: $DecodedDir" -ForegroundColor Red
-    exit 1
-}
-$root = (Resolve-Path -LiteralPath $DecodedDir).ProviderPath.TrimEnd('\', '/')
-$manifest = Join-Path $root 'AndroidManifest.xml'
-if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
-    Write-Host "Error: $root has no AndroidManifest.xml (not an apktool-decoded directory?)" -ForegroundColor Red
-    exit 1
+if (-not $DumpExclusions) {
+    if (-not $DecodedDir) {
+        Write-Host "Error: No decoded directory specified." -ForegroundColor Red
+        Show-Usage
+        exit 1
+    }
+    if (-not (Test-Path -LiteralPath $DecodedDir -PathType Container)) {
+        Write-Host "Error: Not a directory: $DecodedDir" -ForegroundColor Red
+        exit 1
+    }
+    $root = (Resolve-Path -LiteralPath $DecodedDir).ProviderPath.TrimEnd('\', '/')
+    $manifest = Join-Path $root 'AndroidManifest.xml'
+    if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
+        Write-Host "Error: $root has no AndroidManifest.xml (not an apktool-decoded directory?)" -ForegroundColor Red
+        exit 1
+    }
 }
 if (-not $Registry) {
     $Registry = Join-Path (Split-Path -Parent $PSCommandPath) '..\registry'
 }
 
 # =====================================================================
+# FROZEN legacy table - see tests/unit/t_network_roots.sh (identical, same order,
+# in detect-adwrapper.sh; each root is covered by a registry entry).
 # Known ad-network / analytics SDK package roots: "root|label".
 # =====================================================================
 $networkRoots = @(
@@ -115,6 +129,8 @@ $networkRoots = @(
     'io/presage|ogury'
 )
 
+# FROZEN legacy table - see tests/unit/t_network_roots.sh (identical, same order,
+# in detect-adwrapper.sh).
 # Common libraries + ad-tech infrastructure that are NOT publisher-owned wrappers.
 $commonRoots = @(
     'android','androidx','kotlin','kotlinx','com/google','com/squareup',
@@ -130,37 +146,53 @@ $commonRoots = @(
 )
 
 # =====================================================================
-# Registry: third-party-SDK exclusion + in_house_wrapper package map.
+# Registry: third-party-SDK exclusion + in_house_wrapper package map, from the
+# "packages" arrays only (registry-lib.ps1, lenient: unreadable entry files are
+# skipped with a WARN). The in-house map is an ORDERED list (sdk_id ordinal, then
+# file order, like registry-query packages): the first match wins, as in the sh twin.
 # =====================================================================
 $regExcl = New-Object System.Collections.Generic.List[string]
-$inhouseMap = @{}   # slashpkg -> sdk_id
-if (Test-Path -LiteralPath $Registry -PathType Container) {
-    foreach ($jf in (Get-ChildItem -LiteralPath $Registry -Filter '*.json' -File)) {
-        if ($jf.Name.StartsWith('_')) { continue }
-        $txt = [System.IO.File]::ReadAllText($jf.FullName, [System.Text.Encoding]::UTF8)
-        $sdkId = $jf.BaseName
-        $mId = [regex]::Match($txt, '"sdk_id"\s*:\s*"([^"]*)"')
-        if ($mId.Success) { $sdkId = $mId.Groups[1].Value }
-        $inhouse = [regex]::IsMatch($txt, '"in_house_wrapper"\s*:\s*true')
-        foreach ($pm in [regex]::Matches($txt, '"([a-z][a-z0-9_]+(\.[a-z0-9_]+)+)"')) {
-            $pkg = $pm.Groups[1].Value
-            if ($pkg -notmatch '^(com|io|net|org|sg|guru|de|fr|jp)\.') { continue }
-            $slp = $pkg -replace '\.', '/'
-            if ($inhouse) {
-                if (-not $inhouseMap.ContainsKey($slp)) { $inhouseMap[$slp] = $sdkId }
+$inhouseMap = New-Object System.Collections.Generic.List[object]   # {Pkg (slash), Id}
+$regOk = $false
+try {
+    . (Join-Path $PSScriptRoot 'registry-lib.ps1')
+    $regRes = Get-RegistryPackages -Registry $Registry -Lenient
+    foreach ($m in @($regRes.Messages)) { [Console]::Error.Write([string]$m + "`n") }
+    if ($regRes.ExitCode -eq 0) {
+        foreach ($it in $regRes.Items) {
+            $pkg = [string]$it.Package
+            if ($pkg -eq '' -or $pkg -eq '-') { continue }
+            $slp = $pkg.Replace('.', '/')
+            if ($it.InHouse) {
+                $inhouseMap.Add([pscustomobject]@{ Pkg = $slp; Id = [string]$it.SdkId })
             } else {
-                if (-not $regExcl.Contains($slp)) { $regExcl.Add($slp) }
+                $regExcl.Add($slp)
             }
         }
+        $regOk = $true
     }
+} catch {
+    [Console]::Error.Write("registry-lib: $($_.Exception.Message)`n")
+}
+if (-not $regOk) {
+    $regExcl.Clear(); $inhouseMap.Clear()
+    [Console]::Error.Write("[WARN] registry unreadable: registry exclusions skipped`n")
 }
 
-# Full exclusion set
-$exclSet = New-Object System.Collections.Generic.List[string]
-foreach ($nr in $networkRoots) { $exclSet.Add($nr.Split('|')[0]) }
-foreach ($c in $commonRoots) { $exclSet.Add($c) }
-foreach ($r in $regExcl) { $exclSet.Add($r) }
-$excl = @($exclSet | Sort-Object -Unique)
+# Full exclusion set (unique, ordinal order = LC_ALL=C sort -u of the sh twin)
+$exclSet = New-Object 'System.Collections.Generic.SortedSet[string]' ([System.StringComparer]::Ordinal)
+foreach ($nr in $networkRoots) { [void]$exclSet.Add($nr.Split('|')[0]) }
+foreach ($c in $commonRoots) { [void]$exclSet.Add($c) }
+foreach ($r in $regExcl) { if ($r -ne '') { [void]$exclSet.Add($r) } }
+$excl = @($exclSet)
+
+if ($DumpExclusions) {
+    $dump = New-Object System.Collections.Generic.List[string]
+    foreach ($e in $excl) { $dump.Add("EXCL:$e") }
+    foreach ($ih in $inhouseMap) { $dump.Add("INHOUSE:$($ih.Pkg)|$($ih.Id)") }
+    foreach ($l in $dump) { Write-Host $l }
+    exit 0
+}
 
 function Test-Excluded {
     param([string]$Pkg)
@@ -172,8 +204,9 @@ function Test-Excluded {
 }
 function Get-InhouseId {
     param([string]$Pkg)
-    foreach ($p in $inhouseMap.Keys) {
-        if ($Pkg -eq $p -or $Pkg.StartsWith("$p/") -or $p.StartsWith("$Pkg/")) { return $inhouseMap[$p] }
+    foreach ($ih in $inhouseMap) {
+        $p = $ih.Pkg
+        if ($Pkg -eq $p -or $Pkg.StartsWith("$p/") -or $p.StartsWith("$Pkg/")) { return $ih.Id }
     }
     return ''
 }

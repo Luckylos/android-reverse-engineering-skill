@@ -151,11 +151,29 @@ replace_literal() {
       print out s }'
 }
 
+# header_block <file>: print the leading comment block of a script: every line from
+# line 1 up to (not including) the first line that does not start with `#`. Test
+# directives (`# requires:`, `# awk-matrix`) are read only from here; t_runner fails
+# when one appears further down, where it would be silently ignored.
+header_block() {
+  LC_ALL=C awk '!/^#/ { exit } { print }' "$1"
+}
+
+# directives_outside_header <file>...: print `file:line: text` for every `# requires:` /
+# `# awk-matrix` line that is NOT in the leading comment block (so it would be ignored).
+directives_outside_header() {
+  LC_ALL=C awk '
+    FNR == 1 { inhdr = 1 }
+    inhdr && !/^#/ { inhdr = 0 }
+    !inhdr && /^#[[:space:]]*(requires:|awk-matrix)/ { print FILENAME ":" FNR ": " $0 }
+  ' "$@"
+}
+
 # requires_unmet <test-file>: print the first unmet `# requires:` token of a test (see
-# tests/run.sh for the syntax), nothing when all are met. `cmd:` tokens are evaluated in a
-# subshell with this file loaded.
+# tests/run.sh for the syntax), nothing when all are met. Only the leading comment block
+# is read (header_block). `cmd:` tokens are evaluated in a subshell with this file loaded.
 requires_unmet() {
-  sed -n '1,20p' "$1" | sed -n 's/^# requires:[[:space:]]*//p' | while IFS= read -r _line; do
+  header_block "$1" | sed -n 's/^# requires:[[:space:]]*//p' | while IFS= read -r _line; do
     while [ -n "$_line" ]; do
       case "$_line" in
         cmd:*)

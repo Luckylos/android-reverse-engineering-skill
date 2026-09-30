@@ -31,9 +31,9 @@
 #   check-jq  exit 0 when jq >= 1.6 is available, else exit 2 + INSTALL_REQUIRED:jq.
 #   version   registry-query<TAB>1<TAB><backend> (jq-<version> | awk).
 #
-# Integrity (strict, the default): a BOM, an empty file, invalid JSON, more than one
-# JSON document, a root that is not an object, keys that differ only by case, a
-# missing or duplicate sdk_id, or targets: null is an error:
+# Integrity (strict, the default): an unreadable file, a BOM, an empty file, invalid
+# JSON, more than one JSON document, a root that is not an object, keys that differ
+# only by case, a missing or duplicate sdk_id, or targets: null is an error:
 #   registry-query: ERROR <file>: <message>                        -> exit 1
 # --lenient skips such entry files instead:
 #   registry-query: WARN skipping <file>: <message>                -> exit 0
@@ -106,12 +106,17 @@ have_jq16 || use_jq=0
 if [ "$use_jq" = 0 ] && [ "$verb" != packages ]; then install_required; fi
 
 # ---- inputs -------------------------------------------------------------------------
-# entry files in byte order (LC_ALL=C glob), `_*` skipped
+# entry files in byte order (LC_ALL=C glob), `_*` and non-regular files skipped (the
+# ps1 twin lists files only); unreadable ones are kept in `files` (they get the
+# per-file "unreadable file" diagnosis, in file order) and listed in `unreadable`
 files=()
+readable=()
+unreadable=""
 for f in "$registry"/*.json; do
-  [ -e "$f" ] || continue
+  [ -f "$f" ] || continue
   case "${f##*/}" in _*) continue ;; esac
   files+=("$f")
+  if [ -r "$f" ]; then readable+=("$f"); else unreadable="$unreadable$f$NL"; fi
 done
 shared_file=""
 if [ "$verb" = rows ] || [ "$verb" = shared ]; then
@@ -124,10 +129,14 @@ fi
 
 # files that start with a UTF-8 BOM (one awk for all files; jq would accept a BOM
 # on the first file only, PowerShell strips it silently: both twins reject it)
-if [ "$verb" = shared ]; then files=(); fi   # shared reads only _audit-shared.json
+# (an unreadable file would stop gawk/mawk: only readable files are scanned)
+if [ "$verb" = shared ]; then files=(); readable=(); unreadable=""; fi   # shared reads only _audit-shared.json
+shared_readable=""
+if [ -n "$shared_file" ] && [ -r "$shared_file" ]; then shared_readable=$shared_file; fi
 bom_list=$(awk 'FNR == 1 && substr($0, 1, 3) == "\357\273\277" { print FILENAME }' \
-  ${shared_file:+"$shared_file"} ${files[@]+"${files[@]}"} 2>/dev/null)
+  ${shared_readable:+"$shared_readable"} ${readable[@]+"${readable[@]}"} 2>/dev/null </dev/null)
 is_bom() { case "$NL$bom_list$NL" in *"$NL$1$NL"*) return 0 ;; esac; return 1; }
+is_unreadable() { case "$NL$unreadable" in *"$NL$1$NL"*) return 0 ;; esac; return 1; }
 
 run_jq() { # run_jq <verb> <nfiles> <needid> <file>... -> stdout, jq's exit status
   _v=$1 _n=$2 _id=$3; shift 3
@@ -139,8 +148,11 @@ print_out() { [ -z "$1" ] || printf '%s\n' "$1"; }
 # Reads only: the first "sdk_id": "<v>", the presence of "in_house_wrapper": true, and
 # the strings of the "packages" array whose key starts a line (one or several lines).
 # Output: E<TAB>file<TAB>message | R<TAB>sdk_id<TAB>seq<TAB>in_house<TAB>package | N<TAB>count
+# awk reads only the readable files; _RQ_ALL (every entry file, in order) drives the
+# END loop so an unreadable file gets its E line in file order.
 packages_awk() {
-  _RQ_BOM=$bom_list awk '
+  _all=$(printf '%s\n' "${files[@]}")
+  _RQ_BOM=$bom_list _RQ_UNR=$unreadable _RQ_ALL=$_all awk '
     function basename(p) { sub(/.*\//, "", p); return p }
     function pkscan(s,    q, b, e) {
       # state 1: waiting for "["; state 2: inside the array; state 3: done
@@ -166,6 +178,8 @@ packages_awk() {
     BEGIN {
       nb = split(ENVIRON["_RQ_BOM"], tmp, "\n")
       for (i = 1; i <= nb; i++) if (tmp[i] != "") bom[tmp[i]] = 1
+      nb = split(ENVIRON["_RQ_UNR"], tmp, "\n")
+      for (i = 1; i <= nb; i++) if (tmp[i] != "") unr[tmp[i]] = 1
     }
     {
       seen[FILENAME] = 1
@@ -185,8 +199,11 @@ packages_awk() {
     }
     END {
       nok = 0; seq = 0
-      for (i = 1; i < ARGC; i++) {
-        f = ARGV[i]; b = basename(f)
+      nall = split(ENVIRON["_RQ_ALL"], all, "\n")
+      for (i = 1; i <= nall; i++) {
+        f = all[i]; if (f == "") continue
+        b = basename(f)
+        if (f in unr) { print "E\t" b "\tunreadable file"; continue }
         if (f in bom) { print "E\t" b "\tBOM not allowed"; continue }
         if (!(f in nonblank)) { print "E\t" b "\tempty file"; continue }
         if (!(f in sdk) || sdk[f] == "") { print "E\t" b "\tsdk_id missing or not a string"; continue }
@@ -201,7 +218,7 @@ packages_awk() {
         }
       }
       print "N\t" nok
-    }' "${files[@]}"
+    }' ${readable[@]+"${readable[@]}"} </dev/null
 }
 
 if [ "$use_jq" = 0 ]; then
@@ -227,7 +244,7 @@ fi
 # ---- jq: fast path (one process), then per-file diagnosis ---------------------------
 nshared=0
 [ -z "$shared_file" ] || nshared=1
-if [ -z "$bom_list" ]; then
+if [ -z "$bom_list" ] && [ -z "$unreadable" ] && { [ -z "$shared_file" ] || [ -n "$shared_readable" ]; }; then
   if [ "$verb" = shared ]; then
     out=$(run_jq shared 1 false "$shared_file" 2>/dev/null) && { print_out "$out"; exit 0; }
   else
@@ -237,6 +254,7 @@ if [ -z "$bom_list" ]; then
 fi
 
 check_file() { # check_file <file> <needid> -> chk_status (OK|ERR), chk_val (sdk_id | message)
+  if is_unreadable "$1" || [ ! -r "$1" ]; then chk_status=ERR; chk_val="unreadable file"; return 0; fi
   if is_bom "$1"; then chk_status=ERR; chk_val="BOM not allowed"; return 0; fi
   if ! _res=$(run_jq check -1 "$2" "$1" 2>/dev/null) || [ -z "$_res" ]; then
     chk_status=ERR; chk_val="invalid JSON"; return 0

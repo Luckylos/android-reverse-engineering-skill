@@ -38,17 +38,21 @@
 #     medium — networks>=2 (no vendor, no house-ad path)  OR (webview+mraid + ad classes)
 #     low    — a weaker webview+mraid-only match
 #
-# Known third-party SDKs are excluded using the registry (registry/*.json
-# `packages`), EXCEPT entries flagged "in_house_wrapper": true (those are exactly
-# what we look for — a flagged candidate that already has such an entry is
-# annotated registry=<sdk_id>), plus a built-in list of common libraries and
-# ad-tech infrastructure (OMID, SafeDK, mediation-safety layers, ...).
+# Known third-party SDKs are excluded using the registry (the `packages` array of
+# registry/*.json, read with registry-query.sh: jq >= 1.6 when available, else a
+# built-in POSIX awk parser), EXCEPT entries flagged "in_house_wrapper": true
+# (those are exactly what we look for — a flagged candidate that already has such
+# an entry is annotated registry=<sdk_id>), plus a built-in list of common
+# libraries and ad-tech infrastructure (OMID, SafeDK, mediation-safety layers, ...).
+# A registry that cannot be read (missing, malformed) only costs the registry
+# exclusions: a warning goes to stderr and the check still runs and exits 0.
 #
-# Portable: bash 3.2+ (macOS) and BSD/GNU userland. No grep -P, no sed -i,
-# no associative arrays.
+# Portable: bash 3.2+ (macOS) and BSD/GNU userland, POSIX awk. No grep -P,
+# no sed -i, no associative arrays. jq is optional.
 #
 # Exit codes:
-#   0 — check completed (whatever it found: the result is informational)
+#   0 — check completed (whatever it found: the result is informational), also
+#       when the registry is unreadable or jq is missing
 #   1 — error (invalid input, unknown option)
 set -euo pipefail
 
@@ -67,7 +71,11 @@ Arguments:
 
 Options:
   --registry <dir>    SDK registry directory (default: <script-dir>/../registry).
-                      Used to exclude known third-party SDK packages.
+                      Used to exclude known third-party SDK packages (only the
+                      "packages" arrays are read).
+  --dump-exclusions   Debug: print the exclusion set (EXCL:<root>, sorted) and the
+                      in-house wrapper map (INHOUSE:<root>|<sdk_id>, lookup order),
+                      then exit 0. No <decoded-dir> needed.
   -h, --help          Show this help message
 
 Output:
@@ -84,10 +92,12 @@ EOF
 
 DECODED_DIR=""
 REGISTRY_DIR="$SCRIPT_DIR/../registry"
+DUMP_EXCLUSIONS=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -h|--help)  usage ;;
     --registry) shift; REGISTRY_DIR="${1:-}"; shift || true ;;
+    --dump-exclusions) DUMP_EXCLUSIONS=true; shift ;;
     -*)         echo "Error: Unknown option $1" >&2; usage 1 >&2 ;;
     *)
       if [[ -n "$DECODED_DIR" ]]; then
@@ -98,22 +108,26 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$DECODED_DIR" ]]; then
-  echo "Error: No decoded directory specified." >&2
-  usage 1 >&2
-fi
-if [[ ! -d "$DECODED_DIR" ]]; then
-  echo "Error: Not a directory: $DECODED_DIR" >&2
-  exit 1
-fi
-DECODED_DIR=$(cd "$DECODED_DIR" && pwd -P)
-MANIFEST="$DECODED_DIR/AndroidManifest.xml"
-if [[ ! -f "$MANIFEST" ]]; then
-  echo "Error: $DECODED_DIR has no AndroidManifest.xml (not an apktool-decoded directory?)" >&2
-  exit 1
+if [[ "$DUMP_EXCLUSIONS" != true ]]; then
+  if [[ -z "$DECODED_DIR" ]]; then
+    echo "Error: No decoded directory specified." >&2
+    usage 1 >&2
+  fi
+  if [[ ! -d "$DECODED_DIR" ]]; then
+    echo "Error: Not a directory: $DECODED_DIR" >&2
+    exit 1
+  fi
+  DECODED_DIR=$(cd "$DECODED_DIR" && pwd -P)
+  MANIFEST="$DECODED_DIR/AndroidManifest.xml"
+  if [[ ! -f "$MANIFEST" ]]; then
+    echo "Error: $DECODED_DIR has no AndroidManifest.xml (not an apktool-decoded directory?)" >&2
+    exit 1
+  fi
 fi
 
 # =====================================================================
+# FROZEN legacy table — see tests/unit/t_network_roots.sh (identical, same order,
+# in detect-adwrapper.ps1; each root is covered by a registry entry).
 # Known ad-network / analytics SDK package roots.
 # "root|label" — label is what appears in networks=<...> evidence. These roots
 # are BOTH the reference-signal set (a wrapper references several of them) AND
@@ -145,6 +159,8 @@ com/yandex/mobile/ads|yandex
 com/ogury|ogury
 io/presage|ogury'
 
+# FROZEN legacy table — see tests/unit/t_network_roots.sh (identical, same order,
+# in detect-adwrapper.ps1).
 # Common libraries + ad-tech infrastructure / mediation-safety layers that are
 # NOT publisher-owned wrappers (excluded as candidates). Third-party network and
 # analytics SDKs come additionally from the registry (see below).
@@ -208,31 +224,23 @@ j$'
 # =====================================================================
 # Registry: build the third-party-SDK exclusion list, and remember which
 # packages belong to in_house_wrapper entries (so they are NOT excluded and can
-# be annotated registry=<sdk_id>).
+# be annotated registry=<sdk_id>). Only the "packages" arrays are read, through
+# registry-query.sh (jq >= 1.6, or its POSIX awk fallback when jq is missing or
+# older); entry files it cannot read are skipped with a WARN (--lenient). If the
+# registry cannot be read at all, only the static tables below are used.
 # =====================================================================
 REG_EXCL=""       # newline list of slash-packages (third-party SDKs to exclude)
-INHOUSE_MAP=""    # newline "slashpkg|sdk_id" for in_house_wrapper entries
-if [[ -d "$REGISTRY_DIR" ]]; then
-  for f in "$REGISTRY_DIR"/*.json; do
-    [[ -e "$f" ]] || continue
-    case "$(basename "$f")" in _*) continue ;; esac
-    sdk_id=$(grep -oE '"sdk_id"[[:space:]]*:[[:space:]]*"[^"]*"' "$f" | head -1 \
-             | sed -e 's/.*"sdk_id"[[:space:]]*:[[:space:]]*"//' -e 's/"$//')
-    [[ -z "$sdk_id" ]] && sdk_id=$(basename "$f" .json)
-    inhouse=no
-    if grep -qE '"in_house_wrapper"[[:space:]]*:[[:space:]]*true' "$f"; then inhouse=yes; fi
-    # package strings look like "com.rovio.beacon"; take dotted packages only
-    while IFS= read -r pkg; do
-      [[ -z "$pkg" ]] && continue
-      slp=$(printf '%s' "$pkg" | sed 's#\.#/#g')
-      if [[ "$inhouse" == yes ]]; then
-        INHOUSE_MAP="${INHOUSE_MAP}${slp}|${sdk_id}"$'\n'
-      else
-        REG_EXCL="${REG_EXCL}${slp}"$'\n'
-      fi
-    done < <(grep -oE '"[a-z][a-z0-9_]+(\.[a-z0-9_]+)+"' "$f" \
-             | tr -d '"' | grep -E '^(com|io|net|org|sg|guru|de|fr|jp)\.')
-  done
+INHOUSE_MAP=""    # newline "slashpkg|sdk_id" for in_house_wrapper entries, in lookup
+                  # order (sdk_id ordinal, then file order): the first match wins
+# rows: sdk_id<TAB>in_house(true|false)<TAB>package ("-" = empty value); run with
+# this very bash so a bash 3.2 run stays on bash 3.2
+if REG_ROWS=$("${BASH:-bash}" "$SCRIPT_DIR/registry-query.sh" --registry "$REGISTRY_DIR" packages --lenient); then
+  REG_EXCL=$(printf '%s\n' "$REG_ROWS" | awk -F '\t' '
+    $2 == "false" && $3 != "" && $3 != "-" { p = $3; gsub(/\./, "/", p); print p }')
+  INHOUSE_MAP=$(printf '%s\n' "$REG_ROWS" | awk -F '\t' '
+    $2 == "true" && $3 != "" && $3 != "-" { p = $3; gsub(/\./, "/", p); print p "|" $1 }')
+else
+  echo "[WARN] registry unreadable: registry exclusions skipped" >&2
 fi
 
 # Full exclusion set (one per line, unique)
@@ -242,6 +250,12 @@ EXCL=$(
   printf '%s\n' "$REG_EXCL"
 )
 EXCL=$(printf '%s\n' "$EXCL" | LC_ALL=C sort -u | grep -v '^$' || true)
+
+if [[ "$DUMP_EXCLUSIONS" == true ]]; then
+  printf '%s\n' "$EXCL" | awk 'NF { print "EXCL:" $0 }'
+  printf '%s\n' "$INHOUSE_MAP" | awk 'NF { print "INHOUSE:" $0 }'
+  exit 0
+fi
 
 # is_excluded PKG : true if PKG is (a child of / equal to / an ancestor of) any
 # excluded root. The ancestor test handles depth-3 candidate roots that sit
