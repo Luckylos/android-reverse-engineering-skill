@@ -1,0 +1,8 @@
+{
+  "sdk_id": "oneline",
+  "display_name": "One-line packages",
+  "vendor": "x",
+  "category": "ads",
+  "packages": ["com.oneline.a", "com.oneline.b"],
+  "targets": { "entry_points": [] }
+}

@@ -1,0 +1,68 @@
+aaa-first	not_a_category	file	zeta-file.json
+aaa-first	not_a_category	display_name	Sorted by sdk_id, not by file name
+aaa-first	not_a_category	vendor	Zeta
+aaa-first	not_a_category	group	other
+aaa-first	not_a_category	in_house_wrapper	false
+aaa-first	not_a_category	has_targets	false
+aaa-first	not_a_category	package	com.zeta.a
+aaa-first	not_a_category	package	com.zeta.b
+aaa-first	not_a_category	package	com.zeta.c
+alpha	ads	file	alpha.json
+alpha	ads	display_name	Alpha Ads
+alpha	ads	vendor	Alpha Inc.
+alpha	ads	group	ads
+alpha	ads	in_house_wrapper	false
+alpha	ads	has_targets	true
+alpha	ads	package	com.alpha.sdk
+alpha	ads	package	com.alpha.ads
+alpha	ads	extra_package	com.alpha.legacy
+alpha	ads	exclude_package	com.alpha.sdk.shared
+alpha	ads	namespace_root	com.alpha
+alpha	ads	adapter_package	com.alpha.ads.adapters
+alpha	ads	marker_class	com.alpha.sdk.Alpha
+alpha	ads	marker_class	com.alpha.ads.AlphaVideoAd
+alpha	ads	target_api	com.alpha.sdk.Alpha init entry_point
+alpha	ads	target_api	com.alpha.sdk.Alpha init entry_point
+alpha	ads	target_api	com.alpha.ads.AlphaVideoAd load ad_operation
+alpha	ads	target_api	com.alpha.ads.AlphaVideoAd show ad_operation
+alpha	ads	target_api	com.alpha.ads.AlphaView$Inner loadBannerAd ad_operation
+alpha	ads	api	com.alpha.sdk.Alpha setConsent consent
+alpha	ads	api	com.alpha.sdk.Alpha setCoppa consent
+alpha	ads	api	com.alpha.ads.AlphaVideoAd <init> load
+alpha	ads	manifest_component	com.alpha.ads.AlphaActivity
+alpha	ads	manifest_component	com.alpha.sdk.AlphaInitProvider
+alpha	ads	manifest_name	alpha.sdk.key
+alpha	ads	domain	alpha-ads.example
+alpha	ads	id_prefix	alpha-app- app_id
+beta	analytics	file	beta.json
+beta	analytics	display_name	Beta Analytics
+beta	analytics	vendor	Beta
+beta	analytics	group	trackers
+beta	analytics	in_house_wrapper	false
+beta	analytics	has_targets	false
+beta	analytics	package	com.beta.one
+beta	analytics	package	com.beta.two
+beta	analytics	domain	beta.example
+beta	analytics	domain	api.beta.example
+delta	crash_reporting	file	delta.json
+delta	crash_reporting	display_name	Delta
+delta	crash_reporting	vendor	-
+delta	crash_reporting	group	trackers
+delta	crash_reporting	in_house_wrapper	false
+delta	crash_reporting	has_targets	true
+delta	crash_reporting	package	com.delta.crash
+delta	crash_reporting	package	io.delta
+epsilon	consent	file	epsilon.json
+epsilon	consent	display_name	Epsilon (no packages)
+epsilon	consent	vendor	Epsilon
+epsilon	consent	group	consent
+epsilon	consent	in_house_wrapper	false
+epsilon	consent	has_targets	false
+gamma	ads_mediation	file	gamma.json
+gamma	ads_mediation	display_name	-
+gamma	ads_mediation	vendor	Acme\\Corp\tInc
+gamma	ads_mediation	group	ads
+gamma	ads_mediation	in_house_wrapper	true
+gamma	ads_mediation	has_targets	true
+gamma	ads_mediation	package	com.gamma.wrapper
+gamma	ads_mediation	target_api	com.gamma.wrapper.Ads start entry_point

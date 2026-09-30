@@ -1,0 +1,14 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "gamma",
+  "display_name": "",
+  "vendor": "Acme\\Corp\tInc",
+  "category": "ads_mediation",
+  "in_house_wrapper": true,
+  "packages": [
+    "com.gamma.wrapper"
+  ],
+  "targets": {
+    "entry_points": [ { "class": "com.gamma.wrapper.Ads", "methods": [ { "name": "start", "signature": "*", "stub": "return-void" } ] } ]
+  }
+}

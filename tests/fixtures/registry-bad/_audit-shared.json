@@ -1,0 +1,27 @@
+{
+  "$schema": "./_audit-shared.schema.json",
+  "schema_version": 1,
+  "category_groups": {
+    "ads": ["ads", "ads_mediation"],
+    "trackers": ["analytics", "attribution", "crash_reporting", "social"],
+    "consent": ["consent"]
+  },
+  "tool_groups": { "find-ads": ["ads", "consent"], "find-trackers": ["trackers"] },
+  "section_separator": " — ",
+  "legacy_flags": {
+    "find-trackers": [ { "flag": "beta", "sdk_id": "beta", "label": "Beta", "section_prefix": "Beta Analytics" } ],
+    "find-ads": [ { "flag": "alpha", "sdk_id": "alpha", "label": "Alpha", "section_prefix": "Alpha Ads" } ]
+  },
+  "role_labels": { "init": "Initialization", "listener": "Listeners & Callbacks", "odd": "Tab\there, back\\slash" },
+  "format_by_class": [["AlphaVideoAd", "rewarded"], ["AlphaWall", "-"]],
+  "format_by_class_token": [["RewardedInterstitial", "rewarded_interstitial"], ["Rewarded", "rewarded"], ["Banner", "banner"]],
+  "format_by_method_token": [["Interstitial", "interstitial"]],
+  "format_none": ["com.alpha.sdk.Alpha#init"],
+  "library_roots": ["android", "j$", "com.google.android.gms"],
+  "hints": [
+    { "id": "h-one", "tool": "find-trackers", "flag": "generic", "scope": "app_code", "match": "method",
+      "title": "Generic — Event Tracking Methods", "tokens": ["trackEvent", "logEvent"] },
+    { "id": "h-two", "tool": "find-ads", "flag": "manifest", "scope": "manifest", "match": "exact",
+      "title": "AndroidManifest — Ad Meta-data", "tokens": ["unity.ads.gameId"] }
+  ]
+}

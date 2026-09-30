@@ -1,0 +1,7 @@
+{
+  "sdk_id": "dup",
+  "category": "analytics",
+  "packages": [
+    "com.dup.second"
+  ]
+}

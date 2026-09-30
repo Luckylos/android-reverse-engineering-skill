@@ -1,0 +1,10 @@
+{
+  "sdk_id": "case-nested",
+  "display_name": "Case nested",
+  "vendor": "x",
+  "category": "analytics",
+  "packages": [
+    "com.casenested"
+  ],
+  "detection": { "domains": ["a.example"], "Domains": ["b.example"], "Note": "n", "note": "m" }
+}

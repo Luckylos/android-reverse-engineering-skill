@@ -1,0 +1,33 @@
+category_group	ads	ads
+category_group	ads	ads_mediation
+category_group	trackers	analytics
+category_group	trackers	attribution
+category_group	trackers	crash_reporting
+category_group	trackers	social
+category_group	consent	consent
+tool_group	find-ads	ads
+tool_group	find-ads	consent
+tool_group	find-trackers	trackers
+section_separator	-	 — 
+legacy_flag	find-trackers	beta beta Beta Beta Analytics
+legacy_flag	find-ads	alpha alpha Alpha Alpha Ads
+role_label	init	Initialization
+role_label	listener	Listeners & Callbacks
+role_label	odd	Tab\there, back\\slash
+format_token	by_class	AlphaVideoAd rewarded
+format_token	by_class	AlphaWall -
+format_token	by_class_token	RewardedInterstitial rewarded_interstitial
+format_token	by_class_token	Rewarded rewarded
+format_token	by_class_token	Banner banner
+format_token	by_method_token	Interstitial interstitial
+format_token	none	com.alpha.sdk.Alpha#init
+library_root	-	android
+library_root	-	j$
+library_root	-	com.google.android.gms
+hint_meta	h-one	h-one find-trackers generic app_code method
+hint_title	h-one	Generic — Event Tracking Methods
+hint_token	h-one	trackEvent
+hint_token	h-one	logEvent
+hint_meta	h-two	h-two find-ads manifest manifest exact
+hint_title	h-two	AndroidManifest — Ad Meta-data
+hint_token	h-two	unity.ads.gameId

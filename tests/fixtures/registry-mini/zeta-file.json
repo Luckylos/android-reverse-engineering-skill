@@ -1,0 +1,11 @@
+{
+  "sdk_id": "aaa-first",
+  "display_name": "Sorted by sdk_id, not by file name",
+  "vendor": "Zeta",
+  "category": "not_a_category",
+  "packages": [
+    "com.zeta.a",
+    "com.zeta.b",
+    "com.zeta.c"
+  ]
+}

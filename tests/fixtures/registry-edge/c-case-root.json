@@ -1,0 +1,11 @@
+{
+  "sdk_id": "case-root",
+  "SDK_ID": "case-root-2",
+  "display_name": "Case root",
+  "vendor": "x",
+  "category": "ads",
+  "packages": [
+    "com.caseroot"
+  ],
+  "targets": { "entry_points": [ { "class": "com.caseroot.A", "Class": "com.caseroot.B", "methods": [ { "name": "x" } ] } ] }
+}

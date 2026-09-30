@@ -1,0 +1,10 @@
+aaa-first	false	com.zeta.a
+aaa-first	false	com.zeta.b
+aaa-first	false	com.zeta.c
+alpha	false	com.alpha.sdk
+alpha	false	com.alpha.ads
+beta	false	com.beta.one
+beta	false	com.beta.two
+delta	false	com.delta.crash
+delta	false	io.delta
+gamma	true	com.gamma.wrapper

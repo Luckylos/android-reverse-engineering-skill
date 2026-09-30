@@ -1,0 +1,7 @@
+{
+  "sdk_id": "kgood",
+  "category": "analytics",
+  "packages": [
+    "com.kgood"
+  ]
+}

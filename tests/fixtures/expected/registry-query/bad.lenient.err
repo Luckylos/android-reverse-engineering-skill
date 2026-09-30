@@ -1,0 +1,9 @@
+registry-query: WARN skipping a-truncated.json: invalid JSON
+registry-query: WARN skipping b-twodocs.json: more than one JSON document
+registry-query: WARN skipping c-empty.json: empty file
+registry-query: WARN skipping d-blank.json: empty file
+registry-query: WARN skipping e-array.json: root is not an object
+registry-query: WARN skipping f-noid.json: sdk_id missing or not a string
+registry-query: WARN skipping g-numid.json: sdk_id missing or not a string
+registry-query: WARN skipping h-nulltargets.json: targets is null
+registry-query: WARN skipping j-dup.json: duplicate sdk_id dup (also in i-good.json)

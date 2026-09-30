@@ -1,0 +1,7 @@
+{
+  "sdk_id": "dup",
+  "category": "ads",
+  "packages": [
+    "com.dup.first"
+  ]
+}

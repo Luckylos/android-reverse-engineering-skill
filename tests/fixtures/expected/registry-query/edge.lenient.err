@@ -1,0 +1,3 @@
+registry-query: WARN skipping a-bom.json: BOM not allowed
+registry-query: WARN skipping b-case-nested.json: case-colliding keys: domains
+registry-query: WARN skipping c-case-root.json: case-colliding keys: sdk_id

@@ -1,0 +1,41 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "alpha",
+  "display_name": "Alpha Ads",
+  "description": "Synthetic ads entry with targets, manifest components and every detection field.",
+  "vendor": "Alpha Inc.",
+  "category": "ads",
+  "packages": [
+    "com.alpha.sdk",
+    "com.alpha.ads"
+  ],
+  "targets": {
+    "entry_points": [
+      { "class": "com.alpha.sdk.Alpha", "methods": [ { "name": "init", "signature": "*", "stub": "return-void" }, { "name": "init", "signature": "(I)V", "stub": "return-void" } ] }
+    ],
+    "ad_operations": [
+      { "class": "com.alpha.ads.AlphaVideoAd", "methods": [ { "name": "load", "signature": "*", "stub": "return-void" }, { "name": "show", "signature": "*", "stub": "return-void" } ] },
+      { "class": "com.alpha.ads.AlphaView$Inner", "methods": [ { "name": "loadBannerAd", "signature": "*", "stub": "return-void" } ] }
+    ],
+    "deep_patterns": [ { "package_glob": "com.alpha.sdk.internal.**", "rule": "stub_all_concrete" } ]
+  },
+  "manifest_components": [
+    { "type": "activity", "class": "com.alpha.ads.AlphaActivity", "action": "disable" },
+    { "type": "provider", "class": "com.alpha.sdk.AlphaInitProvider", "action": "disable" }
+  ],
+  "detection": {
+    "extra_packages": ["com.alpha.legacy"],
+    "exclude_packages": ["com.alpha.sdk.shared"],
+    "namespace_roots": ["com.alpha"],
+    "adapter_packages": ["com.alpha.ads.adapters"],
+    "marker_classes": ["com.alpha.sdk.Alpha", "com.alpha.ads.AlphaVideoAd"],
+    "apis": [
+      { "class": "com.alpha.sdk.Alpha", "methods": ["setConsent", "setCoppa"], "role": "consent" },
+      { "class": "com.alpha.ads.AlphaVideoAd", "methods": ["<init>"], "role": "load" }
+    ],
+    "manifest_names": ["alpha.sdk.key"],
+    "domains": ["alpha-ads.example"],
+    "id_prefixes": [ { "prefix": "alpha-app-", "label": "app_id" } ],
+    "note": "synthetic"
+  }
+}

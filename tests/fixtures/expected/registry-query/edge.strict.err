@@ -1,0 +1,3 @@
+registry-query: ERROR a-bom.json: BOM not allowed
+registry-query: ERROR b-case-nested.json: case-colliding keys: domains
+registry-query: ERROR c-case-root.json: case-colliding keys: sdk_id

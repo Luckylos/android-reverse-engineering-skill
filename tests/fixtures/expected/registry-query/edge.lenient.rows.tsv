@@ -1,0 +1,15 @@
+desc	social	file	e-desc.json
+desc	social	display_name	Description trap
+desc	social	vendor	x
+desc	social	group	trackers
+desc	social	in_house_wrapper	false
+desc	social	has_targets	false
+desc	social	package	com.desc
+oneline	ads	file	d-oneline.json
+oneline	ads	display_name	One-line packages
+oneline	ads	vendor	x
+oneline	ads	group	ads
+oneline	ads	in_house_wrapper	false
+oneline	ads	has_targets	true
+oneline	ads	package	com.oneline.a
+oneline	ads	package	com.oneline.b

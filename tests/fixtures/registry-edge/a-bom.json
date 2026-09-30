@@ -1,0 +1,9 @@
+﻿{
+  "sdk_id": "bom",
+  "display_name": "BOM",
+  "vendor": "x",
+  "category": "ads",
+  "packages": [
+    "com.bom"
+  ]
+}

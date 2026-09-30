@@ -1,0 +1,9 @@
+registry-query: ERROR a-truncated.json: invalid JSON
+registry-query: ERROR b-twodocs.json: more than one JSON document
+registry-query: ERROR c-empty.json: empty file
+registry-query: ERROR d-blank.json: empty file
+registry-query: ERROR e-array.json: root is not an object
+registry-query: ERROR f-noid.json: sdk_id missing or not a string
+registry-query: ERROR g-numid.json: sdk_id missing or not a string
+registry-query: ERROR h-nulltargets.json: targets is null
+registry-query: ERROR j-dup.json: duplicate sdk_id dup (also in i-good.json)

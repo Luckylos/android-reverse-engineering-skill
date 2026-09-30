@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "sdk-registry-audit-shared.schema.json",
+  "title": "SDK Registry - cross-SDK audit knowledge",
+  "description": "Schema of _audit-shared.json: knowledge that belongs to no single registry entry and is used ONLY by the audit (find-trackers / find-ads) through registry-query. The leading '_' makes registry-scan.py, neutralize.sh and detect-adwrapper skip the file. Data only, no regular expressions: every value is a literal.",
+  "type": "object",
+  "required": ["schema_version", "category_groups", "tool_groups", "section_separator", "legacy_flags", "role_labels",
+               "format_by_class", "format_by_class_token", "format_by_method_token", "format_none", "library_roots", "hints"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "category_groups": {
+      "description": "Group -> registry categories. Every category of the entry schema enum belongs to exactly one group; a category in no group is reported as group 'other'. Must match ADS_CATEGORIES / TRACKER_CATEGORIES of registry-scan.py (test T-CAT).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ads", "trackers", "consent"],
+      "properties": {
+        "ads": { "$ref": "#/definitions/category_list" },
+        "trackers": { "$ref": "#/definitions/category_list" },
+        "consent": { "$ref": "#/definitions/category_list" }
+      }
+    },
+    "tool_groups": {
+      "description": "Audit tool -> the category groups it reports.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["find-ads", "find-trackers"],
+      "properties": {
+        "find-ads": { "$ref": "#/definitions/group_list" },
+        "find-trackers": { "$ref": "#/definitions/group_list" }
+      }
+    },
+    "section_separator": {
+      "description": "Separator between an SDK prefix and a section name in the text output (an em dash between spaces). Kept in the UTF-8 data file so the .ps1 sources stay ASCII-only.",
+      "type": "string",
+      "minLength": 1
+    },
+    "legacy_flags": {
+      "description": "Historical per-SDK CLI flags of find-trackers / find-ads (--firebase, --admob, ...): flag -> registry sdk_id, the legacy label (summary/json) and the legacy section prefix. Every sdk_id must exist in the registry (lint L13), so rows for entries that do not exist yet are added together with the entry.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["find-ads", "find-trackers"],
+      "properties": {
+        "find-ads": { "type": "array", "items": { "$ref": "#/definitions/legacy_flag" } },
+        "find-trackers": { "type": "array", "items": { "$ref": "#/definitions/legacy_flag" } }
+      }
+    },
+    "role_labels": {
+      "description": "API role (detection.apis[].role, plus 'ad_operation' for targets.ad_operations) -> section label.",
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 },
+      "propertyNames": { "pattern": "^[a-z_]+$" }
+    },
+    "format_by_class": {
+      "description": "Ad format lookup, rule 1: exact simple class name -> format ('-' = no format). The simple name is the text after the last '.' of the FQCN (an inner class keeps its '$' part).",
+      "type": "array",
+      "items": { "$ref": "#/definitions/format_pair" }
+    },
+    "format_by_class_token": {
+      "description": "Ad format lookup, rule 2: the FIRST token (in file order) contained in the simple class name gives the format. Order from the most specific to the most generic token (RewardedInterstitial before Rewarded, MaxAdView before AdView).",
+      "type": "array",
+      "items": { "$ref": "#/definitions/format_pair" }
+    },
+    "format_by_method_token": {
+      "description": "Ad format lookup, rule 3: the FIRST token contained in the method name (IronSource#showInterstitial, Chartboost#cacheInterstitial, ...).",
+      "type": "array",
+      "items": { "$ref": "#/definitions/format_pair" }
+    },
+    "format_none": {
+      "description": "Allowlist of 'FQCN#method' pairs of ads / ads_mediation entries (targets and detection.apis) to which no format rule applies (test T-FORMAT: every such pair has a format or is listed here). Reasons: SDK init / configuration / consent / privacy calls (targets.entry_points and setters), placement-driven generic load/show whose format depends on the placement (UnityAds, Appodeal, Vungle, maio, HyprMX, Fyber, Amazon, Yandex loaders), offerwall and house/WebView ads (Tapjoy, Rovio Beacon), availability probes (isReady, canShow, isInitialized).",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)*\\.[A-Za-z_][A-Za-z0-9_$]*#([A-Za-z_][A-Za-z0-9_]*|<init>)$" }
+    },
+    "library_roots": {
+      "description": "Dotted package roots of pure libraries and ad-tech infrastructure (never SDK identity; SDKs come from the registry). com.google.android.gms and com.google.firebase are catch-all roots, shorter than every entry root: with the longest-root rule whatever no entry claims is library code. Used only by the audit in step 1.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*\\$?(\\.[A-Za-z0-9_]+)*$" }
+    },
+    "hints": {
+      "description": "Informational literal token lists, never part of a verdict. Hints with the same title are merged into one section, in file order.",
+      "type": "array",
+      "items": { "$ref": "#/definitions/hint" }
+    }
+  },
+  "definitions": {
+    "category": { "enum": ["ads", "ads_mediation", "analytics", "attribution", "crash_reporting", "social", "consent"] },
+    "category_list": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/definitions/category" } },
+    "group_list": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["ads", "trackers", "consent"] } },
+    "legacy_flag": {
+      "type": "object",
+      "required": ["flag", "sdk_id", "label", "section_prefix"],
+      "additionalProperties": false,
+      "properties": {
+        "flag": { "type": "string", "pattern": "^[a-z0-9]+$", "description": "CLI flag without the leading dashes" },
+        "sdk_id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "label": { "type": "string", "pattern": "^[A-Za-z0-9]+$", "description": "Legacy SDK label (summary / json)" },
+        "section_prefix": { "type": "string", "pattern": "^[^\\t\\n\\r]+$", "description": "Legacy text-section prefix, e.g. 'Firebase Analytics'" }
+      }
+    },
+    "format_pair": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [
+        { "type": "string", "pattern": "^[A-Za-z0-9_$]+$" },
+        { "enum": ["banner", "interstitial", "rewarded", "rewarded_interstitial", "native", "app_open", "-"] }
+      ]
+    },
+    "hint": {
+      "type": "object",
+      "required": ["id", "tool", "flag", "scope", "match", "title", "tokens"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Unique hint id" },
+        "tool": { "enum": ["find-trackers", "find-ads"] },
+        "flag": { "type": "string", "pattern": "^[a-z]+$", "description": "Aspect flag of the tool that prints the section (generic, endpoints, manifest, formats, mediation, consent)" },
+        "scope": { "enum": ["app_code", "manifest"], "description": "app_code: source lines outside library/SDK code; manifest: AndroidManifest android:name values" },
+        "match": {
+          "enum": ["method", "word", "literal", "exact"],
+          "description": "method: token followed by '(' and preceded by a character not in [A-Za-z0-9_$]; word: token delimited on both sides by characters not in [A-Za-z0-9_$] (never for tokens with '_'); literal: substring; exact: equality (manifest android:name values only). Same semantics in awk and .NET."
+        },
+        "title": { "type": "string", "minLength": 1, "description": "Section title (historical names kept)" },
+        "tokens": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  }
+}

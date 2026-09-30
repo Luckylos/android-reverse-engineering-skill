@@ -33,7 +33,9 @@ any `<dir>/bash32.sh`. A single script also runs by name (`tests/run.sh marker-v
 | `fixtures/` | generators of synthetic trees (synth48, adwrapper fixture, pitfalls) and expected outputs; no proprietary code |
 | `shims/` | `nojq`, `jq15` (fake jq 1.5), `nosudo`, `awk-{gawk-posix,mawk,busybox}` for the portability paths |
 | `parity/ps.sh` | runs a `.ps1` with Windows PowerShell 5.1 from WSL (`-File`, Windows paths) |
-| `unit/` | unit tests (`t_*.sh`; `t_runner.sh` covers run.sh itself) |
+| `parity/t_parity.sh` | sh/ps1 byte parity (`--only <section>`; today: `registry-query`, incl. the in-process case) |
+| `fixtures/registry-{mini,edge,bad}/`, `fixtures/expected/registry-query/` | registry-query fixtures (clean; BOM + case-colliding keys; every integrity error) and their expected outputs |
+| `unit/` | unit tests (`t_*.sh`; `t_runner.sh` covers run.sh itself; `t_reader`, `t_pkg_parity` (T-PKG-PARITY, always per awk shim), `t_categories` (T-CAT), `t_libroots` (T-LIBROOTS), `t_format` (T-FORMAT) cover registry-query and `_audit-shared.json`) |
 
 Tests follow a tiny protocol (see `lib/common.sh`): exit 0 = PASS, 77 = SKIP, anything
 else = FAIL. Each test can also be run on its own: `bash tests/unit/t_lint.sh`.

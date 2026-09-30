@@ -1,0 +1,10 @@
+{
+  "sdk_id": "desc",
+  "description": "\"packages\": [\"com.not.a.package\"] inside a description",
+  "display_name": "Description trap",
+  "vendor": "x",
+  "category": "social",
+  "packages": [
+    "com.desc"
+  ]
+}

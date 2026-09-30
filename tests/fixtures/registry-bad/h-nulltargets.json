@@ -1,0 +1,8 @@
+{
+  "sdk_id": "h",
+  "category": "ads",
+  "packages": [
+    "com.h"
+  ],
+  "targets": null
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "beta",
+  "display_name": "Beta Analytics",
+  "description": "Detection-only. A tricky description: \"sdk_id\": \"fake\", \"in_house_wrapper\": true, \"packages\": [\"com.fake.pkg\"] must not be read by the awk fallback.",
+  "vendor": "Beta",
+  "category": "analytics",
+  "in_house_wrapper": false,
+  "packages": ["com.beta.one", "com.beta.two"],
+  "detection": { "domains": ["beta.example", "api.beta.example"] }
+}

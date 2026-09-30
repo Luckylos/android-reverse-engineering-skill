@@ -1,0 +1,12 @@
+{
+  "sdk_id": "delta",
+  "display_name": "Delta",
+  "vendor": null,
+  "category": "crash_reporting",
+  "packages":
+    [
+      "com.delta.crash",
+      "io.delta"
+    ],
+  "targets": {}
+}
