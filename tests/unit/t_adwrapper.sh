@@ -3,7 +3,8 @@
 # `packages` (DESIGN 6; invariants I12, I13, I14, I19):
 #   - fixture (tests/fixtures/make-adwrapper-fixture.sh): the ADWRAPPER_* lines match
 #     tests/fixtures/expected/adwrapper-fixture.txt (tv.superawesome.lib, yads.core.impl and
-#     backtraceio.library.sub gone: the .packages reader sees them), with --registry and
+#     backtraceio.library.sub gone: the .packages reader sees them; com.segment.analytics
+#     gone since the detection-only `segment` entry, commit 7a), with --registry and
 #     with the default resolution, and identically with no jq (tests/shims/nojq) and with
 #     an old jq (tests/shims/jq15: the awk fallback);
 #   - I13: exit 0 + ADWRAPPER_SUMMARY with a malformed entry (regD: invalid JSON), an entry
@@ -18,7 +19,9 @@
 #   - CLI: -h rc 0 (mentions --dump-exclusions), --bogus rc 1, no directory rc 1.
 # regD / regE are rebuilt from the real registry (+ the scratch files' exact content); the
 # scratch copies under $ARE_WORKSPACE/registry-unification/scratch/contract/tol are used
-# too when present. run.sh runs this test once per awk shim.
+# too when present; they freeze the 4c166fe registry, so their reference output is that
+# registry without the bad file, not the expected file of the current registry (commit 7a).
+# run.sh runs this test once per awk shim.
 # awk-matrix
 # requires: NS/registry-query.sh NS/detect-adwrapper.sh NS/decode-apk.sh
 # requires: cmd: grep -q -- --dump-exclusions "$NS/detect-adwrapper.sh"
@@ -81,11 +84,22 @@ done
 for spec in $regs; do
   rn=${spec%%:*} rd=${spec#*:}
   case "$rn" in *regD) bad=zz-broken.json ;; *) bad=zz-noid.json ;; esac
+  exp=$EXPECTED
+  case "$rn" in tol-*)
+    # the scratch copies freeze the 4c166fe registry (no detection-only entry of 7a/7b, so
+    # e.g. com.segment.analytics is still a candidate): their reference is the same
+    # registry without the bad file, read in strict mode
+    mkdir -p "$tmp/$rn-ref"; cp "$rd"/*.json "$tmp/$rn-ref"/; rm -f "$tmp/$rn-ref/$bad"
+    run_dw "$rn-ref" - -- "$FIX" --registry "$tmp/$rn-ref"
+    check_ok "$rn-ref" "scratch copy without $bad"
+    assert_eq "" "$(cat "$tmp/$rn-ref.err")" "[$rn-ref] scratch copy without $bad: empty stderr"
+    exp=$tmp/$rn-ref.adw ;;
+  esac
   for shim in - nojq jq15; do
     tag=${shim#-}; tag=${tag:-jq}
     run_dw "$rn-$tag" "$shim" -- "$FIX" --registry "$rd"
     check_ok "$rn-$tag" "$bad is skipped"
-    assert_files_eq "$EXPECTED" "$tmp/$rn-$tag.adw" "[$rn-$tag] other entries still read: ADWRAPPER_* lines == expected"
+    assert_files_eq "$exp" "$tmp/$rn-$tag.adw" "[$rn-$tag] other entries still read: ADWRAPPER_* lines == expected"
     assert_true "[$rn-$tag] WARN skipping $bad" grep -q "^registry-query: WARN skipping $bad: " "$tmp/$rn-$tag.err"
     assert_false "[$rn-$tag] registry not declared unreadable" grep -qF "$WARN_LINE" "$tmp/$rn-$tag.err"
   done

@@ -223,7 +223,7 @@ l13() { # l13 <name> <jq filter> <message-substring> [<rule>]
 l13 "category in two groups" '.category_groups.trackers += ["ads"]' 'category ads is in 2 group(s) of category_groups (ads, trackers)'
 l13 "category in no group" '.category_groups.consent = []' 'category consent is in 0 group(s)'
 l13 "group holding a non-category" '.category_groups.consent += ["push"]' 'category_groups.consent holds "push"'
-l13 "legacy flag of a missing entry (segment before 7a)" '.legacy_flags["find-trackers"] += [{"flag":"segment","sdk_id":"segment","label":"Segment","section_prefix":"Segment"}]' \
+l13 "legacy flag of a missing entry (segment, not in the mini registry)" '.legacy_flags["find-trackers"] += [{"flag":"segment","sdk_id":"segment","label":"Segment","section_prefix":"Segment"}]' \
   'flag "segment" points to sdk_id "segment", which is not a registry entry'
 l13 "duplicate legacy flag" '.legacy_flags["find-trackers"] += .legacy_flags["find-trackers"]' 'legacy_flags.find-trackers: flag "mixpanel" appears 2 times'
 l13 "legacy flag equal to an aspect flag" '.legacy_flags["find-trackers"][0].flag = "generic"' 'flag "generic" is an aspect flag of find-trackers'

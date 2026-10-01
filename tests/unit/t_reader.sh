@@ -192,7 +192,11 @@ assert_eq 0 "$(rc_of real.shared)" "real registry: shared exit 0"
 assert_eq "$(printf 'section_separator\t-\t \342\200\224 ')" "$(grep '^section_separator' "$tmp/real.shared.out")" "shared: the em-dash separator comes from the UTF-8 data file"
 assert_eq "category_group tool_group section_separator legacy_flag role_label format_token library_root hint_meta hint_title hint_token" \
   "$(cut -f1 "$tmp/real.shared.out" | awk '!s[$0]++' | tr '\n' ' ' | sed 's/ $//')" "shared: every kind, in file order"
-assert_eq "" "$(grep -E '^legacy_flag.*(segment|flurry)' "$tmp/real.shared.out")" "legacy_flags without segment/flurry (they arrive with their entries, commit 7a)"
+assert_eq "$(printf 'legacy_flag\tfind-trackers\tsegment segment Segment Segment\nlegacy_flag\tfind-trackers\tflurry flurry Flurry Flurry')" \
+  "$(grep -E '^legacy_flag.*(segment|flurry)' "$tmp/real.shared.out")" "legacy_flags: the segment and flurry rows (commit 7a, with their entries)"
+assert_eq "firebase adjust appsflyer mixpanel amplitude segment braze clevertap flurry" \
+  "$(awk -F '\t' '$1 == "legacy_flag" && $2 == "find-trackers" { split($3, w, " "); printf "%s ", w[1] }' "$tmp/real.shared.out" | sed 's/ $//')" \
+  "legacy_flags find-trackers: the historical flag order of find-trackers.sh (DESIGN 2.3)"
 
 # ---- source rules --------------------------------------------------------------------------------
 for f in "$NS/registry-query.sh" "$NS/registry-query.jq" "$NS/registry-lib.ps1" "$NS/registry-query.ps1"; do

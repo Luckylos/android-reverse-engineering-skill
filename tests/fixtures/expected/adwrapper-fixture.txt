@@ -1,4 +1,3 @@
 ADWRAPPER_DETECTED:com.example.ads:high:adclasses=3,networks=applovin+unity,webview=no,mraid=no,analytics=no,vendor=yes
 ADWRAPPER_DETECTED:com.rovio.beacon:medium:adclasses=3,networks=applovin+unity,webview=no,mraid=no,analytics=no,vendor=no,registry=rovio-beacon
-ADWRAPPER_DETECTED:com.segment.analytics:medium:adclasses=0,networks=applovin+unity,webview=no,mraid=no,analytics=yes,vendor=no
 ADWRAPPER_SUMMARY:candidate

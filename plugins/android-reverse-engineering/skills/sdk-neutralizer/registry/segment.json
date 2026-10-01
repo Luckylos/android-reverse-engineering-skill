@@ -1,0 +1,18 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "segment",
+  "display_name": "Segment Analytics",
+  "vendor": "Twilio Segment",
+  "category": "analytics",
+  "description": "Detection-only (no targets): registry-scan.py and the registry path of neutralize.sh ignore it. The no-Python builtin fallback of neutralize.sh still stubs com/segment/analytics/Analytics (see registry-backlog.md).",
+  "packages": [
+    "com.segment.analytics"
+  ],
+  "detection": {
+    "apis": [
+      { "class": "com.segment.analytics.Analytics", "methods": ["with", "setSingletonInstance"], "role": "init" },
+      { "class": "com.segment.analytics.Analytics", "methods": ["optOut"], "role": "consent" }
+    ],
+    "domains": ["api.segment.io", "api.segment.com", "cdn-settings.segment.com"]
+  }
+}

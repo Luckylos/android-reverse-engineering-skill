@@ -18,8 +18,10 @@
       { "flag": "appsflyer", "sdk_id": "appsflyer", "label": "AppsFlyer", "section_prefix": "AppsFlyer" },
       { "flag": "mixpanel", "sdk_id": "mixpanel", "label": "Mixpanel", "section_prefix": "Mixpanel" },
       { "flag": "amplitude", "sdk_id": "amplitude", "label": "Amplitude", "section_prefix": "Amplitude" },
+      { "flag": "segment", "sdk_id": "segment", "label": "Segment", "section_prefix": "Segment" },
       { "flag": "braze", "sdk_id": "braze", "label": "Braze", "section_prefix": "Braze" },
-      { "flag": "clevertap", "sdk_id": "clevertap", "label": "CleverTap", "section_prefix": "CleverTap" }
+      { "flag": "clevertap", "sdk_id": "clevertap", "label": "CleverTap", "section_prefix": "CleverTap" },
+      { "flag": "flurry", "sdk_id": "flurry", "label": "Flurry", "section_prefix": "Flurry" }
     ],
     "find-ads": [
       { "flag": "admob", "sdk_id": "google-admob", "label": "AdMob", "section_prefix": "AdMob" },
