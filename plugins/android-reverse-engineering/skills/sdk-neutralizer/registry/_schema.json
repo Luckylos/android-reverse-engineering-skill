@@ -96,9 +96,110 @@
       "type": "array",
       "items": { "$ref": "#/definitions/protected_pattern" },
       "description": "Methods/patterns that must NEVER be stubbed in this SDK"
+    },
+    "detection": {
+      "$ref": "#/definitions/detection"
     }
   },
   "definitions": {
+    "detection": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Facts for the AUDIT only (find-trackers / find-ads). NEVER read by registry-scan.py or neutralize.sh and, in step 1, not by detect-adwrapper either: nothing here changes what gets neutralized. No regex anywhere: literals only.",
+      "properties": {
+        "extra_packages": {
+          "$ref": "#/definitions/package_list",
+          "description": "Identity packages NOT (yet) in `packages`: legacy, sub-products, code only this SDK ships. Each item is by definition a 'detected but not neutralized' gap. Disjoint from `packages`."
+        },
+        "exclude_packages": {
+          "$ref": "#/definitions/package_list",
+          "description": "Sub-packages of this entry's own roots that do NOT prove this SDK (e.g. gms.ads.identifier for google-admob, com.facebook.ads for facebook)."
+        },
+        "namespace_roots": {
+          "$ref": "#/definitions/package_list",
+          "description": "Wider vendor namespaces: code under them is LIBRARY (never app code), NEVER identity. Shared namespaces are forbidden (lint L12)."
+        },
+        "adapter_packages": {
+          "$ref": "#/definitions/package_list",
+          "description": "Mediators only: where the adapters to other networks live (one sub-package per network)."
+        },
+        "marker_classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/top_level_class" },
+          "description": "Public top-level classes (no '$') verified on a real APK. When declared and none is present, the code found counts as MEDIUM (PARTIAL), not HIGH."
+        },
+        "apis": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/api_fact" },
+          "description": "Class-qualified APIs, in addition to the ones derived automatically from targets. A bare method name is never evidence."
+        },
+        "domains": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/definitions/host" },
+          "description": "Hosts or registrable suffixes (braze.com covers sdk.iad-01.braze.com). Weak evidence (LOW)."
+        },
+        "manifest_names": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z0-9_.:]+$" },
+          "description": "Exact android:name values (meta-data, permission, action, component) that identify the SDK and do NOT start with one of its roots (those are matched by prefix automatically). Evidence only, never disabled."
+        },
+        "id_prefixes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prefix", "label"],
+            "additionalProperties": false,
+            "properties": {
+              "prefix": { "type": "string", "minLength": 4 },
+              "label": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+            }
+          },
+          "description": "Literal id prefixes (e.g. ca-app-pub- with label admob_id); no regex."
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "package_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)*$" }
+    },
+    "top_level_class": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*\\.[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "host": {
+      "type": "string",
+      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
+    },
+    "api_fact": {
+      "type": "object",
+      "required": ["class", "methods", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "class": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)*\\.[A-Za-z_][A-Za-z0-9_$]*$"
+        },
+        "methods": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^([A-Za-z_][A-Za-z0-9_]*|<init>)$" }
+        },
+        "role": {
+          "enum": ["init", "event", "identity", "consent", "config", "endpoint", "load", "show", "listener"]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "class_target": {
       "type": "object",
       "required": ["class", "methods"],

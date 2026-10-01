@@ -28,7 +28,7 @@ any `<dir>/bash32.sh`. A single script also runs by name (`tests/run.sh marker-v
 | Path | What |
 |---|---|
 | `run.sh`, `lib/common.sh` | runner and shared helpers (env: `ARE_CORPUS`, `ARE_JADX`, `ARE_GOLD`, `ARE_PS`, `BASH32`, `ARE_PRISTINE`, ...; defaults derive from the checkout's parent directory) |
-| `lint/lint-registry.sh` | registry lint (rules L1-L4 today, plus JSON-schema validation when python `jsonschema` is installed) |
+| `lint/lint-registry.sh` | registry lint, rules L1-L15 of DESIGN 4.6 (`--help` lists them; L11 is a WARN, L14 an INFO report on the FROZEN detect-adwrapper tables; L5/L7 read the allowed keys and patterns from `_schema.json`), plus JSON-schema validation when python `jsonschema` is installed (`--no-schema` skips it) |
 | `golden/capture.sh`, `golden/compare.sh`, `golden/t_golden.sh` | registry-scan (8 apps x depth 1-3 x ads/trackers/all + synth48) and detect-adwrapper (sh with/without `--registry`, ps1) must stay byte-identical to the frozen baseline `$ARE_GOLD/before` |
 | `golden/synth48.before/` | G-synth: registry-scan outputs on the synth48 fixture, captured with the product of 4c166fe |
 | `golden/snapshot.sh`, `golden/snapshot.before.jsonl`, `golden/t_snapshot.sh` | the registry fields today's consumers read must not change for the 48 original entries |
