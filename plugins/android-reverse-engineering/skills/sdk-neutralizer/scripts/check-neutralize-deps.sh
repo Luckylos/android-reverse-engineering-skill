@@ -257,6 +257,22 @@ else
   add_optional "python3"
 fi
 
+# --- jq >= 1.6 (optional: detect-adwrapper.sh reads the registry with it when present) ---
+# ">= 1.6" is the feature probe of registry-query.sh (limit/2 and IN/1 are not in jq 1.5).
+jq_ver=""
+if command -v jq &>/dev/null; then
+  jq_ver=$(jq --version 2>/dev/null | sed -n '1s/^jq-//p' || true)
+fi
+if [[ -n "$jq_ver" ]] && [[ "$(jq -nr '[limit(1;1,2)] | IN(.[]; 1) | tostring' 2>/dev/null || true)" == "true" ]]; then
+  echo "[OK] jq $jq_ver detected (optional — detect-adwrapper reads the registry with it)"
+elif [[ -n "$jq_ver" ]]; then
+  echo "[WARN] jq $jq_ver is older than 1.6 (optional — detect-adwrapper uses a built-in fallback parser)"
+  add_optional "jq"
+else
+  echo "[WARN] jq not found (optional — detect-adwrapper uses a built-in fallback parser)"
+  add_optional "jq"
+fi
+
 # --- Machine-readable summary ---
 echo
 if [[ ${#missing_required[@]} -gt 0 ]]; then

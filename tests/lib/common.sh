@@ -108,8 +108,17 @@ $_d"
 run_bash() { "${BASH32:-bash}" "$@"; }
 
 # with_shim <shim-name> <command...>: run a command with tests/shims/<name> first on PATH
-# (nojq, jq15, nosudo, awk-gawk-posix, awk-mawk, awk-busybox).
-with_shim() { _s=$1; shift; PATH="$TESTS_DIR/shims/$_s:$PATH" "$@"; }
+# (nojq, jq15, nosudo, awk-gawk-posix, awk-mawk, awk-busybox). The jq shims also get
+# HOME=$NO_HOME: the product scripts prepend ~/.local/bin to PATH when it is missing,
+# and a real ~/.local/bin/jq (from `install-dep.sh jq`) would then win over the shim.
+NO_HOME=$TESTS_DIR/shims/no-home   # never created
+with_shim() {
+  _s=$1; shift
+  case "$_s" in
+    nojq|jq15) HOME=$NO_HOME PATH="$TESTS_DIR/shims/$_s:$PATH" "$@" ;;
+    *)         PATH="$TESTS_DIR/shims/$_s:$PATH" "$@" ;;
+  esac
+}
 
 # awk_shims: the awk shims whose underlying binary exists on this machine.
 awk_shims() {

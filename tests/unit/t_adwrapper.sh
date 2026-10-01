@@ -211,7 +211,7 @@ for v in real regD noreg; do
       PATH="$tmp/fakebin:$PATH" run_bash "$tmp/plug-$v/sdk-neutralizer/scripts/decode-apk.sh" "$tmp/app.apk" -o "$tmp/out-$tag" \
         >"$tmp/dec-$tag.out" 2>"$tmp/dec-$tag.err"
     else
-      PATH="$tmp/fakebin:$TESTS_DIR/shims/$shim:$PATH" run_bash "$tmp/plug-$v/sdk-neutralizer/scripts/decode-apk.sh" "$tmp/app.apk" -o "$tmp/out-$tag" \
+      HOME=$NO_HOME PATH="$tmp/fakebin:$TESTS_DIR/shims/$shim:$PATH" run_bash "$tmp/plug-$v/sdk-neutralizer/scripts/decode-apk.sh" "$tmp/app.apk" -o "$tmp/out-$tag" \
         >"$tmp/dec-$tag.out" 2>"$tmp/dec-$tag.err"
     fi
     rc=$?

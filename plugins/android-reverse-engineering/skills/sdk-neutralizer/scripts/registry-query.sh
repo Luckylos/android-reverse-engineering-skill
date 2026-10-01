@@ -39,9 +39,18 @@
 #   registry-query: WARN skipping <file>: <message>                -> exit 0
 # Exit: 0 ok; 1 usage error, missing directory, no valid entry, integrity error;
 #       2 rows/shared/check-jq need jq >= 1.6 (stdout INSTALL_REQUIRED:jq).
+# jq is looked up on PATH with ~/.local/bin (where `install-dep.sh jq` puts it) prepended
+# when that directory exists and is not on PATH yet, like the installer and the checkers.
 # Portability: bash 3.2, POSIX awk, jq >= 1.6 (optional for `packages`).
 set -uo pipefail
 export LC_ALL=C
+
+# Same jq resolution as install-dep.sh / check-deps.sh / check-neutralize-deps.sh: the
+# static jq of `install-dep.sh jq` lives in ~/.local/bin, which may be missing from the
+# caller's PATH (a session started before the directory existed).
+if [ -n "${HOME:-}" ] && [ -d "$HOME/.local/bin" ]; then
+  case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) PATH="$HOME/.local/bin:$PATH"; export PATH ;; esac
+fi
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 JQ_PROG=$SCRIPT_DIR/registry-query.jq

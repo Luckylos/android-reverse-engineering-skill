@@ -3,14 +3,18 @@
 # Usage: install-dep.sh <dependency> [--accept-android-sdk-license]
 # Run it as your own user, not with sudo: per-user tools go to ~/.local and
 # system packages are installed through sudo by the script itself.
-# Dependencies: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, smali, apksigner, zip
-# Compound: neutralize-all (java + apktool + apkeditor + build-tools + zip)
+# Dependencies: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, smali, apksigner, zip, jq
+# Compound: neutralize-all (java + apktool + apkeditor + build-tools + zip; jq optional, never fails it)
 #
 # Exit codes:
 #   0 — installed successfully
 #   1 — installation failed
 #   2 — requires manual action (e.g. sudo needed but not available)
 set -euo pipefail
+
+# The caller's PATH, before this script changes it (install_jq checks which jq the
+# caller's other scripts will find).
+CALLER_PATH=$PATH
 
 # Ensure user-local bin is in PATH (previous installs may have placed tools there)
 if [[ -d "$HOME/.local/bin" ]] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
@@ -36,9 +40,12 @@ Available dependencies:
   smali        Smali/baksmali assembler/disassembler
   apksigner    Android APK signing tool
   zip          zip archiver (needed for XAPK rebuild)
+  jq           jq >= 1.6 JSON processor (optional: the SDK audit scripts read the
+               registry with it; package manager, else a pinned static binary in ~/.local/bin)
 
 Compound targets:
   neutralize-all   Install all SDK neutralizer deps (java, apktool, apkeditor, build-tools, zip)
+                   plus jq as an optional extra (a jq failure only prints a [WARN])
 
 The script detects your OS and package manager, then:
   - Installs directly if possible (brew, or user-local install)
@@ -79,7 +86,7 @@ fi
 # installed through sudo by this script itself, or it prints the exact
 # 'sudo apt-get install ...' command and exits 2.
 case "$DEP" in
-  jadx|vineflower|fernflower|dex2jar|apktool|apkeditor|build-tools|buildtools|zipalign|smali|baksmali|apksigner|neutralize-all)
+  jadx|vineflower|fernflower|dex2jar|apktool|apkeditor|build-tools|buildtools|zipalign|smali|baksmali|apksigner|jq|neutralize-all)
     if [[ "$(id -u)" -eq 0 ]] && [[ -n "${SUDO_USER:-}" ]] && [[ "$SUDO_USER" != "root" ]]; then
       echo "Error: do not run 'install-dep.sh $DEP' with sudo." >&2
       echo "  It installs per-user tools into ~/.local, which would end up in root's home" >&2
@@ -1021,6 +1028,172 @@ install_zip() {
   fi
 }
 
+# jq (jqlang, MIT) — pinned static release binaries, verified by SHA-256.
+# Bump version and hashes together (from the release's sha256sum.txt).
+JQ_VERSION="1.8.2"
+JQ_SHA256_LINUX_AMD64="b1c22172dd303f3be49e935aa56aa48a8b7a46e0bc838b4997d3bb451495870f"
+JQ_SHA256_LINUX_ARM64="8b85c817833814ddca00a144c33705546355afccf0cf39b188f3cdb48b852309"
+JQ_SHA256_MACOS_AMD64="e94b266e3c26690550006abe63152b782280f4e14374accdf04cbde844f00bc0"
+JQ_SHA256_MACOS_ARM64="2d75340ba57a4b4b4c8708a21c2dc8e958a48aaa8bba13b27f77f6e4c0eca07e"
+
+# jq_works [<jq>]: the jq >= 1.6 feature probe (same as registry-query.sh)
+jq_works() {
+  local j="${1-jq}"
+  [[ "$("$j" -nr '[limit(1;1,2)] | IN(.[]; 1) | tostring' 2>/dev/null || true)" == "true" ]]
+}
+# jq_version [<jq>]: "1.7.1-apple" from "jq-1.7.1-apple", empty if jq does not run
+jq_version() {
+  local j="${1-jq}"
+  "$j" --version 2>/dev/null | sed -n '1s/^jq-//p' || true
+}
+
+# jq_reader_first: the jq that registry-query.sh and the checkers will run for the caller:
+# the first 'jq' on the caller's PATH with ~/.local/bin prepended when it exists and is
+# missing (their lookup rule). Empty if there is none. This uses CALLER_PATH, not $PATH,
+# because this script prepends ~/.local/bin (here and in other installers), which would
+# hide an older jq that comes before ~/.local/bin on the caller's PATH.
+jq_reader_first() {
+  (
+    p=$CALLER_PATH
+    if [[ -d "$HOME/.local/bin" ]] && [[ ":$p:" != *":$HOME/.local/bin:"* ]]; then
+      p="$HOME/.local/bin:$p"
+    fi
+    PATH=$p
+    command -v jq
+  ) 2>/dev/null || true
+}
+# jq_shadowed <first> <dest>: <dest> (~/.local/bin/jq) works but <first>, which is not a
+# jq >= 1.6, comes before it on the caller's PATH. Another download cannot fix that:
+# print the PATH fix and exit 2 (manual action).
+jq_shadowed() {
+  local first="$1" dest="$2" v what
+  v=$(jq_version "$first")
+  if [[ -n "$v" ]]; then what="jq $v, older than 1.6"; else what="not a working jq"; fi
+  echo "" >&2
+  echo "[MANUAL ACTION REQUIRED]" >&2
+  echo "  jq $(jq_version "$dest") in $dest works, but $first ($what)" >&2
+  echo "  comes first on PATH, so the scripts would still run that one." >&2
+  echo "  Put ~/.local/bin before $(dirname "$first") on PATH (in your shell profile too), e.g.:" >&2
+  echo "" >&2
+  echo "    export PATH=\"\$HOME/.local/bin:\$PATH\"" >&2
+  echo "" >&2
+  echo "  or remove $first, then retry." >&2
+  echo "" >&2
+  exit 2
+}
+
+install_jq() {
+  local first dest="$HOME/.local/bin/jq"
+  # 1. The jq the scripts will run is already >= 1.6
+  first=$(jq_reader_first)
+  if [[ -n "$first" ]] && jq_works "$first"; then
+    ok "jq $(jq_version "$first") already installed (>= 1.6)"
+    return 0
+  fi
+  # 1b. A working ~/.local/bin/jq (e.g. from an earlier run) is shadowed by another jq:
+  #     downloading it again would change nothing.
+  if [[ -x "$dest" ]] && jq_works "$dest"; then
+    jq_shadowed "$first" "$dest"
+  fi
+  local cur=""
+  if [[ -n "$first" ]]; then cur=$(jq_version "$first"); fi
+  if [[ -n "$cur" ]]; then
+    info "jq $cur found but jq >= 1.6 is needed — installing a newer one."
+  fi
+
+  case "$(uname -s)" in
+    MINGW*|MSYS*)
+      echo "" >&2
+      echo "[MANUAL ACTION REQUIRED] Install jq >= 1.6 for Git Bash with one of:" >&2
+      echo "    winget install jqlang.jq" >&2
+      echo "    scoop install jq" >&2
+      echo "    choco install jq" >&2
+      echo "  (The PowerShell .ps1 scripts do not need jq.)" >&2
+      echo "" >&2
+      exit 2 ;;
+  esac
+
+  # 2. Homebrew
+  if [[ "$PKG_MANAGER" == "brew" ]]; then
+    info "Installing jq via Homebrew..."
+    if brew install jq && jq_works "$(jq_reader_first)"; then
+      ok "jq $(jq_version "$(jq_reader_first)") installed via Homebrew"
+      return 0
+    fi
+    info "Homebrew did not provide a working jq >= 1.6 — falling back to the static binary."
+  fi
+
+  # 3. System package — only with working sudo: pkg_install would otherwise call
+  #    manual() (exit 2) and the static binary below would never be tried.
+  case "$PKG_MANAGER" in
+    apt|dnf|pacman)
+      if [[ "$HAS_SUDO" == true ]]; then
+        if pkg_install jq && jq_works "$(jq_reader_first)"; then
+          ok "jq $(jq_version "$(jq_reader_first)") installed via $PKG_MANAGER"
+          return 0
+        fi
+        info "The $PKG_MANAGER jq is missing or older than 1.6 — installing the static binary."
+      fi ;;
+  esac
+
+  # 4. Pinned static binary into ~/.local/bin (user-local, no sudo)
+  local os_tag arch_tag sha
+  case "$OS" in
+    linux) os_tag="linux" ;;
+    macos) os_tag="macos" ;;
+    *) os_tag="" ;;
+  esac
+  case "$ARCH" in
+    x86_64|amd64) arch_tag="amd64" ;;
+    aarch64|arm64) arch_tag="arm64" ;;
+    *) arch_tag="" ;;
+  esac
+  case "$os_tag-$arch_tag" in
+    linux-amd64) sha="$JQ_SHA256_LINUX_AMD64" ;;
+    linux-arm64) sha="$JQ_SHA256_LINUX_ARM64" ;;
+    macos-amd64) sha="$JQ_SHA256_MACOS_AMD64" ;;
+    macos-arm64) sha="$JQ_SHA256_MACOS_ARM64" ;;
+    *)
+      fail "No pinned jq binary for $(uname -s)/$ARCH."
+      echo "  Install jq >= 1.6 with your package manager, or download a release binary from" >&2
+      echo "  https://github.com/jqlang/jq/releases/tag/jq-$JQ_VERSION and put it on PATH as 'jq'." >&2
+      exit 2 ;;
+  esac
+  local url="https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-${os_tag}-${arch_tag}"
+  # Test hooks only (tests/unit/t_deps.sh): a local file:// fixture and its hash.
+  url="${ARE_JQ_URL:-$url}"
+  sha="${ARE_JQ_SHA256:-$sha}"
+
+  require_sha256_tool
+  info "Installing jq $JQ_VERSION (static binary) from $url..."
+  local tmp_bin
+  tmp_bin=$(mktemp "${TMPDIR:-/tmp}/jq-XXXXXX")
+  if ! download_verified "$url" "$tmp_bin" "$sha"; then
+    rm -f "$tmp_bin"
+    fail "Could not download a verified jq $JQ_VERSION binary."
+    echo "  Manually download: $url" >&2
+    echo "  check that its SHA-256 is $sha," >&2
+    echo "  then save it as $dest and run: chmod 755 $dest" >&2
+    exit 2
+  fi
+  mkdir -p "$HOME/.local/bin"
+  mv -f "$tmp_bin" "$dest"
+  chmod 755 "$dest"
+  if ! jq_works "$dest"; then
+    fail "jq installed to $dest but it does not run on this system."
+    exit 1
+  fi
+  export PATH="$HOME/.local/bin:$PATH"
+  add_to_profile 'export PATH="$HOME/.local/bin:$PATH"'
+  ok "jq $(jq_version "$dest") installed to $dest (SHA-256 verified)"
+  # The caller's PATH may put an older jq before ~/.local/bin (checked on CALLER_PATH:
+  # the export above always puts $dest first for this script).
+  first=$(jq_reader_first)
+  if ! jq_works "$first"; then
+    jq_shadowed "$first" "$dest"
+  fi
+}
+
 install_neutralize_all() {
   echo "=== Installing all SDK Neutralizer dependencies ==="
   echo
@@ -1036,6 +1209,13 @@ install_neutralize_all() {
     fi
     echo
   done
+
+  # jq is optional (only the SDK audit needs it; detect-adwrapper has a built-in
+  # fallback parser): never part of 'failed', so it cannot change the exit code.
+  # The subshell contains every 'exit' of install_jq (and of manual()).
+  info "--- jq (optional) ---"
+  ( install_jq ) || echo "[WARN] jq not installed (optional)"
+  echo
 
   if [[ ${#failed[@]} -gt 0 ]]; then
     fail "Failed to install: ${failed[*]}"
@@ -1065,10 +1245,11 @@ case "$DEP" in
   smali|baksmali)  install_smali ;;
   apksigner)   install_apksigner ;;
   zip)         install_zip ;;
+  jq)          install_jq ;;
   neutralize-all)  install_neutralize_all ;;
   *)
     echo "Error: Unknown dependency '$DEP'" >&2
-    echo "Available: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, smali, apksigner, zip" >&2
+    echo "Available: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, smali, apksigner, zip, jq" >&2
     echo "Compound: neutralize-all" >&2
     exit 1
     ;;

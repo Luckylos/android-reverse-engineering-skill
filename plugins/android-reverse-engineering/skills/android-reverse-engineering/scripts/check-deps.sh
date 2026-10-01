@@ -105,6 +105,23 @@ else
   missing_optional+=("adb")
 fi
 
+# --- jq (optional: find-trackers/find-ads) ---
+# Never required: /decompile does not need it. ">= 1.6" is the feature probe that
+# registry-query.sh uses (limit/2 and IN/1 do not exist in jq 1.5).
+jq_ver=""
+if command -v jq &>/dev/null; then
+  jq_ver=$(jq --version 2>/dev/null | sed -n '1s/^jq-//p' || true)
+fi
+if [[ -n "$jq_ver" ]] && [[ "$(jq -nr '[limit(1;1,2)] | IN(.[]; 1) | tostring' 2>/dev/null || true)" == "true" ]]; then
+  echo "[OK] jq $jq_ver detected"
+elif [[ -n "$jq_ver" ]]; then
+  echo "[WARN] jq $jq_ver is older than 1.6 (optional — find-trackers.sh / find-ads.sh need jq >= 1.6)"
+  missing_optional+=("jq")
+else
+  echo "[MISSING] jq not found (optional — needed by find-trackers.sh / find-ads.sh)"
+  missing_optional+=("jq")
+fi
+
 # --- Machine-readable summary ---
 echo
 if [[ ${#missing_required[@]} -gt 0 ]]; then

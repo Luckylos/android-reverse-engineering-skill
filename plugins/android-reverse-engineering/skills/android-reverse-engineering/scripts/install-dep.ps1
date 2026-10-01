@@ -1,6 +1,7 @@
 # install-dep.ps1 — Install a single dependency for Android reverse engineering
 # Usage: install-dep.ps1 <dependency> [-AcceptAndroidSdkLicense]
-# Dependencies: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb
+# Dependencies: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, jq
+#   (jq: never needed on Windows -- prints [OK] and exits 0)
 # Compound: neutralize-all (java + apktool + apkeditor + build-tools)
 #
 # Exit codes:
@@ -42,6 +43,8 @@ Available dependencies:
   build-tools  Android SDK Build-Tools 36.0.0 (zipalign -P 16, apksigner, aapt2);
                needs -AcceptAndroidSdkLicense (or ACCEPT_ANDROID_SDK_LICENSE=1)
   adb          Android Debug Bridge
+  jq           not needed on Windows: the .ps1 scripts read the registry with
+               ConvertFrom-Json (prints [OK]; exit 0)
 
 Compound targets:
   neutralize-all   java, apktool, apkeditor, build-tools
@@ -532,6 +535,19 @@ function Install-NeutralizeAll {
     Write-Ok "All SDK Neutralizer dependencies installed."
 }
 
+function Install-Jq {
+    # jq is only used by the bash scripts; the .ps1 twins parse JSON natively.
+    Write-Ok "jq is not required on Windows: the .ps1 scripts read the registry with ConvertFrom-Json."
+    if ($hasWinget -or $hasScoop -or $hasChoco) {
+        $cmds = @()
+        if ($hasWinget) { $cmds += 'winget install jqlang.jq' }
+        if ($hasScoop)  { $cmds += 'scoop install jq' }
+        if ($hasChoco)  { $cmds += 'choco install jq' }
+        Write-Info "Only to run the bash scripts under Git Bash: $($cmds -join ' | ')"
+        Write-Info "Under WSL: bash install-dep.sh jq (inside WSL)."
+    }
+}
+
 function Install-Adb {
     if (Get-Command adb -ErrorAction SilentlyContinue) {
         Write-Ok "adb already installed"
@@ -576,9 +592,10 @@ switch ($Dep) {
     'zipalign'    { Install-BuildTools }
     'neutralize-all' { Install-NeutralizeAll }
     'adb'         { Install-Adb }
+    'jq'          { Install-Jq }
     default {
         Write-Host "Error: Unknown dependency '$Dep'" -ForegroundColor Red
-        Write-Host "Available: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb"
+        Write-Host "Available: java, jadx, vineflower, dex2jar, apktool, apkeditor, build-tools, adb, jq"
         Write-Host "Compound: neutralize-all"
         exit 1
     }

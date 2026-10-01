@@ -24,7 +24,17 @@ Write-Host ""
 $javaOk = $false
 $javaBin = Get-Command java -ErrorAction SilentlyContinue
 if ($javaBin) {
-    $javaVersionOutput = & java -version 2>&1 | Select-Object -First 1
+    # java -version writes to stderr: under 'Stop' PS 5.1 turns that into a terminating
+    # NativeCommandError, so run it with 'Continue' (as check-neutralize-deps.ps1 does)
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $javaVersionOutput = & java -version 2>&1 | Select-Object -First 1
+    } catch {
+        $javaVersionOutput = "$_"
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
     $javaVersionStr = "$javaVersionOutput"
     if ($javaVersionStr -match '"(\d+)') {
         $javaVersion = [int]$Matches[1]
@@ -139,6 +149,9 @@ if (Get-Command adb -ErrorAction SilentlyContinue) {
     Write-Host "[MISSING] adb not found (optional - useful for pulling APKs from devices)"
     $missingOptional += "adb"
 }
+
+# --- jq: never needed on Windows (no INSTALL_*:jq line here) ---
+Write-Host "[OK] jq not required on Windows (PowerShell scripts parse the registry natively)"
 
 # --- Machine-readable summary ---
 Write-Host ""

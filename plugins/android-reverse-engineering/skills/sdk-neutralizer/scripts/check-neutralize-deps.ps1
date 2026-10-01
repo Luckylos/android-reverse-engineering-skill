@@ -257,9 +257,13 @@ if ($zaPage -eq '16k') {
 }
 Write-Host "ZIPALIGN_PAGE_ALIGN:$zaPage"
 
+# --- jq: never needed on Windows (no INSTALL_*:jq line here) ---
+Write-Host "[OK] jq not required on Windows (detect-adwrapper.ps1 reads the registry with ConvertFrom-Json)"
+
 Write-Host ""
 Write-Host "Note: on Windows, neutralize.sh and registry-scan.py need bash + python3"
-Write-Host "      (WSL or Git Bash) for now; decode-apk.ps1 and rebuild-apk.ps1 are native."
+Write-Host "      (WSL or Git Bash) for now; decode-apk.ps1, detect-adwrapper.ps1 and"
+Write-Host "      rebuild-apk.ps1 are native and need no jq (under bash jq is optional)."
 
 # --- Machine-readable summary ---
 Write-Host ""

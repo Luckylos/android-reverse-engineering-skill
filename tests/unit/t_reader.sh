@@ -93,7 +93,7 @@ else
 fi
 for m in "" --lenient; do
   rq "awkbad.jq$m" --registry "$tmp/awkbad" packages $m
-  PATH="$TESTS_DIR/shims/nojq:$PATH" run_bash "$RQ" --registry "$tmp/awkbad" packages $m >"$tmp/awkbad.awk$m.out" 2>"$tmp/awkbad.awk$m.err"
+  with_shim nojq run_bash "$RQ" --registry "$tmp/awkbad" packages $m >"$tmp/awkbad.awk$m.out" 2>"$tmp/awkbad.awk$m.err"
   echo $? >"$tmp/awkbad.awk$m.rc"
   assert_eq "$(rc_of "awkbad.jq$m")" "$(rc_of "awkbad.awk$m")" "awk vs jq packages $m: same exit code"
   assert_files_eq "$tmp/awkbad.jq$m.err" "$tmp/awkbad.awk$m.err" "awk vs jq packages $m: same messages"
