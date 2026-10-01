@@ -1,0 +1,15 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "kidoz",
+  "display_name": "Kidoz",
+  "vendor": "Kidoz",
+  "category": "ads",
+  "description": "Detection-only (no targets): registry-scan.py and neutralize.sh ignore it. com.kpadplayer is deliberately not in packages: it would become a detect-adwrapper exclusion and hide the com.kpadplayer.sdk wrapper candidate (see registry-backlog.md).",
+  "packages": [
+    "net.kidoz"
+  ],
+  "detection": {
+    "marker_classes": ["net.kidoz.sdk.Kidoz"],
+    "domains": ["kidoz.net"]
+  }
+}

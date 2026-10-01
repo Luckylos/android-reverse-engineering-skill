@@ -1,0 +1,14 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "tiktok-business",
+  "display_name": "TikTok Business SDK",
+  "vendor": "TikTok (ByteDance)",
+  "category": "attribution",
+  "description": "Detection-only (no targets): registry-scan.py and neutralize.sh ignore it. App-event / conversion tracking to TikTok Ads (see registry-backlog.md).",
+  "packages": [
+    "com.tiktok"
+  ],
+  "detection": {
+    "marker_classes": ["com.tiktok.TikTokBusinessSdk"]
+  }
+}

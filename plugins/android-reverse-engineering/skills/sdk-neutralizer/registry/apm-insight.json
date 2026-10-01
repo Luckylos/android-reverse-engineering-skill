@@ -1,0 +1,11 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "apm-insight",
+  "display_name": "ByteDance APM Insight",
+  "vendor": "ByteDance",
+  "category": "crash_reporting",
+  "description": "Detection-only (no targets): registry-scan.py and neutralize.sh ignore it. Crash / performance monitor bundled with Pangle (see registry-backlog.md).",
+  "packages": [
+    "com.apm.insight"
+  ]
+}

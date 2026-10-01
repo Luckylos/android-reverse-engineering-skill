@@ -1,0 +1,15 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "bigo-ads",
+  "display_name": "BIGO Ads",
+  "vendor": "BIGO Technology",
+  "category": "ads",
+  "description": "Detection-only (no targets): registry-scan.py and neutralize.sh ignore it (see registry-backlog.md).",
+  "packages": [
+    "sg.bigo.ads"
+  ],
+  "detection": {
+    "marker_classes": ["sg.bigo.ads.BigoAdSdk"],
+    "namespace_roots": ["sg.bigo"]
+  }
+}
