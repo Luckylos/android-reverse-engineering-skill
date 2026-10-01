@@ -199,5 +199,9 @@
       "pattern": "*.onCreate(*)*",
       "reason": "TagManagerPreviewActivity and PreviewActivity override Activity.onCreate. A stub skips super.onCreate and throws SuperNotCalledException. Disable the activity in the manifest instead."
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["com.google.android.gms.tagmanager.TagManager"],
+    "domains": ["googletagmanager.com"]
+  }
 }

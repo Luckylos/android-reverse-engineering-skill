@@ -227,5 +227,9 @@
       "pattern": "*.setStatisticsSending()*",
       "reason": "Legacy opt-out switch (YandexMetrica.setStatisticsSending(Context, boolean)). Leave it working"
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["io.appmetrica.analytics.AppMetrica"],
+    "domains": ["startup.mobile.yandex.net"]
+  }
 }

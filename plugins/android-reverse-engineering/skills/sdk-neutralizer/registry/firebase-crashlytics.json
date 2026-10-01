@@ -37,5 +37,10 @@
       "pattern": "*.getInstance()*",
       "reason": "Singleton accessor — null causes NPE if called by app code"
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["com.google.firebase.crashlytics.FirebaseCrashlytics"],
+    "domains": ["firebase-settings.crashlytics.com"],
+    "manifest_names": ["firebase_crashlytics_collection_enabled"]
+  }
 }

@@ -47,5 +47,15 @@
       "pattern": "*.getInstance()*",
       "reason": "Singleton accessor — null causes NPE if called by app code"
     }
-  ]
+  ],
+  "detection": {
+    "apis": [
+      { "class": "com.mixpanel.android.mpmetrics.MixpanelAPI", "methods": ["getInstance"], "role": "init" },
+      { "class": "com.mixpanel.android.mpmetrics.MixpanelAPI", "methods": ["track", "trackMap", "timeEvent"], "role": "event" },
+      { "class": "com.mixpanel.android.mpmetrics.MixpanelAPI", "methods": ["identify", "alias", "getPeople", "getDistinctId"], "role": "identity" },
+      { "class": "com.mixpanel.android.mpmetrics.MixpanelAPI", "methods": ["optOutTracking", "optInTracking"], "role": "consent" },
+      { "class": "com.mixpanel.android.mpmetrics.MixpanelAPI", "methods": ["setServerURL"], "role": "endpoint" }
+    ],
+    "domains": ["mixpanel.com"]
+  }
 }

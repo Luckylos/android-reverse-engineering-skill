@@ -100,5 +100,9 @@
       "pattern": "*.setAppOptOut()*",
       "reason": "Privacy opt-out switch (GoogleAnalytics.setAppOptOut(true) disables all collection). Leave it working; it can only reduce collection"
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["com.google.android.gms.analytics.GoogleAnalytics"],
+    "domains": ["google-analytics.com"]
+  }
 }

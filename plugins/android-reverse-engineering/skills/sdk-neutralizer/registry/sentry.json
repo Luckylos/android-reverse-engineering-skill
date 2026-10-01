@@ -85,5 +85,8 @@
     { "pattern": "*.continueTrace()*", "reason": "Returns io.sentry.TransactionContext the app chains on; null would NPE." },
     { "pattern": "*.getTraceparent()*", "reason": "Returns a header object the app may read for distributed tracing." },
     { "pattern": "*.getBaggage()*", "reason": "Returns a header object the app may read for distributed tracing." }
-  ]
+  ],
+  "detection": {
+    "domains": ["sentry.io"]
+  }
 }

@@ -143,5 +143,15 @@
       "pattern": "*.getApplicationContext()*",
       "reason": "Returns Context — null causes NPE"
     }
-  ]
+  ],
+  "detection": {
+    "exclude_packages": ["com.facebook.ads"],
+    "marker_classes": ["com.facebook.FacebookSdk"],
+    "apis": [
+      { "class": "com.facebook.appevents.AppEventsLogger", "methods": ["newLogger", "activateApp"], "role": "event" },
+      { "class": "com.facebook.FacebookSdk", "methods": ["setAutoLogAppEventsEnabled", "setAdvertiserIDCollectionEnabled", "setDataProcessingOptions"], "role": "consent" }
+    ],
+    "domains": ["graph.facebook.com"],
+    "note": "com.facebook.ads is Meta Audience Network (its own entry): excluded here for the audit only, packages is unchanged. Non-SDK Meta libraries (soloader, fresco, ...) are library_roots."
+  }
 }

@@ -1,0 +1,6 @@
+# marker-allowlist.tsv -- T-MARKER exceptions (tests/corpus/marker-verify.sh, DESIGN 3.1 R4).
+# A detection.marker_classes item normally needs its class file in at least one corpus app
+# where the ground truth has that SDK. A marker that cannot be verified that way may be
+# listed here, one per line, after review, with the reason (e.g. the vendor docs page):
+# sdk_id<TAB>class<TAB>reason
+# Empty on purpose: every marker declared so far is verified by the corpus.

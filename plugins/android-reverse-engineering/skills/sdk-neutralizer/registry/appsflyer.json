@@ -94,5 +94,16 @@
       "pattern": "*.getApplicationContext()*",
       "reason": "Returns Context — null causes NPE"
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["com.appsflyer.AppsFlyerLib"],
+    "apis": [
+      { "class": "com.appsflyer.AppsFlyerLib", "methods": ["getInstance", "init", "start"], "role": "init" },
+      { "class": "com.appsflyer.AppsFlyerLib", "methods": ["logEvent"], "role": "event" },
+      { "class": "com.appsflyer.AppsFlyerLib", "methods": ["setCustomerUserId", "setCustomerIdAndLogSession", "getAppsFlyerUID"], "role": "identity" },
+      { "class": "com.appsflyer.AppsFlyerLib", "methods": ["anonymizeUser", "stop"], "role": "consent" }
+    ],
+    "domains": ["appsflyer.com", "appsflyersdk.com", "onelink.me"],
+    "note": "Domains are matched as bare host strings: AppsFlyer builds its URLs with %s."
+  }
 }

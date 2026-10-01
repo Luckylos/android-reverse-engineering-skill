@@ -87,5 +87,31 @@
       "pattern": "*.getInstance()*",
       "reason": "Singleton accessor — null causes NPE if called by app code"
     }
-  ]
+  ],
+  "detection": {
+    "exclude_packages": ["com.google.firebase.analytics.connector"],
+    "namespace_roots": [
+      "com.google.android.gms.measurement",
+      "com.google.android.gms.internal.measurement"
+    ],
+    "marker_classes": ["com.google.firebase.analytics.FirebaseAnalytics"],
+    "apis": [
+      { "class": "com.google.firebase.analytics.FirebaseAnalytics", "methods": ["getInstance"], "role": "init" },
+      { "class": "com.google.firebase.analytics.FirebaseAnalytics", "methods": ["setConsent", "setAnalyticsCollectionEnabled"], "role": "consent" },
+      { "class": "com.google.firebase.analytics.FirebaseAnalytics", "methods": ["logEvent"], "role": "event" },
+      { "class": "com.google.firebase.analytics.FirebaseAnalytics", "methods": ["setUserId", "setUserProperty"], "role": "identity" }
+    ],
+    "domains": ["app-measurement.com"],
+    "manifest_names": [
+      "firebase_analytics_collection_enabled",
+      "firebase_analytics_collection_deactivated",
+      "google_analytics_adid_collection_enabled",
+      "google_analytics_ssaid_collection_enabled",
+      "google_analytics_default_allow_analytics_storage",
+      "google_analytics_default_allow_ad_storage",
+      "google_analytics_default_allow_ad_user_data",
+      "google_analytics_default_allow_ad_personalization_signals"
+    ],
+    "note": "analytics/connector is the cross-SDK bridge (present without FirebaseAnalytics, e.g. badpiggies): not evidence. gms.measurement is a namespace, never identity: measurement code is library and AppMeasurement* manifest components stay pertinent."
+  }
 }

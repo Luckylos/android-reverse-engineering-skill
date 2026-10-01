@@ -43,5 +43,15 @@
       "note": "Install referrer receiver"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "apis": [
+      { "class": "com.adjust.sdk.Adjust", "methods": ["initSdk"], "role": "init" },
+      { "class": "com.adjust.sdk.AdjustConfig", "methods": ["<init>"], "role": "init" },
+      { "class": "com.adjust.sdk.AdjustEvent", "methods": ["<init>"], "role": "event" },
+      { "class": "com.adjust.sdk.Adjust", "methods": ["getAdid"], "role": "identity" },
+      { "class": "com.adjust.sdk.Adjust", "methods": ["gdprForgetMe", "disableThirdPartySharing", "trackThirdPartySharing"], "role": "consent" }
+    ],
+    "domains": ["adjust.com", "adjust.io", "adjust.world"]
+  }
 }

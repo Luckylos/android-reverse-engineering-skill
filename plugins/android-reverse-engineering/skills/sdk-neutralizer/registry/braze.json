@@ -50,5 +50,13 @@
       "pattern": "*.getInstance()*",
       "reason": "Singleton accessor — null causes NPE if called by app code"
     }
-  ]
+  ],
+  "detection": {
+    "apis": [
+      { "class": "com.braze.Braze", "methods": ["changeUser"], "role": "identity" },
+      { "class": "com.braze.configuration.BrazeConfig$Builder", "methods": ["setApiKey"], "role": "init" },
+      { "class": "com.braze.configuration.BrazeConfig$Builder", "methods": ["setCustomEndpoint"], "role": "endpoint" }
+    ],
+    "domains": ["braze.com", "braze.eu", "appboy.com"]
+  }
 }

@@ -88,5 +88,16 @@
       "pattern": "*.setDeviceId()*",
       "reason": "v1 AmplitudeClient.setDeviceId and v2 Amplitude.setDeviceId are FLUENT (return the client). setDeviceId is never a stub target, so protecting the name is safe and documents the fluent risk"
     }
-  ]
+  ],
+  "detection": {
+    "apis": [
+      { "class": "com.amplitude.api.Amplitude", "methods": ["getInstance"], "role": "init" },
+      { "class": "com.amplitude.api.AmplitudeClient", "methods": ["initialize"], "role": "init" },
+      { "class": "com.amplitude.api.AmplitudeClient", "methods": ["logEvent"], "role": "event" },
+      { "class": "com.amplitude.api.AmplitudeClient", "methods": ["setUserId"], "role": "identity" },
+      { "class": "com.amplitude.api.AmplitudeClient", "methods": ["setOptOut", "enableCoppaControl"], "role": "consent" },
+      { "class": "com.amplitude.api.AmplitudeClient", "methods": ["setServerUrl"], "role": "endpoint" }
+    ],
+    "domains": ["amplitude.com"]
+  }
 }

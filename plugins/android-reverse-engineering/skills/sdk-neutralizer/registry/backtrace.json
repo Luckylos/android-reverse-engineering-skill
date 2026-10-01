@@ -63,5 +63,8 @@
     { "pattern": "*.getSummedEvents()*", "reason": "Returns a ConcurrentLinkedDeque the app may read; null would NPE." },
     { "pattern": "*.initAnrHandler()*", "reason": "Returns backtraceio.library.anr.BacktraceANRHandler the app may chain on; null would NPE. (The common opt-in path enableAnr is stubbed instead.)" },
     { "pattern": "*.createBacktraceAnrHandler()*", "reason": "Returns backtraceio.library.anr.BacktraceANRHandler the app may chain on; null would NPE." }
-  ]
+  ],
+  "detection": {
+    "domains": ["backtrace.io"]
+  }
 }

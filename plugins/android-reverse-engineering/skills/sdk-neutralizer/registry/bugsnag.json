@@ -65,5 +65,8 @@
     { "pattern": "*.getMetadata()*", "reason": "Returns a Map/Object the app may read; null could break app logic." },
     { "pattern": "*.getLastRunInfo()*", "reason": "Returns com.bugsnag.android.LastRunInfo the app reads to detect a prior crash; do not null." },
     { "pattern": "*.getOutOfMemoryHandler()*", "reason": "Returns a handler object the app may hold; do not null." }
-  ]
+  ],
+  "detection": {
+    "domains": ["bugsnag.com"]
+  }
 }

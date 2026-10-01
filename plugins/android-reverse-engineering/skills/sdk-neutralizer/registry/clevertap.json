@@ -50,5 +50,15 @@
       "pattern": "*.getDefaultInstance()*",
       "reason": "Singleton accessor — null causes NPE if called by app code"
     }
-  ]
+  ],
+  "detection": {
+    "apis": [
+      { "class": "com.clevertap.android.sdk.CleverTapAPI", "methods": ["getDefaultInstance", "changeCredentials"], "role": "init" },
+      { "class": "com.clevertap.android.sdk.ActivityLifecycleCallback", "methods": ["register"], "role": "init" },
+      { "class": "com.clevertap.android.sdk.CleverTapAPI", "methods": ["pushEvent", "pushChargedEvent"], "role": "event" },
+      { "class": "com.clevertap.android.sdk.CleverTapAPI", "methods": ["onUserLogin", "pushProfile", "getCleverTapID"], "role": "identity" }
+    ],
+    "domains": ["clevertap-prod.com", "wzrkt.com", "clevertap.com"],
+    "manifest_names": ["CLEVERTAP_ACCOUNT_ID", "CLEVERTAP_TOKEN"]
+  }
 }

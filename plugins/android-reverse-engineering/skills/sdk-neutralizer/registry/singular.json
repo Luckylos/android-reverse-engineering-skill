@@ -76,5 +76,9 @@
       "pattern": "*.createReferrerShortLink()*",
       "reason": "Callback-based: the app awaits a com.singular.sdk.ShortLinkHandler callback with the generated link. Stubbing the void method would leave that callback pending forever, so it is left working"
     }
-  ]
+  ],
+  "detection": {
+    "marker_classes": ["com.singular.sdk.Singular"],
+    "domains": ["singular.net"]
+  }
 }
