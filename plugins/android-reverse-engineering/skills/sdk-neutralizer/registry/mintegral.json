@@ -120,5 +120,9 @@
       "note": "Network change broadcast receiver"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "extra_packages": ["com.mintegral"],
+    "namespace_roots": ["com.mbridge"]
+  }
 }

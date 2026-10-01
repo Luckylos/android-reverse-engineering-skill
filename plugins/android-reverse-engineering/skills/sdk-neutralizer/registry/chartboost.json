@@ -62,5 +62,13 @@
       "note": "Ad impression display activity"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "namespace_roots": ["com.chartboost"],
+    "apis": [
+      { "class": "com.chartboost.sdk.Chartboost", "methods": ["cacheInterstitial"], "role": "load" },
+      { "class": "com.chartboost.sdk.Chartboost", "methods": ["showInterstitial", "showRewardedVideo"], "role": "show" }
+    ],
+    "note": "The apis are the legacy v8 static API (removed in v9)."
+  }
 }

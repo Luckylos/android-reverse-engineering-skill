@@ -84,5 +84,24 @@
       "note": "Delegate activity for ad interactions"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "extra_packages": [
+      "com.pgl.ssdk",
+      "com.bykv.vk",
+      "com.bytedance.adsdk"
+    ],
+    "namespace_roots": [
+      "com.pgl",
+      "com.bykv",
+      "com.bytedance.sdk.component",
+      "com.bytedance.pag",
+      "com.bytedance.fm",
+      "com.bytedance.ycx"
+    ],
+    "apis": [
+      { "class": "com.bytedance.sdk.openadsdk.TTAdSdk", "methods": ["init"], "role": "init" }
+    ],
+    "note": "com.bytedance is never a namespace (shared with APM Insight). The Pangle ownership of sdk.component, pag, fm and ycx is not verified: namespace only, never identity. TTAdSdk.init is the legacy init."
+  }
 }

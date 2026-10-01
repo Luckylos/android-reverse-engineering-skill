@@ -79,5 +79,8 @@
       "pattern": "*.getSDKVersion*",
       "reason": "Returns the SDK version String; mediation adapters may parse it — do not null."
     }
-  ]
+  ],
+  "detection": {
+    "namespace_roots": ["com.adcolony"]
+  }
 }

@@ -119,5 +119,23 @@
       "pattern": "*.getApplicationContext()*",
       "reason": "Returns Context — null causes NPE"
     }
-  ]
+  ],
+  "detection": {
+    "exclude_packages": ["com.google.android.gms.ads.identifier"],
+    "namespace_roots": [
+      "com.google.ads.mediation",
+      "com.google.android.gms.internal.ads"
+    ],
+    "adapter_packages": ["com.google.ads.mediation"],
+    "marker_classes": ["com.google.android.gms.ads.MobileAds"],
+    "apis": [
+      { "class": "com.google.android.gms.ads.MobileAds", "methods": ["setRequestConfiguration"], "role": "config" },
+      { "class": "com.google.android.gms.ads.RequestConfiguration$Builder", "methods": ["setTagForChildDirectedTreatment", "setTagForUnderAgeOfConsent", "setMaxAdContentRating"], "role": "consent" },
+      { "class": "com.google.android.gms.ads.AdLoader$Builder", "methods": ["<init>"], "role": "load" }
+    ],
+    "id_prefixes": [
+      { "prefix": "ca-app-pub-", "label": "admob_id" }
+    ],
+    "note": "gms.ads.identifier (AdvertisingIdClient, used by every SDK) is not AdMob evidence: alone it is at most LOW (HeartStar). com.google.ads as a whole is not a namespace: it also holds the IMA SDK (interactivemedia). The APPLICATION_ID / AD_MANAGER_APP meta-data start with the identity root and match by prefix."
+  }
 }

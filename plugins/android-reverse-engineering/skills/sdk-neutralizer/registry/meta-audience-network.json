@@ -85,5 +85,13 @@
       "note": "Audience Network content provider"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "marker_classes": ["com.facebook.ads.AudienceNetworkAds"],
+    "apis": [
+      { "class": "com.facebook.ads.AudienceNetworkAds", "methods": ["buildInitSettings"], "role": "init" },
+      { "class": "com.facebook.ads.NativeBannerAd", "methods": ["<init>", "loadAd"], "role": "load" },
+      { "class": "com.facebook.ads.AdSettings", "methods": ["setMixedAudience"], "role": "consent" }
+    ]
+  }
 }

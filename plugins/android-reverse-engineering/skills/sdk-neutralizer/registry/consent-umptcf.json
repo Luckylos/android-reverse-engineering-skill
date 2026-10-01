@@ -74,5 +74,15 @@
       "pattern": "*.getApplicationContext()*",
       "reason": "Returns Context — null causes NPE."
     }
-  ]
+  ],
+  "detection": {
+    "extra_packages": ["com.google.unity.ump"],
+    "marker_classes": ["com.google.android.ump.UserMessagingPlatform"],
+    "apis": [
+      { "class": "com.google.android.ump.UserMessagingPlatform", "methods": ["getConsentInformation", "loadConsentForm", "loadAndShowConsentFormIfRequired", "showPrivacyOptionsForm"], "role": "consent" },
+      { "class": "com.google.android.ump.ConsentInformation", "methods": ["requestConsentInfoUpdate", "canRequestAds", "getConsentStatus", "reset"], "role": "consent" },
+      { "class": "com.google.android.ump.ConsentForm", "methods": ["show"], "role": "consent" },
+      { "class": "com.google.android.ump.ConsentRequestParameters$Builder", "methods": ["<init>", "setTagForUnderAgeOfConsent"], "role": "config" }
+    ]
+  }
 }

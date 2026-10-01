@@ -67,5 +67,16 @@
       "pattern": "*.getActivity()*",
       "reason": "Returns Activity reference — null causes NPE"
     }
-  ]
+  ],
+  "detection": {
+    "extra_packages": [
+      "com.unity3d.scar",
+      "gatewayprotocol"
+    ],
+    "marker_classes": ["com.unity3d.ads.UnityAds"],
+    "apis": [
+      { "class": "com.unity3d.services.banners.BannerView", "methods": ["<init>", "load"], "role": "load" }
+    ],
+    "note": "com.unity3d.scar (SCAR adapters, referenced by com.unity3d.services) and gatewayprotocol (protobuf messages of com.unity3d.ads) ship with Unity Ads. The engine com.unity3d.player is not identity."
+  }
 }

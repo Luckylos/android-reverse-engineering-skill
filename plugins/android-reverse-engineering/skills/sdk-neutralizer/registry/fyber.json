@@ -33,5 +33,9 @@
     "deep_patterns": []
   },
   "manifest_components": [],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "extra_packages": ["com.fyber.marketplace"],
+    "namespace_roots": ["com.fyber"]
+  }
 }

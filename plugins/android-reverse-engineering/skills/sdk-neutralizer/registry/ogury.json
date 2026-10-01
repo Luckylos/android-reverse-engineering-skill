@@ -189,5 +189,8 @@
       "pattern": "*.getAdsSdkVersion()*",
       "reason": "io.presage.common.PresageSdk.getAdsSdkVersion() returns a non-null constant version String used by mediation adapters; null could NPE"
     }
-  ]
+  ],
+  "detection": {
+    "extra_packages": ["com.ogury.ad"]
+  }
 }

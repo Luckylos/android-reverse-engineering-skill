@@ -110,5 +110,9 @@
       "pattern": "com.appodeal.ads.initializing.ApdInitializationCallback",
       "reason": "Initialization callback interface — onInitializationFinished must remain callable; do not stub it. See HANG RISK note on Appodeal.initialize."
     }
-  ]
+  ],
+  "detection": {
+    "exclude_packages": ["com.explorestack.protobuf"],
+    "note": "com.explorestack.protobuf ships with BidMachine (its namespace), not Appodeal: Appodeal is not detected on apps that only have BidMachine."
+  }
 }

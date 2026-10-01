@@ -166,5 +166,18 @@
       "pattern": "com.applovin.mediation.adapter.listeners.**->*",
       "reason": "Adapter->MAX listener bridge (MaxInterstitialAdapterListener, MaxRewardedAdapterListener, etc.). Not covered by the adapters.** deep pattern; must stay live to deliver load/show results."
     }
-  ]
+  ],
+  "detection": {
+    "namespace_roots": ["com.applovin"],
+    "adapter_packages": ["com.applovin.mediation.adapters"],
+    "marker_classes": ["com.applovin.sdk.AppLovinSdk"],
+    "apis": [
+      { "class": "com.applovin.sdk.AppLovinSdk", "methods": ["getInstance"], "role": "init" },
+      { "class": "com.applovin.sdk.AppLovinPrivacySettings", "methods": ["setHasUserConsent", "setDoNotSell", "setIsAgeRestrictedUser"], "role": "consent" },
+      { "class": "com.applovin.mediation.nativeAds.MaxNativeAdLoader", "methods": ["<init>", "loadAd"], "role": "load" },
+      { "class": "com.applovin.mediation.ads.MaxRewardedAd", "methods": ["getInstance"], "role": "load" }
+    ],
+    "manifest_names": ["applovin.sdk.key"],
+    "note": "AppLovinSdk.getInstance is evidence only, deliberately not a neutralizer target."
+  }
 }

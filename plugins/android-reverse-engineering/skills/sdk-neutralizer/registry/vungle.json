@@ -154,5 +154,13 @@
       "pattern": "*.isInitialized()*",
       "reason": "Vungle.isInitialized() / VunglePub.isInitialized() return a boolean that is naturally false once init is stubbed; leave them working so callers correctly see the SDK as not initialised rather than being forced true"
     }
-  ]
+  ],
+  "detection": {
+    "extra_packages": ["com.vungle.mediation"],
+    "namespace_roots": ["com.vungle"],
+    "apis": [
+      { "class": "com.vungle.ads.VungleBannerView", "methods": ["<init>", "load"], "role": "load" },
+      { "class": "com.vungle.warren.Vungle", "methods": ["isInitialized"], "role": "init" }
+    ]
+  }
 }

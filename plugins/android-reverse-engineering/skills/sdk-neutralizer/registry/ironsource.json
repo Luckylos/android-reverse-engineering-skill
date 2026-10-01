@@ -288,5 +288,17 @@
       "pattern": "callback-bridge: LevelPlayBridge.onInitSuccess / onInitFailed / onImpressionSuccess and the *Ad*Listener.on* forwarders",
       "reason": "These forward init/impression results from the SDK back up to the Unity/app layer. They are the callback bridge — stubbing them (rather than the load/init that triggers them) is what causes the 'callback never fires -> app waits forever' hang. Never stub. Documentary only (does not match the name-blocklist regex)"
     }
-  ]
+  ],
+  "detection": {
+    "extra_packages": [
+      "com.ironsource.environment",
+      "com.ironsource.lifecycle"
+    ],
+    "namespace_roots": ["com.ironsource"],
+    "adapter_packages": ["com.ironsource.adapters"],
+    "apis": [
+      { "class": "com.ironsource.mediationsdk.IronSource", "methods": ["setUserId"], "role": "identity" },
+      { "class": "com.ironsource.mediationsdk.IronSource", "methods": ["setConsent", "setMetaData"], "role": "consent" }
+    ]
+  }
 }

@@ -68,7 +68,7 @@
       "items": { "$ref": "#/definitions/format_pair" }
     },
     "format_none": {
-      "description": "Allowlist of 'FQCN#method' pairs of ads / ads_mediation entries (targets and detection.apis) to which no format rule applies (test T-FORMAT: every such pair has a format or is listed here). Reasons: SDK init / configuration / consent / privacy calls (targets.entry_points and setters), placement-driven generic load/show whose format depends on the placement (UnityAds, Appodeal, Vungle, maio, HyprMX, Fyber, Amazon, Yandex loaders), offerwall and house/WebView ads (Tapjoy, Rovio Beacon), availability probes (isReady, canShow, isInitialized).",
+      "description": "Allowlist of 'FQCN#method' pairs of ads / ads_mediation entries (targets and detection.apis) to which no format rule applies (test T-FORMAT: every such pair has a format or is listed here). Reasons: SDK init / configuration / consent / privacy / identity calls (targets.entry_points, setters, singleton accessors), multi-format loader builders (AdLoader.Builder: the format comes from the forXxx calls), placement-driven generic load/show whose format depends on the placement (UnityAds, Appodeal, Vungle, maio, HyprMX, Fyber, Amazon, Yandex loaders), offerwall and house/WebView ads (Tapjoy, Rovio Beacon), availability probes (isReady, canShow, isInitialized).",
       "type": "array",
       "uniqueItems": true,
       "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[A-Za-z0-9_]+)*\\.[A-Za-z_][A-Za-z0-9_$]*#([A-Za-z_][A-Za-z0-9_]*|<init>)$" }

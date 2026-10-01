@@ -43,5 +43,15 @@
     "deep_patterns": []
   },
   "manifest_components": [],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "extra_packages": [
+      "com.inmobi.media",
+      "com.inmobi.commons"
+    ],
+    "namespace_roots": ["com.inmobi"],
+    "apis": [
+      { "class": "com.inmobi.ads.InMobiNative", "methods": ["<init>", "load"], "role": "load" }
+    ]
+  }
 }

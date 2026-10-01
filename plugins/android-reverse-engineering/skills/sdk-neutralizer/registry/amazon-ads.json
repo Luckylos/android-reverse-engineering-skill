@@ -45,5 +45,8 @@
       "note": "Ad display activity"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "extra_packages": ["com.amazon.aps"]
+  }
 }

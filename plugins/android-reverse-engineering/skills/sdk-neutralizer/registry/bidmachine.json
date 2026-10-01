@@ -55,5 +55,8 @@
       "note": "Auto-init ContentProvider"
     }
   ],
-  "protected_patterns": []
+  "protected_patterns": [],
+  "detection": {
+    "namespace_roots": ["com.explorestack.protobuf"]
+  }
 }
