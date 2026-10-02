@@ -51,7 +51,7 @@ For targeted searches on a specific SDK (an SDK chosen this way is always printe
 bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh <input-dir> --firebase
 bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh <input-dir> --adjust --mixpanel
 bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh <input-dir> --sdk singular      # any tracker sdk_id
-bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh <input-dir> --list-sdks        # sdk_id, category, legacy flag, neutralizable, packages
+bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh <input-dir> --list-sdks        # sdk_id, category, legacy flag, neutralizable, packages, audit_only_packages
 ```
 
 Options:

@@ -96,11 +96,14 @@ cmp -s "$tmp/s.out" "$tmp/p3.out"; assert_eq 0 $? "--summary --firebase == --sum
 # ---- --list-sdks ----------------------------------------------------------------------------
 run "$tmp/l" "$FT" --list-sdks
 assert_eq 0 "$RC" "find-trackers --list-sdks without input: rc 0"
-assert_eq "$(printf 'sdk_id\tcategory\tlegacy_flag\tneutralizable\tpackages')" "$(head -n 1 "$tmp/l.out")" "--list-sdks header"
-assert_true "--list-sdks: segment --segment detection-only" grep -q "$(printf '^segment\tanalytics\t--segment\tno\tcom.segment.analytics$')" "$tmp/l.out"
+assert_eq "$(printf 'sdk_id\tcategory\tlegacy_flag\tneutralizable\tpackages\taudit_only_packages')" "$(head -n 1 "$tmp/l.out")" "--list-sdks header"
+assert_true "--list-sdks: segment --segment detection-only" grep -q "$(printf '^segment\tanalytics\t--segment\tno\tcom.segment.analytics\t-$')" "$tmp/l.out"
 assert_false "--list-sdks (trackers): no ads entry" grep -q "^google-admob" "$tmp/l.out"
 run "$tmp/la" "$FA" --list-sdks
 assert_true "find-ads --list-sdks: google-ump-consent (consent group)" grep -q "^google-ump-consent" "$tmp/la.out"
+# .packages (neutralized) and detection.extra_packages (audit only) stay in separate columns
+assert_eq "com.bytedance.sdk.openadsdk" "$(awk -F '\t' '$1 == "pangle" { print $5 }' "$tmp/la.out")" "find-ads --list-sdks: pangle packages = .packages only"
+assert_true "find-ads --list-sdks: pangle audit_only_packages has com.pgl.ssdk" awk -F '\t' '$1 == "pangle" && $6 ~ /(^| )com\.pgl\.ssdk( |$)/ { f = 1 } END { exit !f }' "$tmp/la.out"
 
 # ---- option normalization -----------------------------------------------------------------
 run "$tmp/n0" "$FA" "$ADS" --admob

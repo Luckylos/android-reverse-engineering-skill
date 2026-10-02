@@ -36,7 +36,7 @@ bash scripts/check-deps.sh
 # Install a dependency (auto-detects OS/package manager)
 bash scripts/install-dep.sh <dep>   # e.g., jadx, vineflower, dex2jar
 
-# Install ALL neutralizer dependencies at once (java, apktool, apkeditor, build-tools, zip);
+# Install ALL neutralizer dependencies at once (java, apktool, apkeditor, build-tools, zip; jq as an optional soft-fail extra);
 # build-tools (pinned Android SDK Build-Tools 36.0.0) needs the user's explicit license acceptance
 bash scripts/install-dep.sh neutralize-all --accept-android-sdk-license
 
@@ -55,7 +55,7 @@ Tracker analysis script under `plugins/android-reverse-engineering/skills/tracke
 bash find-trackers.sh <input-dir> [--firebase|--adjust|--appsflyer|--mixpanel|--amplitude|--segment|--braze|--clevertap|--flurry]
     [--sdk <sdk_id>]... [--generic|--endpoints|--manifest|--entrypoints|--all] [--summary|--tsv|--json]
     [--manifest-path F] [--registry DIR] [--full] [--no-hints]
-bash find-trackers.sh --list-sdks          # sdk_id, category, legacy_flag, neutralizable, packages
+bash find-trackers.sh --list-sdks          # sdk_id, category, legacy_flag, neutralizable, packages (.packages), audit_only_packages (detection.extra_packages, never neutralized)
 # Windows twin (PowerShell 5.1, no jq): find-trackers.ps1, same option tokens
 ```
 
@@ -180,8 +180,9 @@ Claude Code reads the version from `plugin.json` with priority — if that file 
 - Line endings are LF (enforced via `.gitattributes` for WSL/Windows compatibility)
 - Scripts target Bash 4.0+ and support Linux (apt/dnf/pacman) and macOS (Homebrew); `install-dep.sh`, `check-neutralize-deps.sh`, `decode-apk.sh`, `rebuild-apk.sh`, `detect-adwrapper.sh`, `registry-query.sh`, `sdk-audit.sh` and the `find-trackers.sh` / `find-ads.sh` wrappers are written to also run on macOS's stock bash 3.2 with BSD tools (no `declare -A`, `mapfile`, `${x,,}`; awk is POSIX only: no gawk extensions, checked under `gawk --posix`, mawk and busybox awk; no `grep -P`, no `\s`)
 - `.sh`/`.ps1` pairs must keep feature parity; `.ps1` scripts target Windows PowerShell 5.1 (no PS7-only syntax)
+- **Platform priority: Linux first, then macOS, then Windows.** Develop and validate every new feature in the `.sh` script first (keeping it macOS-compatible: bash 3.2, BSD tools, POSIX awk); only when that work is complete, align the `.ps1` twin and verify functional equivalence (e.g. `tests/parity/`). Parity is mandatory, but it is the last step, not a parallel track
 - Scripts fall back to user-local installs (`~/.local/`) when sudo is unavailable; `install-dep.sh` must run as the user (it refuses sudo for per-user targets and calls sudo itself only for system packages)
 - jq (>= 1.6) is required only by `find-trackers.sh` / `find-ads.sh` (exit 2 + `INSTALL_REQUIRED:jq`); the checkers report it as `INSTALL_OPTIONAL:jq`; it is never needed on Windows (the `.ps1` scripts use `ConvertFrom-Json`), and no `.ps1` checker prints an `INSTALL_*:jq` line. No Python at runtime for the audit
-- PowerShell libraries (`registry-lib.ps1`, `sdk-audit.ps1`) contain only function definitions: no `param()` block, no global/script state, dot-sourced inside the caller's function; they return their output on the pipeline (the audit report as one string, exit code in `$script:SdkAuditExit`). `.ps1` sources are ASCII-only; sorting and comparisons are ordinal
+- PowerShell libraries (`registry-lib.ps1`, `sdk-audit.ps1`) contain only function definitions: no `param()` block, no global/script state other than the documented `$script:SdkAuditExit` result, dot-sourced inside the caller's function; they return their output on the pipeline (the audit report as one string, exit code in `$script:SdkAuditExit`). `.ps1` sources are ASCII-only; sorting and comparisons are ordinal
 - Registry rules: **no regular expressions in the registry** (literals only: packages, classes, hosts, prefixes, method names); **`detection` is not neutralization** (adding a detection fact never changes what gets stubbed; promoting it to `packages` / `targets` / `manifest_components` is a separate change reviewed against the registry-scan golden); new entries follow `_schema.json` and keep `"packages": [` / `sdk_id` / `in_house_wrapper` once each at top level, one string per line (the awk fallback parser relies on it)
 - **Every registry change**: run `tests/run.sh quick` (lint + unit) and `tests/run.sh golden` (registry-scan and detect-adwrapper must stay byte-identical unless the change is meant to alter neutralization), and refresh `registry-backlog.md` with `bash tests/tools/registry-gaps.sh --write`

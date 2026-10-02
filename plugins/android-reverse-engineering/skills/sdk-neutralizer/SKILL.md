@@ -223,6 +223,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-query.sh rows
 
 If it does, the SDK is already identified: go to Phase 3c only to find its entry points, then **add `targets` to that existing entry** instead of creating a new file (never a second entry with the same `sdk_id` or overlapping `packages`).
 
+If the candidate is listed in the **`audit_only_packages`** column of an entry with `neutralizable=yes` (e.g. `com.pgl.ssdk` under pangle), that SDK *is* neutralized, but **not this package**: registry-scan only covers the entry's `.packages`. It is a known coverage gap (see `references/registry-backlog.md`): find its entry points (Phase 3c), stub them for this run through a custom targets file, and propose promoting the package from `detection.extra_packages` to `.packages` (+ its targets) in a dedicated registry change with the registry-scan golden reviewed.
+
 **Discovery workflow** for each unknown package candidate:
 
 1. **List main classes** — use Glob:

@@ -2,7 +2,7 @@
 
 The SDK registry `skills/sdk-neutralizer/registry/*.json` is the **single source** of the packages, marker classes, manifest names, endpoint domains, ad unit id prefixes, APIs and mediation adapter packages used to detect ad SDKs (the `detection` object of each entry, plus `packages` and `targets`); cross-SDK knowledge (ad format tables, hints, library roots) lives in `registry/_audit-shared.json`. This page no longer lists them, so it cannot drift from what the scripts do.
 
-- **Live list**: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh --list-sdks` (TSV: `sdk_id`, `category`, `legacy_flag`, `neutralizable`, `packages`). Every entry of the categories ads, ads_mediation and consent is audited.
+- **Live list**: `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh --list-sdks` (TSV: `sdk_id`, `category`, `legacy_flag`, `neutralizable`, `packages`, `audit_only_packages` — the last column lists `detection.extra_packages`, which the audit counts as identity but the neutralizer never covers). Every entry of the categories ads, ads_mediation and consent is audited.
 - **One entry in detail**: `jq . ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/registry/<sdk_id>.json`.
 - **Adding an SDK**: add a registry entry (`<sdk_id>.json`, see `_schema.json`). `targets` is optional: an entry without it is *detection-only* (the audit sees it, `registry-scan.py` and `neutralize.sh` ignore it). Known gaps are tracked in `skills/sdk-neutralizer/references/registry-backlog.md`.
 

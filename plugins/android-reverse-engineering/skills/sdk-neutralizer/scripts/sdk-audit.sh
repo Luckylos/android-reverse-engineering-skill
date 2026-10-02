@@ -76,14 +76,15 @@ Aspects:
   --all               everything (default; also after filters)
 Output:
   (default)           text sections: ==== <Section> ====, rows path:line:text
-  --summary           one row per SDK with confidence (all tracker entries)
-  --tsv               machine-readable rows (all tracker entries)
-  --json              JSON report v2 (all tracker entries)
+  --summary           one row per SDK with confidence (legacy SDKs + detected tracker entries)
+  --tsv               machine-readable rows (one SDK row for every one of the tracker entries)
+  --json              JSON report v2 (detected tracker entries only)
                       (--json > --tsv > --summary; they ignore the filters)
 Other:
   --manifest-path F   AndroidManifest.xml to use
   --registry DIR      SDK registry directory (default: sdk-neutralizer/registry)
   --list-sdks         list the tracker entries of the registry (TSV) and exit
+                      (packages = neutralized by registry-scan; audit_only_packages = never neutralized)
   --full              no 50-row limit on the "<SDK> — References" sections
   --no-hints          leave out the generic hints
   -h, --help          this help
@@ -120,14 +121,15 @@ Aspects:
   --all               everything (default; also after filters)
 Output:
   (default)           text sections: ==== <Section> ====, rows path:line:text
-  --summary           one row per SDK with confidence (all ads/consent entries)
-  --tsv               machine-readable rows (all ads/consent entries)
-  --json              JSON report v2 (all ads/consent entries)
+  --summary           one row per SDK with confidence (legacy SDKs + detected ads/consent entries)
+  --tsv               machine-readable rows (one SDK row for every one of the ads/consent entries)
+  --json              JSON report v2 (detected ads/consent entries only)
                       (--json > --tsv > --summary; they ignore the filters)
 Other:
   --manifest-path F   AndroidManifest.xml to use
   --registry DIR      SDK registry directory (default: sdk-neutralizer/registry)
   --list-sdks         list the ads/consent entries of the registry (TSV) and exit
+                      (packages = neutralized by registry-scan; audit_only_packages = never neutralized)
   --full              no 50-row limit on the "<SDK> — References" sections
   --no-hints          leave out the hint rows (informational token matches)
   -h, --help          this help
@@ -259,7 +261,11 @@ kind == "rows" {
   else if (f == "group") grp[s] = v
   else if (f == "in_house_wrapper") inh[s] = (v == "true")
   else if (f == "has_targets") tgt[s] = v
-  else if (f == "package" || f == "extra_package") { pk[s] = pk[s] "" (pk[s] == "" ? "" : " ") v; npk++; pks[npk] = s; pkv[npk] = v; pkf[npk] = f }
+  else if (f == "package" || f == "extra_package") {
+    if (f == "package") pk[s] = pk[s] "" (pk[s] == "" ? "" : " ") v
+    else xp[s] = xp[s] "" (xp[s] == "" ? "" : " ") v
+    npk++; pks[npk] = s; pkv[npk] = v; pkf[npk] = f
+  }
   else if (f == "exclude_package") print v, "ex", s > (O "/roots.tsv")
   else if (f == "namespace_root") print v, "ns", s > (O "/roots.tsv")
   else if (f == "adapter_package") print v, "ad", s > (O "/roots.tsv")
@@ -284,7 +290,7 @@ END {
     g = grp[s]
     print s, cat[s], g, disp[s], (inh[s] ? "true" : "false"), tgt[s], ((g in ingroup) ? 1 : 0),
           ((s in lrank) ? lrank[s] : 1000), ((s in lflag) ? lflag[s] : "-"), ((s in llabel) ? llabel[s] : "-"),
-          ((s in lpre) ? lpre[s] : disp[s]), (pk[s] == "" ? "-" : pk[s]) > (O "/ent0.tsv")
+          ((s in lpre) ? lpre[s] : disp[s]), (pk[s] == "" ? "-" : pk[s]), (xp[s] == "" ? "-" : xp[s]) > (O "/ent0.tsv")
   }
   for (i = 1; i <= hn; i++) {
     id = hid[i]
@@ -326,8 +332,10 @@ for id in $SEL_SDKS; do
 done
 
 if [ "$LIST" = 1 ]; then
-  printf 'sdk_id\tcategory\tlegacy_flag\tneutralizable\tpackages\n'
-  awk -F '\t' '$7 == 1 { printf "%s\t%s\t%s\t%s\t%s\n", $1, $2, ($9 == "-" ? "-" : "--" $9), ($6 == "true" ? "yes" : "no"), $12 }' "$TMP/ent.tsv" |
+  # packages = the entry's .packages (what registry-scan / neutralize cover when neutralizable=yes);
+  # audit_only_packages = detection.extra_packages (identity for the audit only, NEVER neutralized)
+  printf 'sdk_id\tcategory\tlegacy_flag\tneutralizable\tpackages\taudit_only_packages\n'
+  awk -F '\t' '$7 == 1 { printf "%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, ($9 == "-" ? "-" : "--" $9), ($6 == "true" ? "yes" : "no"), $12, $13 }' "$TMP/ent.tsv" |
     sort -t "$TAB" -k1,1
   exit 0
 fi
@@ -337,7 +345,7 @@ if [ "$OUT_JSON" = 1 ]; then MODE=json
 elif [ "$OUT_TSV" = 1 ]; then MODE=tsv
 elif [ "$OUT_SUMMARY" = 1 ]; then MODE=summary; fi
 if [ "$MODE" != text ] && [ "$FILTERS" = 1 ]; then
-  info "--$MODE covers every $TOOL SDK of the registry: SDK and aspect filters are ignored"
+  info "--$MODE reports the whole $TOOL group of the registry: SDK and aspect filters are ignored"
 fi
 
 # ---- input layout (DESIGN 5.3) ------------------------------------------------------------

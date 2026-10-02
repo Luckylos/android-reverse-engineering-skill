@@ -92,14 +92,15 @@ Aspects:
   --all               everything (default; also after filters)
 Output:
   (default)           text sections: ==== <Section> ====, rows path:line:text
-  --summary           one row per SDK with confidence (all tracker entries)
-  --tsv               machine-readable rows (all tracker entries)
-  --json              JSON report v2 (all tracker entries)
+  --summary           one row per SDK with confidence (legacy SDKs + detected tracker entries)
+  --tsv               machine-readable rows (one SDK row for every one of the tracker entries)
+  --json              JSON report v2 (detected tracker entries only)
                       (--json > --tsv > --summary; they ignore the filters)
 Other:
   --manifest-path F   AndroidManifest.xml to use
   --registry DIR      SDK registry directory (default: sdk-neutralizer/registry)
   --list-sdks         list the tracker entries of the registry (TSV) and exit
+                      (packages = neutralized by registry-scan; audit_only_packages = never neutralized)
   --full              no 50-row limit on the "<SDK> - References" sections
   --no-hints          leave out the generic hints
   -h, --help          this help
@@ -140,14 +141,15 @@ Aspects:
   --all               everything (default; also after filters)
 Output:
   (default)           text sections: ==== <Section> ====, rows path:line:text
-  --summary           one row per SDK with confidence (all ads/consent entries)
-  --tsv               machine-readable rows (all ads/consent entries)
-  --json              JSON report v2 (all ads/consent entries)
+  --summary           one row per SDK with confidence (legacy SDKs + detected ads/consent entries)
+  --tsv               machine-readable rows (one SDK row for every one of the ads/consent entries)
+  --json              JSON report v2 (detected ads/consent entries only)
                       (--json > --tsv > --summary; they ignore the filters)
 Other:
   --manifest-path F   AndroidManifest.xml to use
   --registry DIR      SDK registry directory (default: sdk-neutralizer/registry)
   --list-sdks         list the ads/consent entries of the registry (TSV) and exit
+                      (packages = neutralized by registry-scan; audit_only_packages = never neutralized)
   --full              no 50-row limit on the "<SDK> - References" sections
   --no-hints          leave out the hint rows (informational token matches)
   -h, --help          this help
@@ -803,7 +805,7 @@ function Invoke-SaCore {
     elseif ($k1 -ceq 'hint_token') { $tokL.Add(@($k2, $k3)) }
   }
   $ids = New-SaList; $cat = New-SaSDict; $dispName = New-SaSDict; $grp = New-SaSDict; $inh = New-SaSet; $tgt = New-SaSDict
-  $pk = New-SaSDict; $pkL = New-SaOList
+  $pk = New-SaSDict; $xp = New-SaSDict; $pkL = New-SaOList
   $markersL = New-SaOList; $mcompsL = New-SaOList; $mnamesL = New-SaOList; $domainsL = New-SaOList; $idpfxL = New-SaOList
   $apiL = New-SaOList; $seenapi = New-SaSet
   foreach ($it in $rq.Items) {
@@ -815,7 +817,7 @@ function Invoke-SaCore {
       'in_house_wrapper' { if ($v -ceq 'true') { [void]$inh.Add($s) } else { [void]$inh.Remove($s) } }
       'has_targets' { $tgt[$s] = $v }
       'package' { if ($pk.ContainsKey($s)) { $pk[$s] = $pk[$s] + ' ' + $v } else { $pk[$s] = $v }; $pkL.Add(@($s, $v)) }
-      'extra_package' { if ($pk.ContainsKey($s)) { $pk[$s] = $pk[$s] + ' ' + $v } else { $pk[$s] = $v }; $pkL.Add(@($s, $v)) }
+      'extra_package' { if ($xp.ContainsKey($s)) { $xp[$s] = $xp[$s] + ' ' + $v } else { $xp[$s] = $v }; $pkL.Add(@($s, $v)) }
       'exclude_package' { $rootsL.Add(@($v, 'ex', $s)) }
       'namespace_root' { $rootsL.Add(@($v, 'ns', $s)) }
       'adapter_package' { $rootsL.Add(@($v, 'ad', $s)) }
@@ -848,6 +850,7 @@ function Invoke-SaCore {
       Label = $(if ($llabel.ContainsKey($s)) { $llabel[$s] } else { '-' })
       Pre = $(if ($lpre.ContainsKey($s)) { $lpre[$s] } else { $d0 })
       Pk = $(if ($pk.ContainsKey($s) -and $pk[$s].Length -gt 0) { $pk[$s] } else { '-' })
+      Xp = $(if ($xp.ContainsKey($s) -and $xp[$s].Length -gt 0) { $xp[$s] } else { '-' })
     }
     $key = $rk.ToString('D9') + "`0" + $s
     $entKeys.Add($key); $entByKey[$key] = $e
@@ -894,10 +897,12 @@ function Invoke-SaCore {
       if (-not $e.Ing) { continue }
       $lf = '-'; if ($e.Flag -cne '-') { $lf = '--' + $e.Flag }
       $nz = 'no'; if ($e.Tgt) { $nz = 'yes' }
-      $rows.Add($e.Id + "`t" + $e.Cat + "`t" + $lf + "`t" + $nz + "`t" + $e.Pk)
+      $rows.Add($e.Id + "`t" + $e.Cat + "`t" + $lf + "`t" + $nz + "`t" + $e.Pk + "`t" + $e.Xp)
     }
     $out = New-SaList
-    $out.Add("sdk_id`tcategory`tlegacy_flag`tneutralizable`tpackages")
+    # packages = the entry's .packages (neutralized when neutralizable=yes);
+    # audit_only_packages = detection.extra_packages (identity for the audit only, NEVER neutralized)
+    $out.Add("sdk_id`tcategory`tlegacy_flag`tneutralizable`tpackages`taudit_only_packages")
     foreach ($r in (Get-SaSortedOrdinal $rows)) { $out.Add($r) }
     $Holder.Out = [string]::Join("`n", $out.ToArray())
     return
@@ -905,7 +910,7 @@ function Invoke-SaCore {
 
   $mode = 'text'
   if ($outJson) { $mode = 'json' } elseif ($outTsv) { $mode = 'tsv' } elseif ($outSummary) { $mode = 'summary' }
-  if ($mode -cne 'text' -and $filters) { Write-SaErr ('[INFO] --' + $mode + ' covers every ' + $Tool + ' SDK of the registry: SDK and aspect filters are ignored') }
+  if ($mode -cne 'text' -and $filters) { Write-SaErr ('[INFO] --' + $mode + ' reports the whole ' + $Tool + ' group of the registry: SDK and aspect filters are ignored') }
 
   # ---- input layout (DESIGN 5.3) --------------------------------------------------------------
   $DISP = $inArg

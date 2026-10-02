@@ -68,7 +68,7 @@ The report prints, for every SDK at level LOW or above, `<SDK> — Identity` (a 
 
 Useful options:
 - `--firebase --adjust --appsflyer --mixpanel --amplitude --segment --braze --clevertap --flurry`: one SDK (combinable); an SDK chosen this way is always printed, with `status=NOT FOUND` when absent.
-- `--sdk <sdk_id>`: any tracker entry of the registry (repeatable). `--list-sdks` lists them (TSV: `sdk_id category legacy_flag neutralizable packages`).
+- `--sdk <sdk_id>`: any tracker entry of the registry (repeatable). `--list-sdks` lists them (TSV: `sdk_id category legacy_flag neutralizable packages audit_only_packages`; `packages` are the entry's `.packages`, the ones registry-scan neutralizes when `neutralizable=yes`; `audit_only_packages` are `detection.extra_packages`, identity for the audit only and never neutralized).
 - `--generic`, `--endpoints`, `--manifest`, `--entrypoints`: one aspect only.
 - `--tsv` (machine-readable rows) and `--json` (report v2, `schema_version: 2`) always cover every tracker entry and ignore the filters.
 - `--no-hints` drops the informational hint rows.

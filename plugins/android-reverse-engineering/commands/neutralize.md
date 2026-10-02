@@ -171,6 +171,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-query.sh rows
 
 If it does, the SDK is already identified: find its entry points (steps below) and propose **adding `targets` to that existing entry** rather than a new registry file — never a duplicate `sdk_id`. For this run, write the found methods to a custom targets file (Step 5d).
 
+If instead the candidate is in the **`audit_only_packages`** column of a `neutralizable=yes` entry (e.g. `com.pgl.ssdk` under pangle), the SDK is neutralized but this package is not (registry-scan covers only `.packages`): treat it as a known gap (`skills/sdk-neutralizer/references/registry-backlog.md`) — find its entry points, stub them for this run via the custom targets file (Step 5d), and propose promoting it to `.packages` (+ targets) in a dedicated registry change.
+
 For significant unknown packages (10+ classes, proper naming), use Claude Code built-in tools:
 
 1. **Glob** to list main classes in the package

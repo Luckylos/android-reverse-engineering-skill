@@ -68,7 +68,7 @@ For every SDK at level LOW or above the report prints `<SDK> — Identity` (a `#
 
 Useful options:
 - `--admob --unity --ironsource --applovin --facebook --vungle --inmobi --chartboost --pangle --mintegral`: one SDK (combinable; `--facebook` = Meta Audience Network). An SDK chosen this way is always printed, with `status=NOT FOUND` when absent, and includes its `— References` section.
-- `--sdk <sdk_id>`: any ads/consent entry of the registry (repeatable). `--list-sdks` lists them (TSV: `sdk_id category legacy_flag neutralizable packages`).
+- `--sdk <sdk_id>`: any ads/consent entry of the registry (repeatable). `--list-sdks` lists them (TSV: `sdk_id category legacy_flag neutralizable packages audit_only_packages`; `packages` are the entry's `.packages`, the ones registry-scan neutralizes when `neutralizable=yes`; `audit_only_packages` are `detection.extra_packages`, identity for the audit only and never neutralized).
 - `--formats`, `--mediation`, `--consent`, `--manifest`, `--entrypoints`: one aspect only. `--consent` also lists the consent APIs of tracker entries (e.g. Adjust `gdprForgetMe`, Facebook `setDataProcessingOptions`), annotated `[sdk_id/trackers]`.
 - `--tsv` (machine-readable rows) and `--json` (report v2, `schema_version: 2`) always cover every ads/consent entry and ignore the filters.
 - `--no-hints` drops the informational hint rows (ad unit / waterfall / TCF token matches).
