@@ -4,6 +4,8 @@ How tracker SDKs send data out of the device — known endpoints, custom configu
 
 ## Known Endpoints by SDK
 
+The per-SDK endpoint domains the audit matches are the `detection.domains` of each registry entry (`skills/sdk-neutralizer/registry/<sdk_id>.json`; registrable suffixes such as `adjust.com` also cover `app.adjust.com`). `find-trackers.sh <input-dir> --endpoints` prints them as `Known Tracker Endpoints` and `<SDK> — Endpoints`. The tables below are background on what each endpoint is for.
+
 ### Firebase Analytics / Google Analytics
 | Endpoint | Purpose |
 |---|---|

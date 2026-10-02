@@ -1,6 +1,6 @@
 # Ad Format Patterns
 
-Code patterns for each ad format across major SDKs — how to identify banner, interstitial, rewarded, native, and app-open ads in decompiled code.
+Code patterns for each ad format across major SDKs — how to identify banner, interstitial, rewarded, native, and app-open ads in decompiled code. The automated cross-SDK view is `find-ads.sh --formats` (sections `Cross-SDK — All <Format> Patterns`, plus `Rewarded Interstitial` and `Ad Unit / Placement IDs`); this page explains what the rows mean.
 
 ## Banner Ads
 
@@ -49,10 +49,8 @@ AdView adView = new AdView(context, "placement_id", AdSize.BANNER_HEIGHT_50);
 adView.loadAd();
 ```
 
-### Grep for all banners
-```bash
-grep -rn 'AdView\|BannerView\|AdSize\.\|BANNER\|loadBanner\|IronSourceBannerLayout\|MaxAdView\|MBBannerView\|PAGBannerAd\|InMobiBanner' "$SOURCE_DIR"
-```
+### Find all banners
+Run `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats` and read `Cross-SDK — All Banner Patterns`: the calls and class references of app code whose class or method maps to this format in the `format_by_*` tables of `skills/sdk-neutralizer/registry/_audit-shared.json` (SDK code itself is not listed).
 
 ---
 
@@ -101,10 +99,8 @@ interstitialAd.loadAd();
 interstitialAd.showAd();
 ```
 
-### Grep for all interstitials
-```bash
-grep -rn 'InterstitialAd\|showInterstitial\|loadInterstitial\|MaxInterstitialAd\|isInterstitialReady\|FullScreenContentCallback\|TTFullScreenVideoAd\|PAGInterstitialAd' "$SOURCE_DIR"
-```
+### Find all interstitials
+Run `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats` and read `Cross-SDK — All Interstitial Patterns`: the calls and class references of app code whose class or method maps to this format in the `format_by_*` tables of `skills/sdk-neutralizer/registry/_audit-shared.json` (SDK code itself is not listed).
 
 ---
 
@@ -160,10 +156,8 @@ rewardedAd.loadAd();
 rewardedAd.showAd(); // reward via MaxRewardedAdListener.onUserRewarded(MaxAd, MaxReward)
 ```
 
-### Grep for all rewarded
-```bash
-grep -rn 'RewardedAd\|RewardedVideo\|showRewardedVideo\|OnUserEarnedRewardListener\|RewardItem\|MaxRewardedAd\|TTRewardVideoAd\|PAGRewardedAd\|MBRewardVideoHandler' "$SOURCE_DIR"
-```
+### Find all rewarded
+Run `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats` and read `Cross-SDK — All Rewarded Patterns`: the calls and class references of app code whose class or method maps to this format in the `format_by_*` tables of `skills/sdk-neutralizer/registry/_audit-shared.json` (SDK code itself is not listed).
 
 ---
 
@@ -204,10 +198,8 @@ nativeAdLoader.setNativeAdListener(new MaxNativeAdListener() { ... });
 nativeAdLoader.loadAd();
 ```
 
-### Grep for all native
-```bash
-grep -rn 'NativeAd\|NativeAdView\|NativeAdLoader\|AdLoader\.Builder\|NativeBannerAd\|NativeAdLayout\|MaxNativeAdLoader\|InMobiNative\|VungleNativeAd' "$SOURCE_DIR"
-```
+### Find all native
+Run `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats` and read `Cross-SDK — All Native Patterns`: the calls and class references of app code whose class or method maps to this format in the `format_by_*` tables of `skills/sdk-neutralizer/registry/_audit-shared.json` (SDK code itself is not listed).
 
 ---
 
@@ -241,7 +233,5 @@ registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
 });
 ```
 
-### Grep for app open
-```bash
-grep -rn 'AppOpenAd\|AppOpenAdLoadCallback\|APP_OPEN_AD\|AppOpenAdManager\|appOpenAd' "$SOURCE_DIR"
-```
+### Find all app open
+Run `bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats` and read `Cross-SDK — All App Open Patterns`: the calls and class references of app code whose class or method maps to this format in the `format_by_*` tables of `skills/sdk-neutralizer/registry/_audit-shared.json` (SDK code itself is not listed).

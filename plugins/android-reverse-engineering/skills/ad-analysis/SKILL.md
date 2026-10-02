@@ -1,5 +1,5 @@
 ---
-description: Detect and analyze advertising SDKs in decompiled Android apps. Identifies AdMob, Unity Ads, IronSource/LevelPlay, AppLovin/MAX, Meta Audience Network, Vungle, InMobi, Chartboost, Pangle, Mintegral. Extracts ad formats (banner, interstitial, rewarded, native), mediation setup, ad unit IDs, and consent/privacy frameworks.
+description: Detect and analyze advertising SDKs in decoded (apktool) or decompiled (jadx) Android apps. Covers every ads / ads_mediation entry of the SDK registry plus consent frameworks — e.g. AdMob, Unity Ads, IronSource/LevelPlay, AppLovin/MAX, Meta Audience Network, Vungle/Liftoff, InMobi, Chartboost, Pangle, Mintegral, Fyber/DT, BidMachine, Moloco, Google UMP — with HIGH/MEDIUM/LOW/NONE confidence. Extracts ad formats (banner, interstitial, rewarded, native), mediation setup, ad unit IDs, and consent/privacy frameworks.
 trigger: find ads|ad analysis|advertising SDK|detect ads|ad network|AdMob|Unity Ads|IronSource|AppLovin|Facebook ads|Meta Audience Network|Vungle|InMobi|Chartboost|Pangle|Mintegral|mediation|ad format|rewarded ad|interstitial ad|banner ad
 ---
 
@@ -9,47 +9,74 @@ Detect and analyze advertising SDKs embedded in decompiled Android applications.
 
 ## Prerequisites
 
-This skill operates on **already decompiled** source code. If the app has not been decompiled yet, use the `android-reverse-engineering` skill first:
+This skill operates on an **already decoded or decompiled** app. If the app has not been decompiled yet, use the `android-reverse-engineering` skill first:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/decompile.sh <apk-file>
 ```
 
-The decompiled sources directory (typically `<output>/sources/`) is the input for this skill.
+Accepted inputs (the script detects the layout and logs it on stderr as `[INFO] layout: …`):
+- an **apktool** decode directory (`AndroidManifest.xml` + `smali*/`, e.g. from `sdk-neutralizer/scripts/decode-apk.sh`): the most precise input, with real package names;
+- a **jadx** output directory (`sources/` + `resources/`) or its `sources/` directory (jadx can rename whole package trees, e.g. ironSource into `com/json/` or `org/json/`; the audit maps them back with package aliases);
+- a jadx XAPK output directory (`<split>/sources/`);
+- any other source tree, with `--manifest-path <AndroidManifest.xml>`.
+
+**jq**: `find-ads.sh` needs jq >= 1.6 to read the SDK registry. Without it the script exits 2 and prints `INSTALL_REQUIRED:jq`: run `bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/install-dep.sh jq` and retry. On Windows use `find-ads.ps1` (Windows PowerShell 5.1, same options, no jq needed; from Bash under WSL, convert the paths before leaving the current directory and run from a Windows directory in a subshell: `S=$(wslpath -w "<script.ps1>"); I=$(wslpath -w "<input-dir>"); (cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$S" "$I" <options>)`; from Git Bash on native Windows, where there is no `/mnt/c` and no `wslpath`: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "<script.ps1>")" "$(cygpath -w "<input-dir>")" <options>`, with no `cd`). `<script.ps1>` is `${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.ps1`.
 
 ## Workflow
 
-### Phase 1: Verify Decompiled Sources
+### Phase 1: Verify the Input
 
-Confirm that the decompiled source directory exists and contains Java/Kotlin files.
+Confirm that the input directory exists and contains code (`.smali`, `.java` or `.kt` files).
 
 **Action**: Check the provided directory path.
 
-- If the user provides a path, verify it exists and contains `.java` or `.kt` files
-- If no decompiled sources are available, instruct the user to run `/decompile` first
-- Look for `AndroidManifest.xml` — it contains ad-related Activities, Services, meta-data (APPLICATION_ID, sdk keys), and the AD_ID permission
+- If the user provides a path, verify it exists and contains code files
+- If no decoded or decompiled tree is available, instruct the user to run `/decompile` first
+- The AndroidManifest.xml contains ad-related Activities, Services, meta-data (APPLICATION_ID, sdk keys), and the AD_ID permission; the script finds it by itself for the layouts above
 
 ### Phase 2: Detect SDKs, Formats, and Mediation
 
-Run the ad detection script to identify all ad SDKs, formats, and mediation setup.
+Run the ad detection script. It audits **every ads / ads_mediation entry of the SDK registry** (`skills/sdk-neutralizer/registry/*.json`) plus the consent entries; `--list-sdks` prints the live list.
 
-**Action**: Execute the detection script.
+**Action**: Start with the confidence summary, then the full report.
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --all
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --summary
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --all
 ```
 
 For targeted searches:
 ```bash
-# Single SDK
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --admob
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --unity
+# Single SDK: prints its Identity, role sections and also "<SDK> — References"
+# (listeners, AdRequest.Builder, callbacks... named in app code; --full lifts the 50-row limit)
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --admob
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --unity
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --sdk moloco      # any ads/consent sdk_id
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --list-sdks      # sdk_id, category, legacy flag, neutralizable, packages
 
 # Specific aspects
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --formats    # cross-SDK format detection
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --mediation   # mediation adapter detection
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --consent     # consent/privacy frameworks
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --formats    # cross-SDK format detection + ad unit / placement ids
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --mediation   # mediation adapters, adapter classes, waterfall
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --consent     # UMP, TCF, COPPA, SDK-specific opt-out (tracker entries too, as [sdk_id/trackers])
 ```
+
+Options:
+- SDK filters: `--admob --unity --ironsource --applovin --facebook` (Meta Audience Network) `--vungle --inmobi --chartboost --pangle --mintegral`, `--sdk <sdk_id>` (repeatable)
+- Aspects: `--formats --mediation --consent --manifest --entrypoints`; `--all` = everything (default)
+- Output: text (default), `--summary`, `--tsv` (machine-readable), `--json` (report v2); the last three always cover every ads/consent entry and ignore the filters
+- `--full`, `--no-hints`, `--manifest-path F`, `--registry DIR`; options are case-insensitive and take one or two dashes
+
+**Confidence levels** (the same rules for every SDK; generic words such as `banner` or a bare `.loadAd(` never count):
+
+| Level | Meaning |
+|---|---|
+| HIGH | SDK code present (a file under one of its registry packages) and its marker class, when the registry declares one |
+| MEDIUM | SDK code without the declared marker class (`detail=partial`), or AndroidManifest declarations only (`detail=manifest-only`) |
+| LOW | no SDK code: app-code references, ad unit id prefixes (`ca-app-pub-`) or endpoint domains only |
+| NONE | not detected |
+
+Rows end with the SDKs they name, e.g. `[google-admob/init]`; `ref` = class reference, a trailing `?` = import-scoped instance call. `neutralizable=no (detection-only)` marks registry entries without `targets` (e.g. BIGO Ads, Kidoz): the sdk-neutralizer cannot stub them yet; see `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/references/registry-backlog.md`.
 
 Parse the output to identify:
 - Which ad SDKs are present
@@ -74,10 +101,10 @@ Distinguish which ad SDKs the app calls directly vs which are only present as pa
 **Action**: Run the entry point detection.
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <sources-dir> --entrypoints
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --entrypoints
 ```
 
-This searches for ad SDK init/load/show calls **only in app code**, excluding known library packages (`com/google`, `com/unity3d`, `com/ironsource`, etc.). The results reveal which SDKs the app actively uses.
+This lists ad SDK calls and class references **only from app code**: files owned by a registry SDK (its packages, namespaces and adapters, jadx-renamed trees included) or by a known library (`library_roots` of `_audit-shared.json`) are excluded. The results reveal which SDKs the app actively uses. Code of an SDK without a registry entry is not known to the audit and appears as app code: check the package of each row (and `registry-backlog.md`).
 
 **Analysis**:
 
@@ -103,11 +130,12 @@ Generate a structured ad analysis report.
 
 ## Summary
 
-| Ad Network | Role | Formats | Ad Unit IDs | Consent |
-|---|---|---|---|---|
-| AdMob | Mediator | Banner, Interstitial, Rewarded | ca-app-pub-XXX/YYY, ... | UMP ✓ |
-| Unity Ads | Mediated | Interstitial, Rewarded | (via mediation) | — |
-| IronSource | Mediated | Rewarded | (via mediation) | — |
+| Ad Network | Confidence | Role | Formats | Ad Unit IDs | Consent | Neutralizable |
+|---|---|---|---|---|---|---|
+| AdMob | HIGH | Mediator | Banner, Interstitial, Rewarded | ca-app-pub-XXX/YYY, ... | UMP ✓ | yes |
+| Unity Ads | HIGH | Mediated | Interstitial, Rewarded | (via mediation) | — | yes |
+| IronSource | HIGH | Mediated | Rewarded | (via mediation) | — | yes |
+| BIGO Ads | HIGH | Mediated | — | — | — | no (detection-only) |
 
 ## Ad Architecture
 
@@ -168,10 +196,15 @@ App code ──→ AdMob (mediator)
 - **COPPA**: tagForChildDirectedTreatment = false
 - **AD_ID permission**: declared in manifest
 - **Per-network consent**: setHasUserConsent called for [list]
+
+## Neutralizer Coverage
+
+- **Detected but not neutralizable** (registry entries without targets): BIGO Ads, ...
 ```
 
 ## References
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/references/ad-sdk-catalog.md` — Package names, classes, manifest markers for detection
+- `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/registry/*.json` — the single source of SDK packages, marker classes, manifest names, domains and APIs (`find-ads.sh --list-sdks` for the list)
+- `${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/references/ad-sdk-catalog.md` — Short notes per known SDK and Gradle coordinates
 - `${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/references/mediation-patterns.md` — Mediation layers, waterfall vs bidding, adapter identification
 - `${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/references/ad-format-patterns.md` — Banner, interstitial, rewarded, native, app-open patterns

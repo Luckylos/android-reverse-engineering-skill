@@ -108,7 +108,7 @@ Some SDKs (particularly ad SDKs like AdMob, IronSource) include native libraries
 
 If the APK was built with R8 or ProGuard, SDK class names are obfuscated (e.g., `Lcom/google/android/gms/ads/MobileAds;` becomes `La/b/c;`). In this case:
 - The standard target list will not match
-- Use `find-ads.sh --entrypoints` and `find-trackers.sh --entrypoints` on the decoded smali to identify obfuscated calls
+- `find-ads.sh` / `find-trackers.sh` on the decoded directory still help, within limits: they recognize SDK code and calls by the registry's package and class names, so a renamed SDK class is not attributed; their endpoint, manifest and id-prefix evidence (not obfuscated) and the `Entry Points` rows of the surviving names point to where to look
 - Use `--targets-file` with manually identified class:method pairs
 - String constants (SDK keys, endpoint URLs) are usually not obfuscated and can help identify the SDK
 

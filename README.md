@@ -29,8 +29,8 @@ A Claude Code skill that decompiles Android APK/XAPK/JAR/AAR files, **extracts H
 | **Recover Kotlin names** | Rebuild original `*Repository` / `*ViewModel` / `*UseCase` class names from R8-obfuscated binaries using Kotlin metadata that R8 cannot strip |
 | **Extract APIs** | Retrofit, OkHttp, Volley **and modern Kotlin/KMP stacks: Ktor, Apollo (GraphQL), Koin DI** — endpoints, hardcoded URLs, auth headers, tokens and HMAC request-signing schemes |
 | **Trace call flows** | From Activities/Fragments through ViewModels and repositories down to HTTP calls |
-| **Detect tracker/analytics SDKs** | Firebase Analytics, Adjust, AppsFlyer, Mixpanel, Amplitude, Segment, Braze, CleverTap, Flurry — with deep analysis of init, events, user identification, consent, and data exfiltration endpoints |
-| **Detect advertising SDKs** | AdMob, Unity Ads, IronSource/LevelPlay, AppLovin/MAX, Meta Audience Network, Vungle, InMobi, Chartboost, Pangle, Mintegral — with ad format mapping, mediation analysis, and consent framework detection |
+| **Detect tracker/analytics SDKs** | Every tracker entry of the SDK registry (Firebase Analytics, Adjust, AppsFlyer, Mixpanel, Amplitude, Segment, Braze, CleverTap, Flurry, Singular, AppMetrica, Crashlytics, ...) with HIGH/MEDIUM/LOW/NONE confidence — plus deep analysis of init, events, user identification, consent, and data exfiltration endpoints |
+| **Detect advertising SDKs** | Every ads / mediation entry of the SDK registry (AdMob, Unity Ads, IronSource/LevelPlay, AppLovin/MAX, Meta Audience Network, Vungle, InMobi, Chartboost, Pangle, Mintegral, ...) with HIGH/MEDIUM/LOW/NONE confidence — plus ad format mapping, mediation analysis, and consent framework detection |
 | **Neutralize SDK entry points** | Replace tracker/ad SDK method bodies with no-op stubs at the smali level, disable manifest components, and rebuild a signed APK for enterprise sideloading |
 | **Analyze structure** | Manifest, packages, architecture patterns |
 | **Handle obfuscation** | R8-resistant path/URL extraction plus strategies for navigating ProGuard/R8 output |
@@ -53,7 +53,10 @@ A Claude Code skill that decompiles Android APK/XAPK/JAR/AAR files, **extracts H
 - [APKEditor](https://github.com/REAndroid/APKEditor) (required for XAPK/APKM/APKS input) — merges split APKs into one APK before decoding; `install-dep.sh apkeditor` installs a pinned, SHA-256-verified release (`APKEDITOR_JAR` overrides its location)
 - zip (only for the deprecated XAPK output)
 
-On Windows, `check-neutralize-deps.ps1`, `decode-apk.ps1`, `detect-protection.ps1` and `rebuild-apk.ps1` are available; `neutralize.sh` requires bash (WSL/Git Bash) for now.
+On Windows, `check-neutralize-deps.ps1`, `decode-apk.ps1`, `detect-protection.ps1`, `detect-adwrapper.ps1` and `rebuild-apk.ps1` are available; `neutralize.sh` requires bash (WSL/Git Bash) for now.
+
+**For the SDK audit (`/find-trackers`, `/find-ads`):**
+- [jq](https://jqlang.org/) 1.6+ (bash side only) — `find-trackers.sh` / `find-ads.sh` read the SDK registry with it and exit 2 with `INSTALL_REQUIRED:jq` without it; `install-dep.sh jq` installs it (package manager with sudo, otherwise a pinned, SHA-256-verified static binary in `~/.local/bin`). On Windows the PowerShell twins `find-trackers.ps1` / `find-ads.ps1` need no jq.
 
 See `plugins/android-reverse-engineering/skills/android-reverse-engineering/references/setup-guide.md` for detailed installation instructions.
 
@@ -116,14 +119,16 @@ Then in Claude Code:
 Runs the full workflow: dependency check, decompilation, and initial structure analysis.
 
 ```
-/find-trackers path/to/decompiled/sources/
+/find-trackers path/to/app-decoded/        # apktool decode, or a jadx output dir (or its sources/)
 ```
 Detects analytics/tracker SDKs and produces a privacy report with init patterns, events, user identification, consent handling, and data endpoints.
 
 ```
-/find-ads path/to/decompiled/sources/
+/find-ads path/to/app-decoded/
 ```
 Detects advertising SDKs and produces a report with ad formats, mediation setup, ad unit IDs, and consent framework analysis.
+
+Both audits read the **SDK registry** (`skills/sdk-neutralizer/registry/*.json`), the same data the neutralizer uses: an SDK is HIGH when its own code is in the app (plus its marker class, when declared), MEDIUM with partial code or manifest-only evidence, LOW with app-code references or endpoints only. Every report says whether the neutralizer can stub each SDK (`neutralizable=no (detection-only)` otherwise).
 
 ```
 /neutralize path/to/app.apk
@@ -191,15 +196,19 @@ bash plugins/android-reverse-engineering/skills/android-reverse-engineering/scri
 bash plugins/android-reverse-engineering/skills/android-reverse-engineering/scripts/find-api-calls.sh output/sources/ --apollo  # Apollo / GraphQL
 bash plugins/android-reverse-engineering/skills/android-reverse-engineering/scripts/find-api-calls.sh output/sources/ --paths   # quoted path literals that survive R8 inlining
 
-# Find tracker/analytics SDKs
-bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh output/sources/
-bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh output/sources/ --firebase
-bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh output/sources/ --adjust
+# Find tracker/analytics SDKs (input: apktool decode dir, jadx output dir or its sources/; needs jq >= 1.6)
+bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh app-decoded --summary
+bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh output/ --firebase
+bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh output/sources/ --sdk singular
+bash plugins/android-reverse-engineering/skills/tracker-analysis/scripts/find-trackers.sh --list-sdks
 
-# Find advertising SDKs
-bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh output/sources/
-bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh output/sources/ --admob
-bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh output/sources/ --mediation
+# Find advertising SDKs (also --tsv / --json report v2 / --entrypoints)
+bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh app-decoded --summary
+bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh app-decoded --admob
+bash plugins/android-reverse-engineering/skills/ad-analysis/scripts/find-ads.sh app-decoded --mediation
+
+# Windows PowerShell 5.1 twins (no jq needed)
+powershell -NoProfile -ExecutionPolicy Bypass -File plugins\android-reverse-engineering\skills\ad-analysis\scripts\find-ads.ps1 C:\work\app-decoded --summary
 
 # Neutralize SDK entry points (decode → patch → rebuild)
 bash plugins/android-reverse-engineering/skills/sdk-neutralizer/scripts/decode-apk.sh app.apk -o app-decoded
@@ -283,7 +292,8 @@ android-reverse-engineering-skill/
 │       │   │   │   ├── tracker-init-patterns.md
 │       │   │   │   └── data-exfiltration-patterns.md
 │       │   │   └── scripts/
-│       │   │       └── find-trackers.sh
+│       │   │       ├── find-trackers.sh        # thin wrapper of sdk-audit.sh
+│       │   │       └── find-trackers.ps1       # thin wrapper of sdk-audit.ps1
 │       │   ├── ad-analysis/                 # Advertising SDK detection
 │       │   │   ├── SKILL.md                # 3-phase workflow
 │       │   │   ├── references/
@@ -291,12 +301,20 @@ android-reverse-engineering-skill/
 │       │   │   │   ├── mediation-patterns.md
 │       │   │   │   └── ad-format-patterns.md
 │       │   │   └── scripts/
-│       │   │       └── find-ads.sh
+│       │   │       ├── find-ads.sh
+│       │   │       └── find-ads.ps1
 │       │   └── sdk-neutralizer/             # SDK neutralization for enterprise
 │       │       ├── SKILL.md                # 6-phase workflow
 │       │       ├── references/
 │       │       │   ├── neutralization-guide.md
-│       │       │   └── smali-patterns.md
+│       │       │   ├── smali-patterns.md
+│       │       │   ├── consent-neutralization.md
+│       │       │   └── registry-backlog.md     # SDKs detected but not (fully) neutralized
+│       │       ├── registry/                   # SDK registry: single source of SDK knowledge
+│       │       │   ├── <sdk_id>.json           # one entry per SDK (no targets = detection-only)
+│       │       │   ├── _schema.json
+│       │       │   ├── _audit-shared.json      # cross-SDK audit data (groups, library roots, formats, hints)
+│       │       │   └── _audit-shared.schema.json
 │       │       └── scripts/
 │       │           ├── check-neutralize-deps.sh
 │       │           ├── check-neutralize-deps.ps1
@@ -304,6 +322,14 @@ android-reverse-engineering-skill/
 │       │           ├── decode-apk.ps1
 │       │           ├── detect-protection.sh
 │       │           ├── detect-protection.ps1
+│       │           ├── detect-adwrapper.sh
+│       │           ├── detect-adwrapper.ps1
+│       │           ├── registry-query.sh       # registry reader (jq) + .jq program + .ps1 twin
+│       │           ├── registry-query.jq
+│       │           ├── registry-query.ps1
+│       │           ├── registry-lib.ps1        # PowerShell registry library
+│       │           ├── sdk-audit.sh            # audit engine of find-trackers / find-ads
+│       │           ├── sdk-audit.ps1
 │       │           ├── neutralize.sh
 │       │           ├── rebuild-apk.sh
 │       │           ├── rebuild-apk.ps1
@@ -313,9 +339,14 @@ android-reverse-engineering-skill/
 │           ├── find-trackers.md            # /find-trackers slash command
 │           ├── find-ads.md                 # /find-ads slash command
 │           └── neutralize.md               # /neutralize slash command
+├── tests/                              # dev-only test harness (not shipped): tests/run.sh quick|full
 ├── LICENSE
 └── README.md
 ```
+
+### Development tests
+
+`tests/run.sh` (quick: registry lint + unit tests + sh/ps1 parity on fixtures) and `tests/run.sh full` (+ golden byte-identity of the neutralizer outputs, corpus ground truth, bash 3.2, performance). PowerShell, a bash 3.2 binary (`BASH32`) and the APK corpus are optional: missing tools give SKIP. See `tests/README.md`.
 
 ## References
 

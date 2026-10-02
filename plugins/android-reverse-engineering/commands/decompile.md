@@ -37,7 +37,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/install-de
 
 The install script auto-detects the OS and installs without sudo when possible (user-local install to `~/.local/`). If sudo is needed, it will prompt — if the user declines or sudo is unavailable, the script prints exact manual instructions (exit code 2). Show those instructions to the user and stop.
 
-**For optional dependencies** (`INSTALL_OPTIONAL:vineflower`, `INSTALL_OPTIONAL:dex2jar`, etc.), ask the user if they want to install them. Recommend vineflower and dex2jar for better results.
+**For optional dependencies** (`INSTALL_OPTIONAL:vineflower`, `INSTALL_OPTIONAL:dex2jar`, etc.), ask the user if they want to install them. Recommend vineflower and dex2jar for better results. `INSTALL_OPTIONAL:jq` is only for the later SDK audit (`/find-trackers`, `/find-ads`, which need jq >= 1.6 on bash): mention it, never block decompilation on it (`install-dep.sh jq` installs it).
 
 After any installations, re-run `check-deps.sh` to verify. Do not proceed until all required dependencies pass.
 

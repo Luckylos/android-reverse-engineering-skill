@@ -1,6 +1,6 @@
 # Tracker SDK Initialization & Event Patterns
 
-Detailed code patterns for each tracker SDK — how they initialize, log events, identify users, and handle consent.
+Detailed code patterns for each tracker SDK — how they initialize, log events, identify users, and handle consent. `find-trackers.sh` already locates these calls in app code (one section per role: Initialization, Event Tracking, User Identity, Consent, Configuration); the APIs it knows are the `targets` and `detection.apis` of each registry entry. This page explains what to read around them.
 
 ## Firebase Analytics
 
@@ -24,7 +24,7 @@ mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, params);
 mFirebaseAnalytics.logEvent("custom_event_name", params);
 ```
 
-**Grep**: `\.logEvent\s*\(` — captures both standard and custom events.
+**Find**: `find-trackers.sh <input-dir> --firebase` prints the app-code call sites by role (`Firebase Analytics — Event Tracking`); instance calls such as `mFirebaseAnalytics.logEvent(` are attributed through the file's imports and marked with a trailing `?`.
 
 ### User Identification
 ```java

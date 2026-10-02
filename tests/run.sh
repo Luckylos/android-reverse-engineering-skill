@@ -3,8 +3,8 @@
 #
 # Usage: tests/run.sh [quick|full|<suite>|<test>...] [--expect-pass <suite|test>...] [-v]
 #   (no argument)  = quick
-#   quick          lint + unit + parity (fixtures)                      ~30 s
-#   full           quick + golden + snapshot + corpus + bash32 + perf   10-15 min
+#   quick          lint + unit + parity (fixtures)                      ~1-2 min
+#   full           quick + golden + snapshot + corpus + bash32 + perf   ~50 min
 #   <suite>        lint | unit | golden | snapshot | parity | corpus | bash32 | perf
 #   <test>         a single test by name, e.g. t_lint (any tests/<dir>/t_*.sh)
 #   --expect-pass  every following name (suite or test) must PASS: a SKIP of it counts

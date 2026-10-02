@@ -66,7 +66,7 @@ On Windows (PowerShell):
 
 The output contains machine-readable lines:
 - `INSTALL_REQUIRED:<dep>` — must be installed before proceeding
-- `INSTALL_OPTIONAL:<dep>` — recommended but not blocking
+- `INSTALL_OPTIONAL:<dep>` — recommended but not blocking. `INSTALL_OPTIONAL:jq` concerns only the SDK audit (`find-trackers.sh` / `find-ads.sh` need jq >= 1.6): it never blocks decompilation; install it with `install-dep.sh jq` only when an audit is planned. On Windows jq is never needed (the `.ps1` audit scripts read the registry natively), and `check-deps.ps1` says so.
 
 **If required dependencies are missing** (exit code 1), install them automatically:
 

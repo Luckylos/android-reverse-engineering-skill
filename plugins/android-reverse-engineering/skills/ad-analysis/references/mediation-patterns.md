@@ -165,39 +165,17 @@ Mediator SDK (e.g., AdMob)          ← ACTIVE: called by app code
 
 An SDK is **active** if its init/load/show calls appear in app code. An SDK is **passive** if its code is present only inside library packages.
 
-**Key principle**: Search for SDK calls only in non-library directories. Known library packages to exclude:
-
-| Package prefix | SDK |
-|---|---|
-| `com/google` | Google/AdMob |
-| `com/unity3d` | Unity Ads |
-| `com/ironsource` | IronSource/LevelPlay |
-| `com/applovin` | AppLovin/MAX |
-| `com/facebook` | Meta Audience Network |
-| `com/vungle`, `io/vungle` | Vungle/Liftoff |
-| `com/inmobi` | InMobi |
-| `com/chartboost` | Chartboost |
-| `com/bytedance`, `com/pgl` | Pangle/TikTok |
-| `com/mbridge`, `com/mintegral` | Mintegral |
-
-### Grep Examples
+**Key principle**: look for SDK calls only in app code, i.e. outside every SDK and library package. A hand-written list of excluded directories is always incomplete (adapters live under the mediator's package, jadx renames whole SDK trees, e.g. ironSource into `com/json/` or `org/json/`, and `grep --exclude-dir` only matches a single directory name, never a path such as `com/google`). Use the audit instead:
 
 ```bash
-# Search for ad SDK calls ONLY in app code (exclude all library packages)
-grep -rn --include="*.java" --include="*.kt" \
-  --exclude-dir="com/google" --exclude-dir="com/unity3d" \
-  --exclude-dir="com/ironsource" --exclude-dir="com/applovin" \
-  --exclude-dir="com/facebook" --exclude-dir="com/vungle" \
-  --exclude-dir="com/inmobi" --exclude-dir="com/chartboost" \
-  --exclude-dir="com/bytedance" --exclude-dir="com/pgl" \
-  --exclude-dir="com/mbridge" \
-  -E '(MobileAds\.initialize|UnityAds\.initialize|IronSource\.init|AppLovinSdk\.getInstance)' \
-  "$SOURCE_DIR"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh <input-dir> --entrypoints
 ```
+
+It decides "library or app code" for every file from the SDK registry: the `packages` / `extra_packages` / `namespace_roots` / `adapter_packages` of every entry (the longest matching root wins, `exclude_packages` applied) plus the `library_roots` of `registry/_audit-shared.json` (Google Play services, Firebase, Kotlin, AndroidX, OMID, ...). On jadx output it also maps renamed package trees back to their real package (`#alias` lines in `--tsv`). Each row ends with the SDKs it names, e.g. `[google-admob/init]`, `[unity-ads/ref]`. Code of an SDK that has no registry entry yet is not known and appears as app code: check the package of each row.
 
 **Interpreting results**:
 - If `MobileAds.initialize` appears in `com/example/myapp/AdManager.java` → AdMob is **active**
-- If `UnityAds.initialize` appears only in `com/google/ads/mediation/unity/UnityAdapter.java` → Unity Ads is **passive** (but this file is excluded, so it won't show up)
+- If `UnityAds.initialize` appears only in `com/google/ads/mediation/unity/UnityAdapter.java` → Unity Ads is **passive** (that file is AdMob adapter code, so it is not listed)
 - If `UnityAds.initialize` appears in `com/example/myapp/AdsHelper.java` → Unity Ads is also **active** (direct integration alongside mediation)
 
 ### Architecture Classification
@@ -210,13 +188,7 @@ grep -rn --include="*.java" --include="*.kt" \
 
 ### Automated Detection
 
-Use the `--entrypoints` flag of `find-ads.sh`:
-
-```bash
-bash find-ads.sh <source-dir> --entrypoints
-```
-
-This runs the exclusion-based grep automatically and shows only app-initiated SDK calls.
+`find-ads.sh --entrypoints` (above) is the automated version of this check; `--summary` adds the count of entry-point call sites and `Mediation adapters: N`, and `--mediation` lists the adapter sub-packages present per mediator (`Mediation — <Mediator> Mediation Adapters`).
 
 ## Extracting Mediation Configuration
 

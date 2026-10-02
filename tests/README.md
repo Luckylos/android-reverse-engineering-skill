@@ -7,7 +7,7 @@ features land) reader/audit unit tests, sh/ps1 parity and corpus ground truth.
 
 ```bash
 tests/run.sh                  # quick: lint + unit (+ parity on fixtures when PowerShell is available)
-tests/run.sh full             # + golden, snapshot, corpus, bash 3.2, perf (10-15 min)
+tests/run.sh full             # + golden, snapshot, corpus, bash 3.2, perf (~50 min with PowerShell + corpus)
 tests/run.sh lint golden      # selected suites; single tests by name: tests/run.sh t_lint
 tests/run.sh --expect-pass lint golden snapshot   # SKIP counts as FAIL for these
 ```
@@ -24,6 +24,9 @@ Suite discovery: `unit/t_*.sh`, `parity/t_*.sh`; `corpus` = every `corpus/*.sh` 
 DESIGN names `groundtruth.sh`, `exclusions-superset.sh`, `marker-verify.sh`) except the
 helper `prepare-pristine.sh` and `perf*.sh` (suite `perf`); `bash32` = `bash32/*.sh` and
 any `<dir>/bash32.sh`. A single script also runs by name (`tests/run.sh marker-verify`).
+
+Before committing a registry change: `tests/run.sh quick`, `tests/run.sh golden`, and
+`bash tests/tools/registry-gaps.sh --write` (then `t_gaps_fresh` stays green).
 
 | Path | What |
 |---|---|
@@ -43,6 +46,8 @@ any `<dir>/bash32.sh`. A single script also runs by name (`tests/run.sh marker-v
 | `unit/t_cli.sh`, `unit/t_layouts.sh`, `unit/t_pitfalls.sh`, `unit/t_tokens.sh` | the audit engine `sdk-audit.sh` behind `find-trackers.sh` / `find-ads.sh`: every historical flag, option normalization, exit codes 0/1/2 (`t_cli`); the five input layouts and their expected outputs `fixtures/expected/layouts/` (`t_layouts`, fixture `fixtures/make-layouts.sh`; also the PowerShell twins `find-*.ps1` on the same expected files, through `\\wsl.localhost` and a drive-letter copy, when PowerShell is reachable); the legacy false positives/negatives (`t_pitfalls`); T-TOKENS: every regex alternative of the legacy scripts has a resolvable home in `fixtures/legacy-tokens.tsv` (`t_tokens`) |
 | `corpus/groundtruth.sh`, `corpus/expected-sdkids.json`, `corpus/known-deviations.tsv`, `corpus/ep-allowlist.tsv` | the corpus gates of the audit on the pristine apktool decodes and the jadx corpus: G-PREC (HIGH precision 1.0), G-REC (recall, jadx package aliases), G-HS (HeartStar), G-NEW, G-FP-KNOWN (`known-deviations.tsv`), G-EP (Entry Points only under the reviewed `ep-allowlist.tsv` prefixes); `ARE_JADX_EXTRA` names the HeartStar / Water Sort jadx dirs |
 | `corpus/find-golden.sh`, `golden/find/` | `--tsv` goldens of both tools on the 9 pristine decodes (`ARE_UPDATE_EXPECTED=1` rewrites them) |
+| `tools/registry-gaps.sh`, `unit/t_gaps_fresh.sh` | dev tool (jq) that generates the computed part of `skills/sdk-neutralizer/references/registry-backlog.md` (DO / P / A gaps of the registry entries, between the `registry-gaps` markers): no option = print, `--check` = rc 1 when stale, `--write` = refresh; `t_gaps_fresh` (gaps-fresh) runs `--check` and the tool's own checks |
+| `bash32/bash32.sh` (suite `bash32`) | I18: `bash -n` under bash 3.2 of the scripts that promise it, then every unit test that runs product scripts through `$BASH32` (and `corpus/find-golden.sh`) again with that bash 3.2; the binary is `$BASH32`, else `registry-unification/scratch/bash32/bash32` next to the repo, else SKIP |
 | `corpus/perf.sh` (suite `perf`), `corpus/prepare-pristine.sh` | engine time budgets, WARN only (the PowerShell twin is timed too: logged, Subway beyond 60 s is a WARN); the helper that decodes the corpus originals into `$ARE_PRISTINE` (not a test) |
 
 Tests follow a tiny protocol (see `lib/common.sh`): exit 0 = PASS, 77 = SKIP, anything

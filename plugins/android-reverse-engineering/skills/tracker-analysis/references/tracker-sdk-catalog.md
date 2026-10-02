@@ -1,93 +1,22 @@
 # Tracker SDK Catalog
 
-Quick-reference for detecting analytics/tracker SDKs in decompiled Android apps.
+The SDK registry `skills/sdk-neutralizer/registry/*.json` is the **single source** of the packages, marker classes, manifest names, endpoint domains and APIs used to detect tracker SDKs (the `detection` object of each entry, plus `packages` and `targets`). This page no longer lists them, so it cannot drift from what the scripts do.
 
-## Firebase Analytics
+- **Live list**: `bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh --list-sdks` (TSV: `sdk_id`, `category`, `legacy_flag`, `neutralizable`, `packages`). Every entry of the categories analytics, attribution, crash_reporting and social is audited.
+- **One entry in detail**: `jq . ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/registry/<sdk_id>.json`.
+- **Adding an SDK**: add a registry entry (`<sdk_id>.json`, see `_schema.json`). `targets` is optional: an entry without it is *detection-only* (the audit sees it, `registry-scan.py` and `neutralize.sh` ignore it). Known gaps are tracked in `skills/sdk-neutralizer/references/registry-backlog.md`.
 
-| Field | Value |
-|---|---|
-| **Package** | `com.google.firebase.analytics` |
-| **Key classes** | `FirebaseAnalytics`, `AppMeasurement`, `AppMeasurementService` |
-| **Manifest markers** | `<service android:name="com.google.android.gms.measurement.AppMeasurementService"/>`, `<receiver android:name="com.google.android.gms.measurement.AppMeasurementReceiver"/>` |
-| **Gradle** | `com.google.firebase:firebase-analytics` |
-| **Grep detection** | `FirebaseAnalytics\.getInstance\|AppMeasurement\|app-measurement\.com` |
+## Notes per SDK (documentation only)
 
-## Adjust
-
-| Field | Value |
-|---|---|
-| **Package** | `com.adjust.sdk` |
-| **Key classes** | `Adjust`, `AdjustConfig`, `AdjustEvent`, `AdjustAttribution` |
-| **Manifest markers** | `<receiver android:name="com.adjust.sdk.AdjustReferrerReceiver"/>` |
-| **Gradle** | `com.adjust.sdk:adjust-android` |
-| **Grep detection** | `AdjustConfig\|AdjustEvent\|Adjust\.trackEvent\|Adjust\.onCreate` |
-
-## AppsFlyer
-
-| Field | Value |
-|---|---|
-| **Package** | `com.appsflyer` |
-| **Key classes** | `AppsFlyerLib`, `AppsFlyerConversionListener`, `AFInAppEventType` |
-| **Manifest markers** | `<receiver android:name="com.appsflyer.SingleInstallBroadcastReceiver"/>`, `<service android:name="com.appsflyer.AppsFlyerJobIntentService"/>` |
-| **Gradle** | `com.appsflyer:af-android-sdk` |
-| **Grep detection** | `AppsFlyerLib\.getInstance\|AFInAppEventType\|appsflyer\.com` |
-
-## Mixpanel
-
-| Field | Value |
-|---|---|
-| **Package** | `com.mixpanel.android` |
-| **Key classes** | `MixpanelAPI`, `AnalyticsMessages`, `DecideMessages` |
-| **Manifest markers** | `<service android:name="com.mixpanel.android.mpmetrics.MixpanelFCMMessagingService"/>` |
-| **Gradle** | `com.mixpanel.android:mixpanel-android` |
-| **Grep detection** | `MixpanelAPI\.getInstance\|com\.mixpanel\.android\|api\.mixpanel\.com` |
-
-## Amplitude
-
-| Field | Value |
-|---|---|
-| **Package** | `com.amplitude.api` (v2), `com.amplitude.android` (v1) |
-| **Key classes** | `Amplitude`, `AmplitudeClient`, `Revenue`, `Identify` |
-| **Manifest markers** | (none specific — uses standard Android components) |
-| **Gradle** | `com.amplitude:analytics-android` (v2), `com.amplitude:android-sdk` (v1) |
-| **Grep detection** | `Amplitude\.getInstance\|AmplitudeClient\|api\.amplitude\.com` |
-
-## Segment
-
-| Field | Value |
-|---|---|
-| **Package** | `com.segment.analytics` |
-| **Key classes** | `Analytics`, `TrackPayload`, `IdentifyPayload`, `ScreenPayload`, `Traits` |
-| **Manifest markers** | (none specific) |
-| **Gradle** | `com.segment.analytics.android:analytics` |
-| **Grep detection** | `Analytics\.with\|com\.segment\.analytics\|api\.segment\.io` |
-
-## Braze (formerly Appboy)
-
-| Field | Value |
-|---|---|
-| **Package** | `com.braze` (v4+), `com.appboy` (legacy) |
-| **Key classes** | `Braze`, `BrazeConfig`, `BrazeUser`, `BrazeProperties`; legacy: `Appboy`, `AppboyConfig` |
-| **Manifest markers** | `<service android:name="com.braze.push.BrazeFirebaseMessagingService"/>`, `com.braze.BrazeActivityLifecycleCallbackListener` |
-| **Gradle** | `com.braze:android-sdk-ui` |
-| **Grep detection** | `Braze\.configure\|BrazeConfig\|logCustomEvent\|com\.braze\.\|com\.appboy\.` |
-
-## CleverTap
-
-| Field | Value |
-|---|---|
-| **Package** | `com.clevertap.android.sdk` |
-| **Key classes** | `CleverTapAPI`, `ActivityLifecycleCallback` |
-| **Manifest markers** | `<meta-data android:name="CLEVERTAP_ACCOUNT_ID"/>`, `<service android:name="com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService"/>` |
-| **Gradle** | `com.clevertap.android:clevertap-android-sdk` |
-| **Grep detection** | `CleverTapAPI\.getDefaultInstance\|pushEvent\|onUserLogin\|wzrkt\.com` |
-
-## Flurry
-
-| Field | Value |
-|---|---|
-| **Package** | `com.flurry.android` |
-| **Key classes** | `FlurryAgent`, `FlurryConfig`, `FlurryPerformance` |
-| **Manifest markers** | `<service android:name="com.flurry.android.agent.FlurryService"/>` |
-| **Gradle** | `com.flurry.android:analytics` |
-| **Grep detection** | `FlurryAgent\.logEvent\|FlurryAgent\.Builder\|data\.flurry\.com` |
+| SDK | Notes | Gradle |
+|---|---|---|
+| Firebase Analytics | Google's app analytics on top of the Play services measurement module (`com.google.android.gms.measurement`); events go to `app-measurement.com`. `analytics/connector` alone (Crashlytics, FCM) is not Analytics. | `com.google.firebase:firebase-analytics` |
+| Adjust | Attribution. v4 initializes with `Adjust.onCreate(AdjustConfig)`, v5 with `Adjust.initSdk`. | `com.adjust.sdk:adjust-android` |
+| AppsFlyer | Attribution. The public API is `AppsFlyerLib`; the SDK builds its endpoint URLs with `%s`, so the bare host (`appsflyer.com`) is the evidence. | `com.appsflyer:af-android-sdk` |
+| Mixpanel | Product analytics, `MixpanelAPI.getInstance`. | `com.mixpanel.android:mixpanel-android` |
+| Amplitude | Product analytics. Legacy SDK: `com.amplitude.api` (`Amplitude.getInstance()`, `AmplitudeClient`); current Kotlin SDK: `com.amplitude.android` + `com.amplitude.core`. | legacy `com.amplitude:android-sdk`; current `com.amplitude:analytics-android` |
+| Segment | Customer data platform, `Analytics.with(context)`; detection-only in the registry (no neutralization targets yet). | `com.segment.analytics.android:analytics` |
+| Braze (formerly Appboy) | Engagement/push. `com.braze` (v4+), `com.appboy` (legacy). | `com.braze:android-sdk-ui` |
+| CleverTap | Engagement/analytics, `CleverTapAPI.getDefaultInstance`; account id in the `CLEVERTAP_ACCOUNT_ID` meta-data. | `com.clevertap.android:clevertap-android-sdk` |
+| Flurry | Yahoo analytics, `new FlurryAgent.Builder()…build(context, apiKey)` (legacy `FlurryAgent.init` / `onStartSession`); detection-only in the registry. | `com.flurry.android:analytics` |
+| Singular, AppMetrica, Google Analytics (legacy), Google Tag Manager, Firebase Crashlytics, Sentry, Bugsnag, Backtrace, Facebook SDK, TikTok Business SDK, ByteDance APM Insight, SYBO in-house analytics | See their registry entries (`--list-sdks`). | — |

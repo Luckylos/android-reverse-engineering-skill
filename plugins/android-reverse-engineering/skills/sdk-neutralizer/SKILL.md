@@ -76,6 +76,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/check-neutralize-deps.
 
 The output also reports `ZIPALIGN_PAGE_ALIGN:16k|4k|none` (whether zipalign supports `-P 16` for 16 KB-page devices or only `-p`).
 
+`INSTALL_OPTIONAL:jq` is never blocking: jq (>= 1.6) only makes `detect-adwrapper.sh` read the registry with jq (it has a built-in fallback parser) and is needed by the audit scripts `find-trackers.sh` / `find-ads.sh`; `install-dep.sh neutralize-all` tries to install it as an optional step. On Windows jq is never needed (`check-neutralize-deps.ps1` says so).
+
 If any `INSTALL_REQUIRED:` lines appear, ask the user to install all dependencies at once. `build-tools` downloads Google's Android SDK Build-Tools (pinned 36.0.0, SHA-256 verified; `sdkmanager` is used instead when `ANDROID_HOME`/`ANDROID_SDK_ROOT` has one). It is licensed under the [Android Software Development Kit License Agreement](https://developer.android.com/studio/terms): **show the user that link and get their explicit acceptance before passing `--accept-android-sdk-license`** — never pass it on your own.
 
 ```bash
@@ -143,9 +145,9 @@ Parse:
 
 If a candidate is found, tell the user this app has an in-house ads wrapper at `<package>` and that the network-SDK neutralization may not fully stop ads. Then:
 - If the evidence has `registry=<sdk_id>`, a dedicated entry already exists — make sure it is applied (it is picked up by Phase 3a automatically).
-- Otherwise, run the unknown-SDK **discovery workflow** (Phase 3b/3c) on `<package>` and consider adding a dedicated registry entry for it.
+- Otherwise, run the unknown-SDK **discovery workflow** (Phase 3b/3c) on `<package>` and consider adding a dedicated registry entry for it (first check that no detection-only entry already owns the package: see "Detection-only entries" below).
 
-The detector excludes known third-party SDKs (from the registry) and common libraries, so a genuine third-party ad SDK is **not** reported as an in-house wrapper. It never modifies anything.
+The detector excludes known third-party SDKs (the `packages` of every registry entry, detection-only entries included) and common libraries, so a genuine third-party ad SDK is **not** reported as an in-house wrapper. It never modifies anything.
 
 ### Phase 3: Identify Targets
 
@@ -160,7 +162,7 @@ Ask the user which depth level to use. Default to depth 1 unless they request mo
 
 #### Phase 3a — Registry Scan (Known SDKs)
 
-Run `registry-scan.py` to match the decoded APK against the SDK registry (48 SDKs, 373 entry points, 355 ad operations, 31 deep patterns).
+Run `registry-scan.py` to match the decoded APK against the SDK registry (48 neutralizable entries with 373 entry points, 355 ad operations, 31 deep patterns, + 6 detection-only entries that registry-scan skips; `find-ads.sh --list-sdks` / `find-trackers.sh --list-sdks` give the live list with a `neutralizable` column).
 
 **Action**: Run registry scan.
 
@@ -173,7 +175,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-scan.py "<
 
 Parse stdout for:
 - `MATCHED:<sdk_id>:<display_name>:<category>:<n_targets>` — matched SDK with target count
-- `UNKNOWN_PACKAGE:<package>:<class_count>` — unknown packages (candidates for Phase 3b)
+- `UNKNOWN_PACKAGE:<package>:<class_count>` — unknown packages (candidates for Phase 3b). registry-scan does not know detection-only entries (it skips them), so an `UNKNOWN_PACKAGE` can belong to one: check before treating it as a new SDK (see "Detection-only entries" below)
 - `REGISTRY_TARGETS:<path>` — generated targets file for neutralize.sh
 - `REGISTRY_MANIFEST:<path>` — generated manifest components file
 
@@ -193,6 +195,8 @@ If the user requests **depth 2 or 3**, re-run registry-scan.py with the higher d
 bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/neutralize.sh <decoded-dir> --all --dry-run
 ```
 
+The builtin catalog is a separate, older list inside `neutralize.sh`: it does not read the registry, stubs a few classes the registry does not target (Segment, Flurry, the public `AppsFlyerLib`, legacy Pangle `TTAdSdk`) and has some dead paths. Prefer the registry path; the differences are listed in `skills/sdk-neutralizer/references/registry-backlog.md` (section C).
+
 #### Phase 3b — Unknown SDK Discovery
 
 Activate this sub-phase when:
@@ -208,6 +212,16 @@ The registry scan automatically filters unknowns:
 - Only includes packages with 10+ classes and 3+ name segments
 
 **CRITICAL — Use Claude Code built-in tools, NOT bash commands.** Glob, Grep, and Read are auto-approved.
+
+**Before discovery**, check whether the candidate already belongs to a **detection-only** registry entry (an entry without `targets`, which registry-scan skips):
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh --list-sdks        # neutralizable=no rows
+bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh --list-sdks
+bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-query.sh rows | grep has_targets   # has_targets false = detection-only
+```
+
+If it does, the SDK is already identified: go to Phase 3c only to find its entry points, then **add `targets` to that existing entry** instead of creating a new file (never a second entry with the same `sdk_id` or overlapping `packages`).
 
 **Discovery workflow** for each unknown package candidate:
 
@@ -257,7 +271,7 @@ Present results as a table:
    com/vendor/sdk/MainClass:start
    ```
 
-5. **Optionally**, propose a draft registry JSON entry for future inclusion.
+5. **Optionally**, propose a draft registry JSON entry for future inclusion. If the package belongs to a detection-only entry (see Phase 3b), propose instead the `targets` (and `manifest_components`) to add to **that** entry: no duplicate `sdk_id`. A new entry must pass the registry lint (`tests/lint/lint-registry.sh` in the repo).
 
 #### Phase 3d — Compile & Confirm
 
@@ -469,11 +483,24 @@ If the input was a split bundle, include this section (from `.merged-from-splits
 ```
 
 **Next steps to suggest:**
-- Re-run `find-ads.sh --entrypoints` and `find-trackers.sh --entrypoints` on the rebuilt APK to verify neutralization
+- Verify the neutralization with `neutralize-manifest.json` (every patched method and disabled component) and, after a re-decode, `neutralize.sh --replay`; `find-ads.sh` / `find-trackers.sh` do **not** verify it: stubbing keeps the SDK packages in place, so the audit still reports the SDKs as HIGH
 - **Test the APK thoroughly** on a device/emulator — watch for crashes, broken features, and startup errors
 - Check for runtime crashes caused by null returns from stubbed `getInstance()` methods
 - Use `--targets-file` to add custom neutralization targets for obfuscated code
 - Review the legal implications with your organization's legal/compliance team before distributing
+
+## The SDK Registry: Neutralization vs Detection
+
+`registry/*.json` is the single source of SDK knowledge for the whole plugin: the neutralizer (`registry-scan.py`, `neutralize.sh`), the in-house wrapper detector (`detect-adwrapper.sh/.ps1`, which reads only `packages`) and the privacy audit (`find-trackers` / `find-ads`, engine `scripts/sdk-audit.sh` / `sdk-audit.ps1`).
+
+- **Neutralization data**: `packages`, `targets` (entry_points, ad_operations, deep_patterns), `manifest_components`, `protected_patterns`, `in_house_wrapper`. Only these drive `registry-scan.py` and `neutralize.sh`.
+- **Detection data**: the optional `detection` object (`extra_packages`, `exclude_packages`, `namespace_roots`, `adapter_packages`, `marker_classes`, `manifest_names`, `domains`, `id_prefixes`, `apis`). It is read **only** by the audit; `registry-scan.py` and `neutralize.sh` never read it, so adding or fixing a detection fact never changes what gets stubbed. Promoting a detection fact to neutralization (e.g. an `extra_packages` item to `packages`, an `apis` method to `targets`) is a separate, deliberate change to the neutralization data.
+- **Literals only**: registry data never contains regular expressions (packages, classes, hosts, prefixes and method names are matched literally).
+- **Cross-SDK knowledge** used only by the audit lives in `registry/_audit-shared.json` (schema `_audit-shared.schema.json`): category groups, the legacy `--<sdk>` flags, `library_roots` (code that is never app code: Play services, Firebase core, Kotlin, AndroidX, ...), the ad format tables and the informational hints.
+
+### Detection-only entries
+
+An entry **without `targets`** is *detection-only* (today: segment, flurry, tiktok-business, apm-insight, bigo-ads, kidoz). The audit reports it (`neutralizable=no (detection-only)`), registry-scan skips it (no `MATCHED`, no target lines; its packages can show up as `UNKNOWN_PACKAGE`), and detect-adwrapper treats its `packages` as known third-party code. To make such an SDK neutralizable, **add `targets` (and `manifest_components` if needed) to the existing entry**; never create a second entry for the same SDK. The open gaps (SDKs without an entry, detection-only entries, detection facts not yet promoted) are listed in `references/registry-backlog.md`.
 
 ## Consent Neutralization (distinct capability — code injection)
 
@@ -508,4 +535,5 @@ entries; reject-all **reduces** but does not **guarantee** zero tracking.
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/references/neutralization-guide.md` — Approach overview, stub types, pitfalls, legal disclaimer
 - `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/references/smali-patterns.md` — Complete smali stub catalog per SDK
+- `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/references/registry-backlog.md` — SDKs detected but not (fully) neutralized: missing entries, detection-only entries, detection facts not yet in the neutralization data
 - `${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/references/consent-neutralization.md` — Consent neutralization (IAB TCF / UMP) via code injection: mechanism, keys, reject-all TCString, interception points, caveats

@@ -48,7 +48,7 @@ Run the dependency check to ensure all required tools are installed:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/check-neutralize-deps.sh "$APK_PATH"
 ```
 
-(Passing the file makes APKEditor required for XAPK/APKM/APKS input.)
+(Passing the file makes APKEditor required for XAPK/APKM/APKS input. `INSTALL_OPTIONAL:jq` is not blocking: jq is used by `detect-adwrapper.sh`, which has a built-in fallback parser, and by the `/find-trackers` / `/find-ads` audit scripts.)
 
 On Windows without bash, `check-neutralize-deps.ps1`, `decode-apk.ps1`, `detect-protection.ps1`, `detect-adwrapper.ps1` and `rebuild-apk.ps1` (PowerShell 5.1) are available; `neutralize.sh` and `registry-scan.py` still require bash + python3 (WSL or Git Bash) for now.
 
@@ -101,13 +101,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/detect-adwrapper.sh "$
 
 Read `ADWRAPPER_DETECTED:<package>:<confidence>:<evidence>` and `ADWRAPPER_SUMMARY:<none|candidate>`. A candidate is a publisher's own layer that drives the network SDKs (or serves house/WebView ads) itself — so neutralizing the third-party network SDKs may **not** fully stop ads (e.g. Rovio's `com.rovio.beacon`). If reported:
 - with `registry=<sdk_id>` in the evidence, a dedicated registry entry already exists — make sure it is applied (Step 5 picks it up automatically);
-- otherwise, run the unknown-SDK discovery pass (SKILL.md Phases 3b/3c) on `<package>` and consider a dedicated registry entry.
+- otherwise, run the unknown-SDK discovery pass (SKILL.md Phases 3b/3c) on `<package>` and consider a dedicated registry entry (unless a detection-only entry already owns the package: then add `targets` to it, see Step 5c).
 
 Known third-party SDKs and common libraries are excluded, so a genuine third-party ad SDK is not flagged as an in-house wrapper. Detection only — nothing is modified.
 
 ### Step 5: Identify targets — Registry Scan
 
-The decoded directory contains smali bytecode. Use `registry-scan.py` to match against the SDK registry (48 SDKs, 373 entry points, 355 ad operations).
+The decoded directory contains smali bytecode. Use `registry-scan.py` to match against the SDK registry (48 neutralizable entries, 373 entry points, 355 ad operations; the detection-only entries, which have no `targets`, are skipped).
 
 **5a. Run registry scan:**
 
@@ -120,7 +120,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-scan.py "$
 
 Parse stdout:
 - `MATCHED:` lines — present as a table (SDK name, category, target count)
-- `UNKNOWN_PACKAGE:` lines — candidates for Step 5c
+- `UNKNOWN_PACKAGE:` lines — candidates for Step 5c (a package of a detection-only entry also shows up here: registry-scan skips those entries)
 - `REGISTRY_TARGETS:` / `REGISTRY_MANIFEST:` — paths to generated files
 
 **Depth levels**: Ask the user which depth to use:
@@ -146,6 +146,8 @@ still need stubbing). Full detail: `skills/sdk-neutralizer/references/consent-ne
 bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/neutralize.sh "${DECODED_DIR}" --all --dry-run
 ```
 
+The builtin catalog is a separate, older list inside `neutralize.sh`: it does not read the registry, stubs a few classes the registry does not target (Segment, Flurry, the public `AppsFlyerLib`, legacy Pangle `TTAdSdk`) and has some dead paths. Prefer the registry path; the differences are listed in `skills/sdk-neutralizer/references/registry-backlog.md` (section C).
+
 **5b. Identify wrapper frameworks:**
 
 Search for non-SDK packages that invoke known SDK methods — these are wrapper/bridge classes. Use Grep (auto-approved) to find invocations from app code:
@@ -158,6 +160,16 @@ Grep: pattern="invoke-.*Lcom/google/android/gms/ads|invoke-.*Lcom/unity3d/ads|in
 Filter to non-SDK packages to identify wrappers. If found, add as `--package` targets.
 
 **5c. Unknown SDK discovery (if registry reported UNKNOWN_PACKAGE candidates):**
+
+First check whether the candidate belongs to a **detection-only** registry entry (no `targets`: the audit knows the SDK, the neutralizer cannot stub it yet):
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh --list-sdks           # neutralizable=no rows
+bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh --list-sdks
+bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-query.sh rows | grep has_targets
+```
+
+If it does, the SDK is already identified: find its entry points (steps below) and propose **adding `targets` to that existing entry** rather than a new registry file — never a duplicate `sdk_id`. For this run, write the found methods to a custom targets file (Step 5d).
 
 For significant unknown packages (10+ classes, proper naming), use Claude Code built-in tools:
 
@@ -262,7 +274,7 @@ Include in the report:
 
 Tell the user what they can do next:
 - **Test thoroughly**: "Install via `adb install <apk>`" — test for crashes, especially features tied to ads or analytics
-- **Verify**: "I can re-run entry point detection on the rebuilt APK to confirm neutralization"
+- **Verify**: "I can check `neutralize-manifest.json` (every patched method and disabled component) to confirm the neutralization" — `/find-trackers` and `/find-ads` do not verify it: the stubbed SDK packages are still in the APK, so the audit still reports them
 - **Custom targets**: "If the app uses obfuscated SDK calls, provide a targets file for additional patching"
 - **Deep analysis**: "Run `/find-trackers` or `/find-ads` for full SDK analysis"
 - **Restore**: "Backup `.smali.bak` files were created — I can restore the original methods"

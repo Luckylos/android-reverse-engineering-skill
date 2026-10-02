@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A Claude Code Skill (plugin) for Android reverse engineering, API extraction, and privacy auditing. It provides four skills:
 - **android-reverse-engineering**: 5-phase workflow — dependency verification, APK/XAPK/JAR/AAR decompilation (jadx and/or Fernflower), manifest/structure analysis, call flow tracing, and HTTP API endpoint extraction
-- **tracker-analysis**: 4-phase workflow — detect analytics/tracker SDKs (Firebase, Adjust, AppsFlyer, Mixpanel, Amplitude, Segment, Braze, CleverTap, Flurry), analyze init/events/user ID/consent, report data exfiltration endpoints
-- **ad-analysis**: 3-phase workflow — detect ad SDKs (AdMob, Unity, IronSource, AppLovin, Meta AN, Vungle, InMobi, Chartboost, Pangle, Mintegral), map ad formats and mediation setup, report privacy/consent
+- **tracker-analysis**: 4-phase workflow — detect analytics/tracker SDKs (every tracker entry of the SDK registry: Firebase, Adjust, AppsFlyer, Mixpanel, Amplitude, Segment, Braze, CleverTap, Flurry, Singular, ...; HIGH/MEDIUM/LOW/NONE confidence), analyze init/events/user ID/consent, report data exfiltration endpoints
+- **ad-analysis**: 3-phase workflow — detect ad SDKs (every ads/ads_mediation entry of the SDK registry: AdMob, Unity, IronSource, AppLovin, Meta AN, Vungle, InMobi, Chartboost, Pangle, Mintegral, ...; plus consent frameworks), map ad formats and mediation setup, report privacy/consent
 - **sdk-neutralizer**: 6-phase workflow — decode APK, identify tracker/ad SDK entry points, neutralize by replacing smali method bodies with stubs, disable manifest components, rebuild and sign APK for enterprise sideloading
 
 ## Repository Structure
@@ -19,10 +19,11 @@ A Claude Code Skill (plugin) for Android reverse engineering, API extraction, an
 - `plugins/android-reverse-engineering/commands/find-ads.md` — `/find-ads` slash command
 - `plugins/android-reverse-engineering/commands/neutralize.md` — `/neutralize` slash command
 - `plugins/android-reverse-engineering/skills/android-reverse-engineering/` — Core RE skill (5-phase workflow, references, scripts)
-- `plugins/android-reverse-engineering/skills/tracker-analysis/` — Tracker/analytics SDK detection skill (4-phase workflow, references, find-trackers.sh)
-- `plugins/android-reverse-engineering/skills/ad-analysis/` — Advertising SDK detection skill (3-phase workflow, references, find-ads.sh)
-- `plugins/android-reverse-engineering/skills/sdk-neutralizer/` — SDK neutralization skill (6-phase workflow, references, decode-apk.sh/.ps1, detect-protection.sh/.ps1, detect-adwrapper.sh/.ps1, neutralize.sh, registry-scan.py, rebuild-apk.sh/.ps1, check-neutralize-deps.sh/.ps1)
-- `plugins/android-reverse-engineering/skills/sdk-neutralizer/registry/` — SDK registry (48 JSON files defining neutralization targets, manifest components, protected patterns; includes `consent-umptcf.json`, a code-injection entry for UMP/IAB-TCF consent)
+- `plugins/android-reverse-engineering/skills/tracker-analysis/` — Tracker/analytics SDK detection skill (4-phase workflow, references, find-trackers.sh/.ps1: thin wrappers of the sdk-audit engine)
+- `plugins/android-reverse-engineering/skills/ad-analysis/` — Advertising SDK detection skill (3-phase workflow, references, find-ads.sh/.ps1: thin wrappers of the sdk-audit engine)
+- `plugins/android-reverse-engineering/skills/sdk-neutralizer/` — SDK neutralization skill (6-phase workflow, references incl. `registry-backlog.md`, decode-apk.sh/.ps1, detect-protection.sh/.ps1, detect-adwrapper.sh/.ps1, neutralize.sh, registry-scan.py, rebuild-apk.sh/.ps1, check-neutralize-deps.sh/.ps1, registry-query.sh/.jq/.ps1 + registry-lib.ps1 (registry reader), sdk-audit.sh/.ps1 (audit engine of find-trackers / find-ads))
+- `plugins/android-reverse-engineering/skills/sdk-neutralizer/registry/` — SDK registry, the single source of SDK knowledge (54 entry files: 48 neutralizable entries defining neutralization targets, manifest components, protected patterns — including `consent-umptcf.json`, a code-injection entry for UMP/IAB-TCF consent — plus 6 detection-only entries; `_schema.json`, `_audit-shared.json` + `_audit-shared.schema.json`)
+- `tests/` — dev-only test harness (not shipped with the plugin): `tests/run.sh`, see "Tests" below
 
 ## Key Scripts
 
@@ -49,15 +50,27 @@ bash scripts/find-api-calls.sh <source-dir> [--retrofit|--okhttp|--volley|--urls
 Tracker analysis script under `plugins/android-reverse-engineering/skills/tracker-analysis/scripts/`:
 
 ```bash
-# Search for tracker/analytics SDKs
-bash find-trackers.sh <source-dir> [--firebase|--adjust|--appsflyer|--mixpanel|--amplitude|--segment|--braze|--clevertap|--flurry|--all]
+# Audit tracker/analytics SDKs (every tracker entry of the registry; needs jq >= 1.6, else exit 2 + INSTALL_REQUIRED:jq)
+# <input-dir>: apktool decode dir, jadx output dir, its sources/, jadx XAPK dir, or any tree (+ --manifest-path)
+bash find-trackers.sh <input-dir> [--firebase|--adjust|--appsflyer|--mixpanel|--amplitude|--segment|--braze|--clevertap|--flurry]
+    [--sdk <sdk_id>]... [--generic|--endpoints|--manifest|--entrypoints|--all] [--summary|--tsv|--json]
+    [--manifest-path F] [--registry DIR] [--full] [--no-hints]
+bash find-trackers.sh --list-sdks          # sdk_id, category, legacy_flag, neutralizable, packages
+# Windows twin (PowerShell 5.1, no jq): find-trackers.ps1, same option tokens
 ```
 
 Ad analysis script under `plugins/android-reverse-engineering/skills/ad-analysis/scripts/`:
 
 ```bash
-# Search for advertising SDKs
-bash find-ads.sh <source-dir> [--admob|--unity|--ironsource|--applovin|--facebook|--formats|--mediation|--consent|--entrypoints|--all]
+# Audit advertising SDKs + consent frameworks (every ads/ads_mediation/consent entry of the registry)
+bash find-ads.sh <input-dir> [--admob|--unity|--ironsource|--applovin|--facebook|--vungle|--inmobi|--chartboost|--pangle|--mintegral]
+    [--sdk <sdk_id>]... [--formats|--mediation|--consent|--manifest|--entrypoints|--all] [--summary|--tsv|--json]
+    [--manifest-path F] [--registry DIR] [--full] [--no-hints]
+bash find-ads.sh --list-sdks
+# Windows twin: find-ads.ps1
+# Confidence: HIGH = SDK code present (+ marker class when declared); MEDIUM = code without the
+# declared marker, or AndroidManifest only; LOW = app-code references / endpoints / id prefixes only;
+# NONE. --summary/--tsv/--json cover the whole group and ignore filters (--json = report v2).
 ```
 
 SDK neutralizer scripts under `plugins/android-reverse-engineering/skills/sdk-neutralizer/scripts/`:
@@ -106,11 +119,16 @@ Windows: `check-neutralize-deps.ps1`, `decode-apk.ps1`, `detect-protection.ps1`,
 
 SDK registry under `plugins/android-reverse-engineering/skills/sdk-neutralizer/registry/`:
 
-- 48 SDK JSON files + `_schema.json` schema definition
-- Covers: AdMob, Unity Ads, IronSource, AppLovin, Meta AN, Vungle, InMobi, Chartboost, Pangle, BidMachine, Smaato, PubNative, Ogury, Fyber, Amazon APS, Facebook, Firebase Analytics, Firebase Crashlytics, AppsFlyer, Adjust, Braze, CleverTap, Guru Fusion, Mintegral, Mixpanel, MobileFuse, Moloco, PubMatic, TradPlus, Tapjoy, Yandex Ads, Google Tag Manager, AppMetrica, AdColony, Google UMP / IAB TCF consent
+- 54 SDK entry files (48 neutralizable + 6 detection-only: segment, flurry, tiktok-business, apm-insight, bigo-ads, kidoz) + `_schema.json` schema definition + `_audit-shared.json` (cross-SDK audit data: category groups, legacy `--<sdk>` flags, `library_roots`, ad format tables, hints) with its `_audit-shared.schema.json`
+- `targets` is optional: an entry **without** `targets` is *detection-only* — the audit reports it, `registry-scan.py` skips it (one-line guard), `detect-adwrapper` still excludes its `packages`. To make it neutralizable, add `targets` to that entry (never a second entry for the same SDK)
+- Covers: AdMob, Unity Ads, IronSource, AppLovin, Meta AN, Vungle, InMobi, Chartboost, Pangle, BidMachine, Smaato, PubNative, Ogury, Fyber, Amazon APS, Facebook, Firebase Analytics, Firebase Crashlytics, AppsFlyer, Adjust, Braze, CleverTap, Guru Fusion, Mintegral, Mixpanel, MobileFuse, Moloco, PubMatic, TradPlus, Tapjoy, Yandex Ads, Google Tag Manager, AppMetrica, AdColony, Google UMP / IAB TCF consent (and more: `find-ads.sh --list-sdks` / `find-trackers.sh --list-sdks`); detection-only: Segment, Flurry, TikTok Business, ByteDance APM Insight, BIGO Ads, Kidoz
 - Each JSON defines: packages, entry_points, ad_operations, deep_patterns, manifest_components, protected_patterns; a method target may specify either `stub` (trivial no-op/constant return) or `inject` (code injection)
 - **Consent neutralization** (`category: consent`, `consent-umptcf.json`) is a distinct capability: instead of stubbing, it INJECTS code that suppresses the Google UMP / IAB TCF consent dialog and writes a reject-all TCF v2.2 state (gdprApplies=1, all-zero consent + legitimate-interest keys, a decode-verified reject-all `IABTCF_TCString`) to the default SharedPreferences, so TCF-honoring SDKs self-limit. The inject kind travels on the targets-file line as an optional third `:`-field; `neutralize.sh` emits the injected smali. See `skills/sdk-neutralizer/references/consent-neutralization.md`. It complements (does not replace) per-SDK stubbing.
 - `registry-scan.py` consumes these JSONs to generate neutralization targets
+- The optional `detection` object (`extra_packages`, `exclude_packages`, `namespace_roots`, `adapter_packages`, `marker_classes`, `manifest_names`, `domains`, `id_prefixes`, `apis`) is read **only** by the audit (`sdk-audit.sh/.ps1` via `registry-query`); `registry-scan.py` and `neutralize.sh` never read it, and `detect-adwrapper` reads only `packages`
+- Read the registry from scripts with `registry-query.sh rows|shared|packages` (jq >= 1.6; `packages` has a POSIX-awk fallback) or, in PowerShell, `registry-lib.ps1` (`Get-RegistryRows/-Shared/-Packages`)
+- Known gaps (SDKs without entry, detection-only entries, detection facts not promoted to neutralization data): `skills/sdk-neutralizer/references/registry-backlog.md`; its generated part is refreshed with `bash tests/tools/registry-gaps.sh --write`
+- Other copies of SDK knowledge that do not read the registry yet (to unify in later steps; listed in `registry-backlog.md` section C): the builtin fallback catalog of `neutralize.sh`, `third_party_hosts.txt`, `fingerprint.sh` SDK markers, `recover-kotlin-names.sh` `SKIP_PREFIXES`, `registry-scan.py` `KNOWN_LIBRARY_PACKAGES`, and detect-adwrapper's `NETWORK_ROOTS` / `COMMON_ROOTS` (frozen; sh == ps1 enforced by `tests/unit/t_network_roots.sh`)
 
 ## Architecture
 
@@ -131,9 +149,20 @@ SDK registry under `plugins/android-reverse-engineering/skills/sdk-neutralizer/r
 - Fernflower/Vineflower: better Java output for complex code, requires dex2jar for APK input
 - `--engine both`: runs both in parallel and compares output quality
 
-## No Build/Test/Lint
+## Tests
 
-This is a documentation-and-scripts plugin with no compiled code, no test suite, and no linter configuration. Changes are validated by reading the markdown/bash and testing scripts manually against APK files.
+There is no build step. A dev-only harness lives in `tests/` (not shipped with the plugin; see `tests/README.md`):
+
+```bash
+tests/run.sh                 # quick (~1-2 min): registry lint + unit tests + sh/ps1 parity on fixtures
+tests/run.sh full            # + golden (registry-scan / detect-adwrapper byte-identical to the frozen baseline),
+                             #   snapshot, corpus ground truth, bash 3.2, perf (~50 min with PowerShell + corpus)
+tests/run.sh lint unit       # selected suites; tests/run.sh t_cli = one test
+tests/run.sh --expect-pass lint golden   # a SKIP of these counts as FAIL
+bash tests/tools/registry-gaps.sh --check   # generated part of registry-backlog.md up to date
+```
+
+Optional requirements (a missing one gives SKIP, never FAIL): Windows PowerShell 5.1 reachable from WSL (`ARE_PS`), a bash 3.2 binary (`BASH32`), the APK corpus and its golden baselines next to the repo (`ARE_CORPUS`, `ARE_JADX`, `ARE_PRISTINE`, `ARE_GOLD`), `gawk`/`mawk`/`busybox` for the awk matrix, python `jsonschema` for schema validation in the lint.
 
 ## Versioning
 
@@ -149,6 +178,10 @@ Claude Code reads the version from `plugin.json` with priority — if that file 
 ## Conventions
 
 - Line endings are LF (enforced via `.gitattributes` for WSL/Windows compatibility)
-- Scripts target Bash 4.0+ and support Linux (apt/dnf/pacman) and macOS (Homebrew); `install-dep.sh`, `check-neutralize-deps.sh`, `decode-apk.sh` and `rebuild-apk.sh` are written to also run on macOS's stock bash 3.2 with BSD tools
+- Scripts target Bash 4.0+ and support Linux (apt/dnf/pacman) and macOS (Homebrew); `install-dep.sh`, `check-neutralize-deps.sh`, `decode-apk.sh`, `rebuild-apk.sh`, `detect-adwrapper.sh`, `registry-query.sh`, `sdk-audit.sh` and the `find-trackers.sh` / `find-ads.sh` wrappers are written to also run on macOS's stock bash 3.2 with BSD tools (no `declare -A`, `mapfile`, `${x,,}`; awk is POSIX only: no gawk extensions, checked under `gawk --posix`, mawk and busybox awk; no `grep -P`, no `\s`)
 - `.sh`/`.ps1` pairs must keep feature parity; `.ps1` scripts target Windows PowerShell 5.1 (no PS7-only syntax)
 - Scripts fall back to user-local installs (`~/.local/`) when sudo is unavailable; `install-dep.sh` must run as the user (it refuses sudo for per-user targets and calls sudo itself only for system packages)
+- jq (>= 1.6) is required only by `find-trackers.sh` / `find-ads.sh` (exit 2 + `INSTALL_REQUIRED:jq`); the checkers report it as `INSTALL_OPTIONAL:jq`; it is never needed on Windows (the `.ps1` scripts use `ConvertFrom-Json`), and no `.ps1` checker prints an `INSTALL_*:jq` line. No Python at runtime for the audit
+- PowerShell libraries (`registry-lib.ps1`, `sdk-audit.ps1`) contain only function definitions: no `param()` block, no global/script state, dot-sourced inside the caller's function; they return their output on the pipeline (the audit report as one string, exit code in `$script:SdkAuditExit`). `.ps1` sources are ASCII-only; sorting and comparisons are ordinal
+- Registry rules: **no regular expressions in the registry** (literals only: packages, classes, hosts, prefixes, method names); **`detection` is not neutralization** (adding a detection fact never changes what gets stubbed; promoting it to `packages` / `targets` / `manifest_components` is a separate change reviewed against the registry-scan golden); new entries follow `_schema.json` and keep `"packages": [` / `sdk_id` / `in_house_wrapper` once each at top level, one string per line (the awk fallback parser relies on it)
+- **Every registry change**: run `tests/run.sh quick` (lint + unit) and `tests/run.sh golden` (registry-scan and detect-adwrapper must stay byte-identical unless the change is meant to alter neutralization), and refresh `registry-backlog.md` with `bash tests/tools/registry-gaps.sh --write`

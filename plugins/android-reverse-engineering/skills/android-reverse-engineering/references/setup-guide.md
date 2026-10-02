@@ -204,6 +204,29 @@ bash scripts/install-dep.sh build-tools --accept-android-sdk-license
 # Windows: .\scripts\install-dep.ps1 build-tools -AcceptAndroidSdkLicense
 ```
 
+### jq (SDK audit, bash only)
+
+`find-trackers.sh` and `find-ads.sh` read the SDK registry with **jq >= 1.6** and exit 2 with `INSTALL_REQUIRED:jq` without it. `check-deps.sh` and `check-neutralize-deps.sh` report it as `INSTALL_OPTIONAL:jq` only (`/decompile` and the neutralizer never need it: `detect-adwrapper.sh` has a built-in fallback parser).
+
+```bash
+# Uses brew on macOS; apt/dnf/pacman only when sudo works; otherwise a pinned jq 1.8.2
+# static binary (SHA-256 verified) into ~/.local/bin/jq
+bash scripts/install-dep.sh jq
+```
+
+| OS | Command |
+|---|---|
+| Ubuntu / Debian | `sudo apt install jq` (Ubuntu 18.04 / Debian 10 ship jq 1.5: too old, use `install-dep.sh jq`) |
+| Fedora | `sudo dnf install jq` |
+| Arch Linux | `sudo pacman -S jq` |
+| macOS | `brew install jq` (the stock `jq-1.7.1-apple` of recent macOS also works) |
+| Other distros | `install-dep.sh jq` (static binary) |
+| Windows | **not needed**: `find-trackers.ps1` / `find-ads.ps1` and the other `.ps1` scripts read the registry with `ConvertFrom-Json` (`install-dep.ps1 jq` just says so). Under Git Bash or WSL, the `.sh` scripts need jq like on Linux |
+
+If `install-dep.sh jq` exits 2 saying that an older jq comes first on `PATH`, put `~/.local/bin` first (`export PATH="$HOME/.local/bin:$PATH"`, also in the shell profile) or remove the old jq.
+
+**PowerShell 5.1 output note**: `> out.txt` inside Windows PowerShell 5.1 writes UTF-16. Capture the `.ps1` output from Bash (`powershell.exe -File … > out.txt`), or in PowerShell with `| Out-File -Encoding utf8 out.txt`.
+
 ### adb (Android Debug Bridge)
 
 Useful for pulling APKs directly from a connected Android device.
