@@ -9,8 +9,16 @@
 #   - text and --tsv outputs of every layout equal the committed expected files
 #     (tests/fixtures/expected/layouts/<layout>.<tool>.{txt,tsv}; the input path is
 #     written <IN>); ARE_UPDATE_EXPECTED=1 rewrites them;
+#   - '.', 'sources/.' and '..' naming <out>/sources are jadx-sources (basename of the full
+#     path, DEVIATIONS 9.5);
 #   - a tree without AndroidManifest.xml says so, and --manifest-path fixes it.
-# The PowerShell side of this test comes with sdk-audit.ps1 (DESIGN 10, commit 9).
+# PowerShell side (DESIGN 5.3, 10 row 9; when NS/sdk-audit.ps1 exists and PowerShell 5.1 is
+# reachable, ARE_PS): find-trackers.ps1 / find-ads.ps1 run with -File on the same five layouts
+# through the \\wsl.localhost UNC path give --tsv and text equal to the same expected files
+# (input path -> <IN>, backslash -> /, CR dropped) and the right [INFO] layout line; a copy of
+# the jadx layout on a Windows drive (C:\...\Temp) gives the expected find-ads output too.
+# Run once, not once per awk shim (the PowerShell engine uses no awk). Without PowerShell the
+# ps1 part prints a note; t_parity (SKIP without PowerShell) is the strict gate.
 # requires: NS/sdk-audit.sh S/tracker-analysis/scripts/find-trackers.sh S/ad-analysis/scripts/find-ads.sh
 # requires: cmd: have_jq16
 set -uo pipefail
@@ -82,6 +90,16 @@ for name in apktool jadx jadx-sources jadx-xapk tree; do
     grep -q "$(printf '^EV\tgoogle-admob\tmanifest\tactivity\tcom.google.android.gms.ads.AdActivity$')" "$tmp/$name.find-ads.tsv"
 done
 
+# '.' (or 'sources/.') naming <out>/sources is jadx-sources too: the rule takes the basename
+# of the full path, as the ps1 twin does (t_parity checks the two twins on '.')
+for spec in "jadx/sources	." "jadx	sources/." "jadx/sources/com	.."; do
+  cwd=${spec%%"$(printf '\t')"*} arg=${spec#*"$(printf '\t')"}
+  (cd "$F/$cwd" && run_bash "$FA" "$arg" --tsv) >"$tmp/dot.tsv" 2>"$tmp/dot.err"
+  assert_eq 0 "$?" "'$arg' from $cwd: rc 0"
+  assert_true "'$arg' from $cwd: [INFO] layout: jadx-sources" grep -qx '\[INFO\] layout: jadx-sources' "$tmp/dot.err"
+  assert_files_eq "$tmp/jadx-sources.find-ads.tsv0" "$tmp/dot.tsv" "'$arg' from $cwd: --tsv == jadx-sources"
+done
+
 # tree without a manifest
 rm "$F/tree/AndroidManifest.xml"
 run_bash "$FA" "$F/tree" --tsv >"$tmp/nm.tsv" 2>"$tmp/nm.err"
@@ -90,5 +108,73 @@ assert_true "tree without manifest: says so" grep -q '# manifest: not found (use
 assert_eq "" "$(awk -F '\t' '$1 == "EV" && $3 == "manifest"' "$tmp/nm.tsv")" "tree without manifest: no manifest evidence"
 run_bash "$FA" "$F/tree" --tsv --manifest-path "$F/jadx/resources/AndroidManifest.xml" >"$tmp/mp.tsv" 2>/dev/null
 assert_files_eq "$tmp/tree.find-ads.tsv0" "$tmp/mp.tsv" "tree + --manifest-path == tree with its manifest"
+
+# ---- PowerShell twins ------------------------------------------------------------------------
+FTP=$S/tracker-analysis/scripts/find-trackers.ps1
+FAP=$S/ad-analysis/scripts/find-ads.ps1
+if [ ! -f "$NS/sdk-audit.ps1" ]; then
+  echo "note: sdk-audit.ps1 not present: ps1 layouts not checked"
+elif ! have_ps || ! command -v wslpath >/dev/null 2>&1; then
+  echo "note: PowerShell not available (ARE_PS=$ARE_PS): ps1 layouts not checked"
+elif [ -n "${ARE_AWK_SHIM:-}" ] && [ "$ARE_AWK_SHIM" != "$(awk_shims | head -n 1)" ]; then
+  echo "note: ps1 layouts checked in the $(awk_shims | head -n 1) run only"
+else
+  PSH=$TESTS_DIR/parity/ps.sh
+  FP=$tmp/fxp
+  bash "$TESTS_DIR/fixtures/make-layouts.sh" "$FP" >/dev/null || die "make-layouts.sh failed"
+  wtmp=""
+  for c in "${ARE_WINTMP:-}" /mnt/c/Users/*/AppData/Local/Temp /mnt/c/Windows/Temp; do
+    [ -n "$c" ] && [ -d "$c" ] && [ -w "$c" ] && { wtmp=$c; break; }
+  done
+  # psjob <name> <win-input> <script> [args...]: background -File run; outputs in $tmp/ps.<name>.*
+  psjob() {
+    _n=$1 _w=$2 _s=$3; shift 3
+    ( bash "$PSH" "$_s" "$_w" "$@" </dev/null >"$tmp/ps.$_n.out" 2>"$tmp/ps.$_n.err"; echo $? >"$tmp/ps.$_n.rc" ) &
+  }
+  k=0
+  while IFS="$(printf '\t')" read -r name dir; do
+    for tool in "$FTP" "$FAP"; do
+      tn=$(basename "$tool" .ps1)
+      psjob "$name.$tn.tsv" "$(wslpath -w "$FP/$dir")" "$tool" --tsv
+      psjob "$name.$tn.txt" "$(wslpath -w "$FP/$dir")" "$tool"
+      k=$((k + 2)); [ $((k % 4)) = 0 ] && wait
+    done
+  done <<LAYOUTS_EOF
+$LAYOUTS
+LAYOUTS_EOF
+  if [ -n "$wtmp" ]; then
+    wdir=$(mktemp -d "$wtmp/are-lay.XXXXXX")
+    _T_TMPS="$_T_TMPS
+$wdir"
+    cp -R "$FP/jadx" "$wdir/jadx"
+    psjob "drive.tsv" "$(wslpath -w "$wdir/jadx")" "$FAP" --tsv
+    psjob "drive.txt" "$(wslpath -w "$wdir/jadx")" "$FAP"
+  else
+    fail_check "no writable Windows temp dir: drive-letter input not checked"
+  fi
+  wait
+  while IFS="$(printf '\t')" read -r name dir; do
+    win=$(wslpath -w "$FP/$dir")
+    for tn in find-trackers find-ads; do
+      for kind in tsv txt; do
+        n=$name.$tn.$kind
+        assert_eq 0 "$(cat "$tmp/ps.$n.rc")" "ps1 $name $tn $kind: rc 0"
+        normalize "$win" <"$tmp/ps.$n.out" >"$tmp/ps.$n.norm"
+        assert_files_eq "$EXP/$name.$tn.$kind" "$tmp/ps.$n.norm" "ps1 $name $tn $kind == expected/layouts/$name.$tn.$kind"
+      done
+      assert_eq "[INFO] layout: $name" "$(tr -d '\r' <"$tmp/ps.$name.$tn.tsv.err" | grep '^\[INFO\] layout: ')" "ps1 $name $tn: [INFO] layout: $name"
+    done
+  done <<LAYOUTS_EOF
+$LAYOUTS
+LAYOUTS_EOF
+  if [ -n "$wtmp" ]; then
+    win=$(wslpath -w "$wdir/jadx")
+    for kind in tsv txt; do
+      assert_eq 0 "$(cat "$tmp/ps.drive.$kind.rc")" "ps1 drive-letter input ($win) $kind: rc 0"
+      normalize "$win" <"$tmp/ps.drive.$kind.out" >"$tmp/ps.drive.$kind.norm"
+      assert_files_eq "$EXP/jadx.find-ads.$kind" "$tmp/ps.drive.$kind.norm" "ps1 drive-letter input: jadx find-ads $kind == expected"
+    done
+  fi
+fi
 
 t_done

@@ -359,7 +359,8 @@ elif [ -d "$D/sources" ]; then
   LAYOUT=jadx
   echo sources >"$TMP/coderoots"
   if [ -f "$D/resources/AndroidManifest.xml" ]; then MAN=$D/resources/AndroidManifest.xml; MANDISP=$DISP/resources/AndroidManifest.xml; fi
-elif [ "$(basename "$D")" = sources ] && [ -f "$D/../resources/AndroidManifest.xml" ]; then
+elif [ "$(basename "$(CDPATH='' cd -- "$D" && pwd)")" = sources ] && [ -f "$D/../resources/AndroidManifest.xml" ]; then
+  # basename of the absolute (logical) path, as the ps1 twin: "." inside <out>/sources is jadx-sources
   LAYOUT=jadx-sources
   echo "" >"$TMP/coderoots"
   MAN=$D/../resources/AndroidManifest.xml; MANDISP=$DISP/../resources/AndroidManifest.xml
@@ -571,12 +572,15 @@ AWK
 
 # ---- inventory + ownership ---------------------------------------------------------------------
 : >"$TMP/list0"
+: >"$TMP/find.err"
 while IFS= read -r r; do
-  (cd "$D${r:+/$r}" && find . -type f \( -name '*.java' -o -name '*.kt' -o -name '*.smali' \) -print 2>/dev/null) |
+  # find reports an unreadable directory and goes on (the ps1 twin does the same)
+  (cd "$D${r:+/$r}" && find . -type f \( -name '*.java' -o -name '*.kt' -o -name '*.smali' \) -print 2>>"$TMP/find.err") |
     SA_RR=$r awk 'BEGIN { rr = ENVIRON["SA_RR"] } { sub(/^\.\//, ""); print (rr == "" ? $0 : rr "/" $0) "\t" rr "\t" $0 }'
 done <"$TMP/coderoots" >"$TMP/list0"
 sort -t "$TAB" -k1,1 "$TMP/list0" >"$TMP/list.tsv"
 NFILES=$(wc -l <"$TMP/list.tsv" | tr -d ' ')
+[ -s "$TMP/find.err" ] && info "# unreadable directories skipped (check the permissions)"
 info "code files: $NFILES"
 
 cat >"$TMP/inv.awk" <<'AWK'
@@ -929,6 +933,7 @@ function instance(m,   n, a, i, ok, kk, nk, b, j) {
   n = split(VLIST, a, " ")
   for (i = 1; i <= n; i++) {
     ok = keyof(VIS[a[i]])
+    if (!(ok in OUTERS)) continue   # no OUTERS[ok] autovivification: wild_ref tests (c in OUTERS)
     nk = split(OUTERS[ok], b, " ")
     for (j = 1; j <= nk; j++) {
       kk = b[j]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # t_parity.sh -- sh/ps1 parity through Windows PowerShell 5.1 (DESIGN 9.1 I21, I22).
-# Usage: t_parity.sh [--only <section>]...     sections: registry-query adwrapper
+# Usage: t_parity.sh [--only <section>]...     sections: registry-query adwrapper find
 #
 # registry-query (I21): registry-query.ps1 run with -File (the way the docs tell users:
 # tests/parity/ps.sh) prints the same bytes as registry-query.sh for rows / shared /
@@ -22,6 +22,23 @@
 # Corpus part (8 apps: sh --registry == ps1 -File -Registry == ps1 in-process via `&` as
 # decode-apk.ps1 calls it, $LASTEXITCODE 0): only when the section is named with --only
 # or under `run.sh full` (ARE_FULL=1): it takes a few minutes.
+# find (I22; DESIGN 5, 10 row 9; runs when NS/sdk-audit.ps1 exists): find-trackers.ps1 /
+# find-ads.ps1 vs find-trackers.sh / find-ads.sh. --tsv and --summary byte-identical (after
+# the host's final CR), text identical after normalization (common.sh normalize: CR, input
+# prefix -> <IN>, backslash -> /), --json identical after `jq -S -c 'del(.input)'` with the
+# input prefix mapped the same way, [INFO] stderr identical after normalization. Inputs: the
+# five layouts of fixtures/make-layouts.sh through the \\wsl.localhost UNC path, a copy of the
+# jadx layout on a Windows drive (C:\...\Temp) and the same copy as a drive root (subst X:,
+# 'X:' and 'X:\'), a copy with an unreadable (chmod 000) directory and one with symlinks
+# under the code root, '.' run from inside <out>/sources (jadx-sources in both twins),
+# HeartStar (jadx; $ARE_JADX_EXTRA) when present. Option forms --admob / -admob / -Admob,
+# -ManifestPath, --sdk:flurry / -sdk:flurry / --SDK=flurry, --; errors (--bogus, missing dir, --sdk outside the group, value on a flag,
+# missing engine), -Help, --list-sdks. In-process: `$x = & find-ads.ps1 D --json |
+# ConvertFrom-Json` non-empty, `& ... --tsv` captured as ONE string == sh, $LASTEXITCODE, no
+# variable or function leaks into the caller, [Console]::OutputEncoding restored. Static: the
+# three .ps1 are ASCII and LF-only, the engine is function-only, no param() block. badpiggies
+# (pristine apktool decode) and the pitfall fixtures only with --only find or under run.sh
+# full (ARE_FULL=1).
 # SKIP when PowerShell is not reachable (ARE_PS=none).
 # requires: NS/registry-query.sh NS/registry-query.ps1 NS/registry-lib.ps1
 # requires: cmd: have_jq16
@@ -38,7 +55,7 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-for s in $only; do case "$s" in registry-query|adwrapper) ;; *) die "unknown section: $s (known: registry-query adwrapper)" ;; esac; done
+for s in $only; do case "$s" in registry-query|adwrapper|find) ;; *) die "unknown section: $s (known: registry-query adwrapper find)" ;; esac; done
 want() { [ -z "$only" ] && return 0; case " $only " in *" $1 "*) return 0 ;; esac; return 1; }
 
 have_ps || skip "PowerShell not available (ARE_PS=$ARE_PS)"
@@ -367,8 +384,312 @@ $wdir"
   echo "adwrapper: $n_adw sh/ps1 cases compared"
 }
 
+# ---- section find -----------------------------------------------------------------------
+# ps_bg <name> <script.ps1> [args...]: one PowerShell run in the background (stdout/stderr/rc
+# in $tmp/<name>.{ps,ps.err,ps.rc}); ps_wait waits for all of them. At most $PS_JOBS run at
+# once (each run reads the whole registry, so they are run in parallel).
+PS_JOBS=${ARE_PS_JOBS:-4}
+_ps_n=0
+ps_bg() {
+  _n=$1; shift
+  ( bash "$PSH" "$@" </dev/null >"$tmp/$_n.ps" 2>"$tmp/$_n.ps.err"; echo $? >"$tmp/$_n.ps.rc" ) &
+  _ps_n=$((_ps_n + 1))
+  if [ "$_ps_n" -ge "$PS_JOBS" ]; then wait; _ps_n=0; fi
+}
+ps_wait() { wait; _ps_n=0; }
+
+section_find() {
+  FTS=$S/tracker-analysis/scripts/find-trackers.sh
+  FAS=$S/ad-analysis/scripts/find-ads.sh
+  FTP=$S/tracker-analysis/scripts/find-trackers.ps1
+  FAP=$S/ad-analysis/scripts/find-ads.ps1
+  ENG=$NS/sdk-audit.ps1
+  if [ ! -f "$ENG" ]; then echo "note: $ENG not present: find section not run"; return 0; fi
+  n_find=0
+
+  # static rules: ASCII only, LF only, function-only engine, no param() block
+  for f in "$ENG" "$FTP" "$FAP"; do
+    assert_eq "" "$(LC_ALL=C grep -nP '[^\x00-\x7F]' "$f" | head -3)" "$(basename "$f"): ASCII only"
+    assert_eq 0 "$(count_cr "$f")" "$(basename "$f"): LF line endings"
+  done
+  for f in "$FTP" "$FAP"; do
+    assert_false "$(basename "$f"): no param() block" grep -qiE '^[[:space:]]*param[[:space:]]*\(' "$f"
+  done
+  # the engine: a script-level param() block would be a top-level statement (checked below)
+  assert_eq "" "$(LC_ALL=C awk '/^[ \t]*#/ || /^[ \t]*$/ { next } /^function / { inf = 1 } !inf { print FNR ": " $0 } /^}/ { inf = 0 }' "$ENG" | head -3)" \
+    "sdk-audit.ps1: function definitions only (no top-level statement)"
+
+  # find_pair <name> <tool> <mode: tsv|summary|text|json> <linux-input> <win-input> [args...]:
+  # sh now, ps1 in the background; find_check <name> compares them once ps_wait returned
+  find_pair() {
+    _n=$1 _t=$2 _m=$3 _li=$4 _wi=$5; shift 5
+    case "$_t" in find-trackers) _ss=$FTS _sp=$FTP ;; *) _ss=$FAS _sp=$FAP ;; esac
+    _ma=""; [ "$_m" != text ] && _ma="--$_m"
+    printf '%s\t%s\t%s\t%s\n' "$_m" "$_li" "$_wi" "$_t" >"$tmp/$_n.meta"
+    run_bash "$_ss" "$_li" ${_ma:+"$_ma"} "$@" >"$tmp/$_n.sh" 2>"$tmp/$_n.sh.err"; echo $? >"$tmp/$_n.sh.rc"
+    ps_bg "$_n" "$_sp" "$_wi" ${_ma:+"$_ma"} "$@"
+  }
+  # jq program: drop .input, map the input prefix to <IN> and '\' to '/' in every string
+  JQN='del(.input) | walk(if type == "string" then ((if startswith($p) then "<IN>" + .[($p | length):] else . end) | gsub("\\\\"; "/")) else . end)'
+  find_check() {
+    _n=$1
+    IFS="$(printf '\t')" read -r _m _li _wi _t <"$tmp/$_n.meta"
+    n_find=$((n_find + 1))
+    assert_eq "$(cat "$tmp/$_n.sh.rc")" "$(cat "$tmp/$_n.ps.rc")" "[$_n] same exit code"
+    assert_eq 0 "$(cat "$tmp/$_n.ps.rc")" "[$_n] ps1 exit 0"
+    strip_final_cr "$tmp/$_n.ps"
+    case "$_m" in
+      tsv|summary)
+        assert_eq 0 "$(count_cr "$tmp/$_n.ps")" "[$_n] ps1 stdout: no CR besides the host's final one"
+        assert_files_eq "$tmp/$_n.sh" "$tmp/$_n.ps" "[$_n] --$_m byte-identical" ;;
+      text)
+        normalize "$_li" <"$tmp/$_n.sh" >"$tmp/$_n.sh.n"; normalize "$_wi" <"$tmp/$_n.ps" >"$tmp/$_n.ps.n"
+        assert_files_eq "$tmp/$_n.sh.n" "$tmp/$_n.ps.n" "[$_n] text identical after normalization" ;;
+      json)
+        jq -S -c --arg p "$_li" "$JQN" "$tmp/$_n.sh" >"$tmp/$_n.sh.n" 2>&1
+        jq -S -c --arg p "$_wi" "$JQN" "$tmp/$_n.ps" >"$tmp/$_n.ps.n" 2>&1
+        assert_true "[$_n] --json parses" [ -s "$tmp/$_n.ps.n" ]
+        assert_files_eq "$tmp/$_n.sh.n" "$tmp/$_n.ps.n" "[$_n] --json identical (jq -S -c, del(.input), paths normalized)" ;;
+    esac
+    normalize "$_li" <"$tmp/$_n.sh.err" >"$tmp/$_n.sh.errn"; normalize "$_wi" <"$tmp/$_n.ps.err" >"$tmp/$_n.ps.errn"
+    assert_files_eq "$tmp/$_n.sh.errn" "$tmp/$_n.ps.errn" "[$_n] stderr ([INFO] lines) identical after normalization"
+  }
+
+  LAY=$tmp/lay
+  bash "$TESTS_DIR/fixtures/make-layouts.sh" "$LAY" >/dev/null || { fail_check "make-layouts.sh failed"; return 0; }
+  names=""
+  # every layout: --tsv byte-identical; jadx + apktool: text, --summary, --json too
+  for spec in apktool:apktool jadx:jadx jadx-sources:jadx/sources jadx-xapk:xapk tree:tree; do
+    ln_=${spec%%:*} dir=$LAY/${spec#*:}
+    for tool in find-trackers find-ads; do
+      modes=tsv
+      case "$ln_" in apktool|jadx) modes="tsv text summary json" ;; esac
+      for m in $modes; do find_pair "lay.$ln_.$tool.$m" "$tool" "$m" "$dir" "$(wslpath -w "$dir")"; names="$names lay.$ln_.$tool.$m"; done
+    done
+  done
+  # option forms (DESIGN 5.1): the same output as the sh long form
+  J=$LAY/jadx; JW=$(wslpath -w "$J")
+  run_bash "$FAS" "$J" --admob >"$tmp/o.admob.sh" 2>/dev/null
+  for v in --admob -admob -Admob; do ps_bg "o.ads$v" "$FAP" "$JW" "$v"; done
+  run_bash "$FTS" "$J" --sdk flurry >"$tmp/o.flurry.sh" 2>/dev/null
+  for v in --sdk:flurry -sdk:flurry --SDK=flurry; do ps_bg "o.trk$v" "$FTP" "$JW" "$v"; done
+  run_bash "$FAS" "$J/sources" --tsv --manifest-path "$J/resources/AndroidManifest.xml" >"$tmp/o.mp.sh" 2>/dev/null
+  ps_bg o.mp "$FAP" "$JW\\sources" --tsv -ManifestPath "$JW\\resources\\AndroidManifest.xml"
+  ps_bg o.dd "$FAP" --tsv -- "$JW"
+  run_bash "$FAS" "$J" --tsv >"$tmp/o.tsv.sh" 2>/dev/null
+  # errors and listings
+  ps_bg e.bogus "$FAP" "$JW" --bogus
+  ps_bg e.missing "$FAP" 'C:\nonexistent\dir'
+  ps_bg e.adjust "$FAP" "$JW" --sdk adjust
+  ps_bg e.flagval "$FTP" "$JW" --all:1
+  ps_bg e.help "$FTP" -Help
+  ps_bg e.list "$FAP" --list-sdks
+  run_bash "$FAS" --list-sdks >"$tmp/e.list.sh" 2>/dev/null
+  # a copy of the jadx layout on a Windows drive (not the \\wsl.localhost UNC path)
+  wtmp=$(win_tmp)
+  if [ -n "$wtmp" ]; then
+    wdir=$(mktemp -d "$wtmp/are-find.XXXXXX")
+    _T_TMPS="$_T_TMPS
+$wdir"
+    cp -R "$J" "$wdir/jadx"
+    for tool in find-trackers find-ads; do
+      find_pair "drive.$tool.tsv" "$tool" tsv "$J" "$(wslpath -w "$wdir/jadx")"; names="$names drive.$tool.tsv"
+      find_pair "drive.$tool.text" "$tool" text "$J" "$(wslpath -w "$wdir/jadx")"; names="$names drive.$tool.text"
+    done
+    # the sh side ran on $J: normalization maps both inputs to <IN>
+    # the same copy as a drive root (subst X:): 'X:' with every check, 'X:\' --tsv (rows are
+    # relative to the input) and its [INFO] lines (no doubled '\' after the root)
+    sdrv=""
+    for _l in R S T U V W X Y Z P O N M; do
+      case "$(cd /mnt/c && cmd.exe /c "if exist $_l:\\ (echo used) else (echo free)" 2>/dev/null | tr -d '\r')" in
+        free) sdrv=$_l; break ;;
+      esac
+    done
+    if [ -n "$sdrv" ] && (cd /mnt/c && cmd.exe /c "subst $sdrv: $(wslpath -w "$wdir/jadx")" >/dev/null 2>&1); then
+      for tool in find-trackers find-ads; do
+        find_pair "root.$tool.tsv" "$tool" tsv "$J" "$sdrv:"; names="$names root.$tool.tsv"
+        find_pair "root.$tool.text" "$tool" text "$J" "$sdrv:"; names="$names root.$tool.text"
+      done
+      ps_bg rootbs "$FAP" "$sdrv:\\" --tsv
+    else
+      sdrv=""
+      echo "note: no free drive letter or subst failed: drive-root input case not run"
+    fi
+  else
+    fail_check "no writable Windows temp dir: drive-letter input case not run"
+  fi
+  # an unreadable directory under the code root: both twins skip only that directory and
+  # say so on stderr (find goes on; the ps1 walk catches per directory)
+  PERM=$tmp/perm
+  cp -R "$J" "$PERM"
+  mkdir -p "$PERM/sources/com/aaa/locked"
+  printf 'package com.aaa.locked;\n\nimport com.unity3d.ads.UnityAds;\n\npublic class X {\n    void f() { UnityAds.initialize(null, "1", null); }\n}\n' >"$PERM/sources/com/aaa/locked/X.java"
+  chmod 000 "$PERM/sources/com/aaa/locked"
+  perm_locked=1; [ -r "$PERM/sources/com/aaa/locked" ] && perm_locked=0
+  for tool in find-trackers find-ads; do
+    find_pair "perm.$tool.tsv" "$tool" tsv "$PERM" "$(wslpath -w "$PERM")"; names="$names perm.$tool.tsv"
+    find_pair "perm.$tool.text" "$tool" text "$PERM" "$(wslpath -w "$PERM")"; names="$names perm.$tool.text"
+  done
+  # symlinks under the code root: neither twin follows them (find -P -type f; reparse points)
+  SYM=$tmp/sym
+  cp -R "$J" "$SYM"
+  mkdir -p "$SYM/other"
+  printf 'package com.example.app;\n\nimport com.google.android.gms.ads.MobileAds;\n\npublic class L {\n    void f() { MobileAds.initialize(this); }\n}\n' >"$SYM/other/L.java"
+  ln -s ../../../../other/L.java "$SYM/sources/com/example/app/L.java"
+  ln -s ../../../other "$SYM/sources/com/example/lnk"
+  find_pair sym.find-ads.tsv find-ads tsv "$SYM" "$(wslpath -w "$SYM")"; names="$names sym.find-ads.tsv"
+  # '.' run from inside <out>/sources is jadx-sources in both twins (basename of the full path)
+  (cd "$J/sources" && run_bash "$FAS" . --tsv) >"$tmp/dot.sh" 2>"$tmp/dot.sh.err"
+  cat >"$tmp/dot.ps1" <<EOF
+Set-Location -LiteralPath '$(wslpath -w "$J/sources")'
+\$o = & '$(wslpath -w "$FAP")' . --tsv
+\$o
+exit \$LASTEXITCODE
+EOF
+  ps_bg dot "$tmp/dot.ps1"
+  # HeartStar (jadx) when present
+  HOMEP=$(dirname "$ARE_WORKSPACE")
+  extra=${ARE_JADX_EXTRA:-heartstar=$HOMEP/re-test5/HeartStar_1.2.5_align-decompiled}
+  HS=$(printf '%s\n' "$extra" | tr '|' '\n' | awk 'index($0, "heartstar=") == 1 { print substr($0, 11); exit }')
+  if [ -n "$HS" ] && [ -d "$HS" ]; then
+    for tool in find-trackers find-ads; do
+      for m in tsv summary text json; do find_pair "hs.$tool.$m" "$tool" "$m" "$HS" "$(wslpath -w "$HS")"; names="$names hs.$tool.$m"; done
+    done
+  else
+    echo "note: HeartStar jadx tree not found (${HS:-unset}): HeartStar part skipped"
+  fi
+  # badpiggies (apktool) and the pitfall fixtures: --only find or run.sh full
+  big=0
+  case " $only " in *" find "*) big=1 ;; esac
+  [ "${ARE_FULL:-0}" = 1 ] && big=1
+  if [ "$big" = 1 ]; then
+    BP=$ARE_PRISTINE/badpiggies; [ -d "$BP" ] || BP=$ARE_CORPUS/badpiggies-decoded
+    if [ -d "$BP" ]; then
+      for tool in find-trackers find-ads; do
+        for m in tsv summary text json; do find_pair "bp.$tool.$m" "$tool" "$m" "$BP" "$(wslpath -w "$BP")"; names="$names bp.$tool.$m"; done
+      done
+    else
+      fail_check "badpiggies tree not found under $ARE_PRISTINE or $ARE_CORPUS"
+    fi
+    PIT=$tmp/pit
+    bash "$TESTS_DIR/fixtures/pitfalls/make-pitfalls.sh" "$PIT" >/dev/null || fail_check "make-pitfalls.sh failed"
+    for c in "$PIT"/*/; do
+      c=${c%/}; cn=$(basename "$c")
+      for tool in find-trackers find-ads; do find_pair "pit.$cn.$tool.tsv" "$tool" tsv "$c" "$(wslpath -w "$c")"; names="$names pit.$cn.$tool.tsv"; done
+    done
+  else
+    echo "note: badpiggies and pitfall parity not run (name the section with --only find, or run.sh full)"
+  fi
+
+  # in-process: capture, ConvertFrom-Json, no leaks, encoding restored, errors
+  cat >"$tmp/fin.ps1" <<EOF
+\$ErrorActionPreference = 'Continue'
+\$engine = 'caller-engine'
+\$Tool = 'caller-tool'
+\$before = @(Get-Variable | ForEach-Object { \$_.Name })
+\$enc0 = [Console]::OutputEncoding.WebName
+\$x = & '$(wslpath -w "$FAP")' '$JW' --json | ConvertFrom-Json
+'EXIT:' + \$LASTEXITCODE
+'ADS:' + @(\$x.ad_sdks).Count
+'SCHEMA:' + \$x.schema_version
+\$y = & '$(wslpath -w "$FAP")' '$JW' --tsv
+'TYPE:' + \$y.GetType().FullName
+[IO.File]::WriteAllText('$(wslpath -w "$tmp")\\fin.tsv', \$y, (New-Object Text.UTF8Encoding(\$false)))
+\$z = & '$(wslpath -w "$FTP")' '$JW' -Summary -Flurry
+'EXIT2:' + \$LASTEXITCODE
+\$null = & '$(wslpath -w "$FAP")' '$JW' --bogus 2>\$null
+'EXITBAD:' + \$LASTEXITCODE
+\$after = @(Get-Variable | ForEach-Object { \$_.Name })
+\$new = @(\$after | Where-Object { \$before -notcontains \$_ -and @('before', 'x', 'y', 'z', 'enc0', 'LASTEXITCODE') -notcontains \$_ })
+'NEWVARS:' + (\$new -join ',')
+'ENGINE:' + \$engine
+'TOOL:' + \$Tool
+'FUNC:' + [bool](Get-Command Invoke-SdkAudit -CommandType Function -ErrorAction SilentlyContinue)
+'ENC:' + (\$enc0 -eq [Console]::OutputEncoding.WebName)
+\$env:SDK_AUDIT_ENGINE_PS1 = 'C:\\nonexistent\\sdk-audit.ps1'
+\$null = & '$(wslpath -w "$FAP")' '$JW' 2>\$null
+'EXITNOENG:' + \$LASTEXITCODE
+EOF
+  ps_bg fin "$tmp/fin.ps1"
+  SDK_AUDIT_ENGINE_PS1='C:\nonexistent\sdk-audit.ps1' WSLENV="SDK_AUDIT_ENGINE_PS1${WSLENV:+:$WSLENV}" bash "$PSH" "$FAP" "$JW" </dev/null >"$tmp/e.noeng.ps" 2>"$tmp/e.noeng.ps.err"
+  echo $? >"$tmp/e.noeng.ps.rc"
+  ps_wait
+
+  chmod 755 "$PERM/sources/com/aaa/locked"
+  if [ -n "${sdrv:-}" ]; then (cd /mnt/c && cmd.exe /c "subst $sdrv: /D" >/dev/null 2>&1); fi
+  for n in $names; do find_check "$n"; done
+  if [ -n "${sdrv:-}" ]; then
+    strip_final_cr "$tmp/rootbs.ps"; n_find=$((n_find + 1))
+    assert_eq 0 "$(cat "$tmp/rootbs.ps.rc")" "ps1 drive root '$sdrv:\\': exit 0"
+    assert_files_eq "$tmp/drive.find-ads.tsv.sh" "$tmp/rootbs.ps" "ps1 drive root '$sdrv:\\' --tsv == sh --tsv"
+    assert_eq "[INFO] layout: jadx|[INFO] code root: $sdrv:\\sources|[INFO] manifest: $sdrv:\\resources\\AndroidManifest.xml" \
+      "$(tr -d '\r' <"$tmp/rootbs.ps.err" | head -n 3 | paste -sd '|' -)" "ps1 drive root '$sdrv:\\': jadx layout, no doubled separator"
+  fi
+  if [ "$perm_locked" = 1 ]; then
+    assert_true "unreadable directory: sh says so" grep -qx '\[INFO\] # unreadable directories skipped (check the permissions)' "$tmp/perm.find-ads.tsv.sh.err"
+  else
+    echo "note: chmod 000 does not lock the directory (root?): unreadable-directory message not checked"
+  fi
+  assert_files_eq "$tmp/o.tsv.sh" "$tmp/sym.find-ads.tsv.sh" "symlinks: sh --tsv == the jadx layout's (L.java and lnk/ behind symlinks are not code)"
+  strip_final_cr "$tmp/dot.ps"; n_find=$((n_find + 1))
+  assert_eq 0 "$(cat "$tmp/dot.ps.rc")" "ps1 '.' inside sources/: exit 0"
+  assert_true "sh '.' inside sources/: [INFO] layout: jadx-sources" grep -qx '\[INFO\] layout: jadx-sources' "$tmp/dot.sh.err"
+  assert_files_eq "$tmp/dot.sh" "$tmp/dot.ps" "'.' inside sources/: ps1 --tsv == sh --tsv"
+  tr -d '\r' <"$tmp/dot.ps.err" | tr '\\' / >"$tmp/dot.ps.errn"
+  assert_files_eq "$tmp/dot.sh.err" "$tmp/dot.ps.errn" "'.' inside sources/: same [INFO] lines ('\\' -> '/')"
+  for v in --admob -admob -Admob; do
+    n_find=$((n_find + 1)); strip_final_cr "$tmp/o.ads$v.ps"
+    normalize "$J" <"$tmp/o.admob.sh" >"$tmp/o.admob.sh.n"; normalize "$JW" <"$tmp/o.ads$v.ps" >"$tmp/o.ads$v.ps.n"
+    assert_files_eq "$tmp/o.admob.sh.n" "$tmp/o.ads$v.ps.n" "ps1 $v == sh --admob (normalized text)"
+  done
+  for v in --sdk:flurry -sdk:flurry --SDK=flurry; do
+    n_find=$((n_find + 1)); strip_final_cr "$tmp/o.trk$v.ps"
+    normalize "$J" <"$tmp/o.flurry.sh" >"$tmp/o.flurry.sh.n"; normalize "$JW" <"$tmp/o.trk$v.ps" >"$tmp/o.trk$v.ps.n"
+    assert_files_eq "$tmp/o.flurry.sh.n" "$tmp/o.trk$v.ps.n" "ps1 $v == sh --sdk flurry (normalized text)"
+  done
+  strip_final_cr "$tmp/o.mp.ps"; n_find=$((n_find + 1))
+  assert_files_eq "$tmp/o.mp.sh" "$tmp/o.mp.ps" "ps1 -ManifestPath == sh --manifest-path (--tsv)"
+  strip_final_cr "$tmp/o.dd.ps"; n_find=$((n_find + 1))
+  assert_files_eq "$tmp/o.tsv.sh" "$tmp/o.dd.ps" "ps1 --tsv -- <dir> == sh --tsv <dir>"
+  assert_eq 1 "$(cat "$tmp/e.bogus.ps.rc")" "ps1 --bogus: exit 1"
+  assert_eq "" "$(tr -d '\r\n' <"$tmp/e.bogus.ps")" "ps1 --bogus: nothing on stdout"
+  assert_true "ps1 --bogus: error + usage on stderr" grep -q '^Usage: find-ads.ps1 <input-dir>' "$tmp/e.bogus.ps.err"
+  assert_eq "Error: unknown option: --bogus" "$(head -n 1 "$tmp/e.bogus.ps.err" | tr -d '\r')" "ps1 --bogus: message"
+  assert_eq 1 "$(cat "$tmp/e.missing.ps.rc")" "ps1 missing directory: exit 1"
+  assert_eq 'Error: Directory not found: C:\nonexistent\dir' "$(tr -d '\r' <"$tmp/e.missing.ps.err")" "ps1 missing directory: message"
+  assert_eq 1 "$(cat "$tmp/e.adjust.ps.rc")" "ps1 find-ads --sdk adjust: exit 1"
+  assert_eq "Error: 'adjust' is a find-trackers SDK" "$(tr -d '\r' <"$tmp/e.adjust.ps.err")" "ps1 find-ads --sdk adjust: message"
+  assert_eq 1 "$(cat "$tmp/e.flagval.ps.rc")" "ps1 --all:1 (value on a flag): exit 1"
+  assert_eq 0 "$(cat "$tmp/e.help.ps.rc")" "ps1 -Help: exit 0"
+  assert_true "ps1 -Help: usage on stdout" grep -q '^Usage: find-trackers.ps1 <input-dir>' "$tmp/e.help.ps"
+  strip_final_cr "$tmp/e.list.ps"
+  assert_files_eq "$tmp/e.list.sh" "$tmp/e.list.ps" "ps1 --list-sdks == sh --list-sdks"
+  assert_eq 1 "$(cat "$tmp/e.noeng.ps.rc")" "ps1 missing engine (SDK_AUDIT_ENGINE_PS1): exit 1"
+  assert_true "ps1 missing engine: message" grep -q 'Error: sdk-audit engine not found at C:\\nonexistent\\sdk-audit.ps1 (install the whole android-reverse-engineering plugin)' "$tmp/e.noeng.ps.err"
+
+  assert_eq 0 "$(cat "$tmp/fin.ps.rc")" "in-process driver: exit 0"
+  tr -d '\r' <"$tmp/fin.ps" >"$tmp/fin.txt"
+  kv() { sed -n "s/^$1://p" "$tmp/fin.txt"; }
+  assert_eq 0 "$(kv EXIT)" "in-process --json: \$LASTEXITCODE 0"
+  assert_true "in-process --json | ConvertFrom-Json: ad_sdks not empty" [ "$(kv ADS)" -gt 0 ]
+  assert_eq 2 "$(kv SCHEMA)" "in-process --json: schema_version 2"
+  assert_eq System.String "$(kv TYPE)" "in-process --tsv: ONE string"
+  printf '\n' >>"$tmp/fin.tsv"
+  assert_files_eq "$tmp/o.tsv.sh" "$tmp/fin.tsv" "in-process --tsv == sh --tsv (LF inside, no final LF)"
+  assert_eq 0 "$(kv EXIT2)" "in-process -Summary -Flurry: \$LASTEXITCODE 0"
+  assert_eq 1 "$(kv EXITBAD)" "in-process --bogus: \$LASTEXITCODE 1"
+  assert_eq "" "$(kv NEWVARS)" "in-process: no variable leaks into the caller"
+  assert_eq caller-engine "$(kv ENGINE)" "in-process: caller's \$engine intact"
+  assert_eq caller-tool "$(kv TOOL)" "in-process: caller's \$Tool intact"
+  assert_eq False "$(kv FUNC)" "in-process: Invoke-SdkAudit not defined in the caller"
+  assert_eq True "$(kv ENC)" "in-process: [Console]::OutputEncoding restored"
+  assert_eq 1 "$(kv EXITNOENG)" "in-process: missing engine -> \$LASTEXITCODE 1"
+  echo "find: $n_find sh/ps1 output pairs compared"
+}
+
 ran=0
 if want registry-query; then section_registry_query; ran=1; fi
 if want adwrapper; then section_adwrapper; ran=1; fi
+if want find; then section_find; ran=1; fi
 [ "$ran" = 1 ] || die "no section selected"
 t_done

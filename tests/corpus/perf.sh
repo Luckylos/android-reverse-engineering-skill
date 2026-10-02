@@ -5,6 +5,9 @@
 #   HeartStar jadx < 1 s, Subway apktool < 10 s, Water Sort jadx < 10 s.
 # Trees: $ARE_PRISTINE/subway (apktool), the HeartStar and Water Sort jadx outputs of
 # $ARE_JADX_EXTRA (as in groundtruth.sh). SKIP when none exists.
+# PowerShell twin (when NS/sdk-audit.ps1 exists and PowerShell is reachable): find-ads.ps1
+# --tsv with -File on HeartStar and Subway through \\wsl.localhost; no hard budget, the time
+# is logged, and Subway beyond the 60 s objective is a WARN (DESIGN 5.4 "Performance").
 # requires: NS/sdk-audit.sh S/tracker-analysis/scripts/find-trackers.sh S/ad-analysis/scripts/find-ads.sh
 # requires: cmd: have_jq16
 set -uo pipefail
@@ -37,6 +40,26 @@ while IFS='|' read -r name dir budget; do
   done
 done <"${TMPDIR:-/tmp}/are-perf.$$"
 rm -f "${TMPDIR:-/tmp}/are-perf.$$"
+if [ -f "$NS/sdk-audit.ps1" ] && have_ps && command -v wslpath >/dev/null 2>&1; then
+  FAP=$S/ad-analysis/scripts/find-ads.ps1
+  for spec in "heartstar-jadx|$(extra heartstar)|0" "subway-apktool|$ARE_PRISTINE/subway|60"; do
+    name=${spec%%|*}; rest=${spec#*|}; dir=${rest%|*}; budget=${rest##*|}
+    if [ -z "$dir" ] || [ ! -d "$dir" ]; then echo "note: $name (ps1): no tree (${dir:-unset})"; continue; fi
+    t0=$(now)
+    bash "$TESTS_DIR/parity/ps.sh" "$FAP" "$(wslpath -w "$dir")" --tsv </dev/null >/dev/null 2>&1
+    rc=$?
+    t1=$(now)
+    dt=$(awk -v a="$t0" -v b="$t1" 'BEGIN { printf "%.2f", b - a }')
+    ran=$((ran + 1))
+    if [ "$rc" != 0 ]; then echo "WARN: $name find-ads.ps1: rc $rc"; warn=$((warn + 1))
+    elif [ "$budget" != 0 ] && awk -v d="$dt" -v b="$budget" 'BEGIN { exit !(d > b) }'; then
+      echo "WARN: $name find-ads.ps1: ${dt}s (objective ${budget}s)"; warn=$((warn + 1))
+    elif [ "$budget" = 0 ]; then echo "ok: $name find-ads.ps1: ${dt}s (logged only)"
+    else echo "ok: $name find-ads.ps1: ${dt}s (objective ${budget}s)"; fi
+  done
+else
+  echo "note: PowerShell twin not timed (sdk-audit.ps1 missing or PowerShell not reachable)"
+fi
 [ "$ran" -gt 0 ] || skip "no perf tree found"
 echo "perf: $ran run(s), $warn over budget (WARN only)"
 exit 0

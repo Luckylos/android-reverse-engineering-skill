@@ -191,4 +191,14 @@ entry_points "$tmp/$c.txt" >"$tmp/$c.ep"
 assert_true "$c: Entry Points has WildAds.java" grep -q 'com/example/app/WildAds.java:[0-9]' "$tmp/$c.ep"
 assert_false "$c: Entry Points has nothing from NoWild.java" grep -q 'NoWild.java' "$tmp/$c.ep"
 
+# P20
+c=p20-awk-autovivify
+run "$FT" $c tsv --tsv
+assert_eq "app_refs=1" "$(awk -F '\t' '$1 == "SDK" && $2 == "mixpanel" { print $11 }' "$tmp/$c.tsv")" \
+  "$c: mixpanel app_refs=1 (only A1.java's explicit FQCN)"
+run "$FT" $c txt --entrypoints
+entry_points "$tmp/$c.txt" >"$tmp/$c.ep"
+assert_true "$c: Entry Points has A1.java" grep -q 'com/example/app/A1.java:[0-9]' "$tmp/$c.ep"
+assert_false "$c: Entry Points has nothing from B1.java (Foo is no tree or API class)" grep -q 'B1.java' "$tmp/$c.ep"
+
 t_done

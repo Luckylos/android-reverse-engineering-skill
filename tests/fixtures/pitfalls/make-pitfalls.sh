@@ -338,4 +338,22 @@ public class NoWild {
 }
 JEOF
 
+# P20: a class seen through an explicit FQCN in one file must not make a later file's
+# wildcard import of the same package resolve that name (awk autovivification of OUTERS[k]
+# in instance(): the sh engine then emitted [mixpanel/ref] for B1.java, the ps1 twin did not)
+c=p20-awk-autovivify
+manifest_jadx $c
+java $c com.example.app.A1 <<'JEOF'
+class A1 {
+    void f(Object x) { com.mixpanel.android.mpmetrics.Foo.bar(); x.track("e"); }
+}
+JEOF
+java $c com.example.app.B1 <<'JEOF'
+import com.mixpanel.android.mpmetrics.*;
+
+class B1 {
+    Foo f; Object o = nullio.appmetrica.analytics.Bar;
+}
+JEOF
+
 echo "pitfall fixtures written to $O"
