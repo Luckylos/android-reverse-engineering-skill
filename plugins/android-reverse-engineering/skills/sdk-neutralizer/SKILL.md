@@ -350,11 +350,13 @@ Parse the output for `PATCHED:` and `MANIFEST_DISABLED:` lines to build the repo
 - `--manifest-components-file <file>` — load manifest components from file (registry-scan.py output)
 - `--ads` / `--trackers` / `--all` — target selection (for builtin mode)
 - `--dry-run` — preview only
-- `--no-backup` — skip `.smali.bak` creation
+- `--backup` — keep a `.smali.bak` copy of every patched file (off by default; `--no-backup` is the default)
 - `--no-manifest` — skip manifest patching
 - `--package <path>` — neutralize all methods in a package recursively
 - `--replay` — replay patches from a previous `neutralize-manifest.json` (useful after re-decode)
 - `--no-save-manifest` — skip saving `neutralize-manifest.json`
+
+With `--targets-file`, every target line that patched nothing prints `TARGET_SKIPPED:<sdk>:<class>:<method>:<reason>` (`class-not-found`, or `not-patched` = method absent, abstract/native, or `SKIP_INJECT`), and the summary lists, per SDK, the target lines applied vs emitted. An SDK marked `<- nothing applied` was MATCHED by registry-scan but nothing was stubbed: typically a package false positive (e.g. AdMob on `gms.ads.identifier` only) or a different SDK version (e.g. UMP 2.x vs the 3.x consent targets). Report these to the user instead of counting the SDK as neutralized.
 
 After a successful (non-dry-run) neutralization, a `neutralize-manifest.json` is saved in the decoded directory. This file records all patched methods and disabled components. If the APK is re-decoded, use `--replay` to reapply the same patches automatically.
 

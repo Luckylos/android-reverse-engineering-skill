@@ -233,6 +233,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/neutralize.sh "${DECOD
 
 Parse the `PATCHED:` and `MANIFEST_DISABLED:` output lines for the report.
 
+Also read the `TARGET_SKIPPED:` lines and the per-SDK "Targets applied" table of the summary: an SDK marked `<- nothing applied` was MATCHED by registry-scan but nothing was stubbed (package false positive, or a different SDK version such as UMP 2.x vs the 3.x consent targets). List those SDKs in the report as **not neutralized**, never as covered.
+
 ### Step 8: Rebuild & sign
 
 The output is always a single APK. **Ask the user their signing preference**:
@@ -279,5 +281,5 @@ Tell the user what they can do next:
 - **Verify**: "I can check `neutralize-manifest.json` (every patched method and disabled component) to confirm the neutralization" — `/find-trackers` and `/find-ads` do not verify it: the stubbed SDK packages are still in the APK, so the audit still reports them
 - **Custom targets**: "If the app uses obfuscated SDK calls, provide a targets file for additional patching"
 - **Deep analysis**: "Run `/find-trackers` or `/find-ads` for full SDK analysis"
-- **Restore**: "Backup `.smali.bak` files were created — I can restore the original methods"
+- **Restore**: "The original APK is untouched: re-decode it to start over (`.smali.bak` backups exist only if `neutralize.sh` was run with `--backup`)"
 - **Legal review**: "Have your legal/compliance team review before distributing the modified APK"

@@ -308,7 +308,7 @@ add_to_profile() {
 install_java() {
   if command -v java &>/dev/null; then
     local ver
-    ver=$(java -version 2>&1 | sed -n 1p | sed -n 's/.*"\([0-9]*\)\..*/\1/p')
+    ver=$(java -version 2>&1 | grep ' version "' | sed -n 's/.*"\([0-9]*\)\..*/\1/p' || true)
     if [[ -n "$ver" ]] && (( ver >= 17 )); then
       ok "Java $ver already installed"
       return 0
@@ -326,7 +326,7 @@ install_java() {
 
   # Verify
   if command -v java &>/dev/null; then
-    ok "Java installed: $(java -version 2>&1 | sed -n 1p)"
+    ok "Java installed: $(java -version 2>&1 | grep ' version "' | sed -n 1p)"
   else
     fail "Java installation may require PATH update."
     if [[ "$PKG_MANAGER" == "brew" ]]; then

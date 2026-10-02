@@ -112,10 +112,24 @@ $localShare = Join-Path $env:USERPROFILE '.local\share'
 # Dependency installers
 # =====================================================================
 
+# First "... version "..."" line of `java -version`, skipping the "Picked up _JAVA_OPTIONS/
+# JAVA_TOOL_OPTIONS: ..." notice. java writes to stderr: under 'Stop' PS 5.1 turns that into a
+# terminating NativeCommandError, so run it with 'Continue' (as check-deps.ps1 does).
+function Get-JavaVersionLine {
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try { $lines = @(& java -version 2>&1 | ForEach-Object { "$_" }) }
+    catch { $lines = @("$_") }
+    finally { $ErrorActionPreference = $prev }
+    $line = $lines | Where-Object { $_ -match ' version "' } | Select-Object -First 1
+    if (-not $line) { $line = $lines | Select-Object -First 1 }
+    return "$line"
+}
+
 function Install-Java {
     $javaBin = Get-Command java -ErrorAction SilentlyContinue
     if ($javaBin) {
-        $verOutput = & java -version 2>&1 | Select-Object -First 1
+        $verOutput = Get-JavaVersionLine
         if ("$verOutput" -match '"(\d+)') {
             $ver = [int]$Matches[1]
             if ($ver -ge 17) {
@@ -142,7 +156,7 @@ function Install-Java {
     # Verify
     $javaBin = Get-Command java -ErrorAction SilentlyContinue
     if ($javaBin) {
-        Write-Ok "Java installed: $(& java -version 2>&1 | Select-Object -First 1)"
+        Write-Ok "Java installed: $(Get-JavaVersionLine)"
     } else {
         Write-Fail "Java installation may require a terminal restart for PATH update."
         exit 1

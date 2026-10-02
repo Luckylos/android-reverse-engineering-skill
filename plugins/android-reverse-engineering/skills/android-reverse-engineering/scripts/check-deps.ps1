@@ -29,7 +29,10 @@ if ($javaBin) {
     $prevEap = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        $javaVersionOutput = & java -version 2>&1 | Select-Object -First 1
+        # skip the "Picked up _JAVA_OPTIONS/JAVA_TOOL_OPTIONS: ..." notice the JVM prints first
+        $javaLines = @(& java -version 2>&1 | ForEach-Object { "$_" })
+        $javaVersionOutput = $javaLines | Where-Object { $_ -match ' version "' } | Select-Object -First 1
+        if (-not $javaVersionOutput) { $javaVersionOutput = $javaLines | Select-Object -First 1 }
     } catch {
         $javaVersionOutput = "$_"
     } finally {

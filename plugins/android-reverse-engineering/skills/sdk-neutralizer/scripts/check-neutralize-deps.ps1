@@ -107,7 +107,10 @@ Write-Host ""
 
 # --- Java 17+ (required) ---
 if (Get-Command java -ErrorAction SilentlyContinue) {
-    $javaVersionStr = (Get-ToolOutput 'java' @('-version')) -split "`n" | Select-Object -First 1
+    # skip the "Picked up _JAVA_OPTIONS/JAVA_TOOL_OPTIONS: ..." notice the JVM prints first
+    $javaLines = @((Get-ToolOutput 'java' @('-version')) -split "`n")
+    $javaVersionStr = $javaLines | Where-Object { $_ -match ' version "' } | Select-Object -First 1
+    if (-not $javaVersionStr) { $javaVersionStr = $javaLines | Select-Object -First 1 }
     $javaVersion = 0
     if ($javaVersionStr -match '"(\d+)') {
         $javaVersion = [int]$Matches[1]

@@ -64,6 +64,9 @@ Output:
     MANIFEST_DISABLED:<type>:<name>:<sdk>
     DRY_RUN:WOULD_PATCH:<sdk>:<class>:<method>:<stub_type>:<file>
     DRY_RUN:WOULD_DISABLE:<type>:<name>:<sdk>
+    TARGET_SKIPPED:<sdk>:<class>:<method>:<reason>   (--targets-file line that patched nothing;
+        reason = class-not-found | not-patched: method absent, abstract/native, or SKIP_INJECT)
+  With --targets-file, the summary also lists, per SDK, the targets applied vs emitted.
 EOF
   exit 0
 }
@@ -166,11 +169,13 @@ fi
 METHODS_PATCHED=0
 METHODS_SKIPPED=0
 COMPONENTS_DISABLED=0
+# --targets-file outcome per line: "<sdk>\t<applied 0|1>" (aggregated in the summary)
+TARGET_STATS_FILE=$(mktemp "${TMPDIR:-/tmp}/neutralize-targets-XXXXXX")
 
 # Patch log file — captures all PATCHED: and MANIFEST_DISABLED: lines
 PATCH_LOG_FILE=$(mktemp "${TMPDIR:-/tmp}/neutralize-log-XXXXXX")
 cleanup_patch_log() {
-  rm -f "$PATCH_LOG_FILE"
+  rm -f "$PATCH_LOG_FILE" "$TARGET_STATS_FILE"
 }
 trap cleanup_patch_log EXIT
 
@@ -626,7 +631,7 @@ patch_all_methods() {
 
   # Extract class descriptor from the .class line
   local class_desc
-  class_desc=$(grep -m1 '^\.class ' "$file" | grep -oP 'L[^ ;]+;' | head -1)
+  class_desc=$(grep -m1 '^\.class ' "$file" | grep -oE 'L[^ ;]+;' | head -1)
   if [[ -z "$class_desc" ]]; then
     return
   fi
@@ -1022,10 +1027,17 @@ patch_custom_targets() {
     return
   fi
 
+  local target_sdk="Custom"
   while IFS= read -r line || [[ -n "$line" ]]; do
-    # Skip comments and empty lines
+    # Skip comments and empty lines; registry-scan.py headers "# [<SDK>] ..." name the SDK of
+    # the targets that follow (used only for reporting)
     [[ -z "$line" ]] && continue
-    [[ "$line" == \#* ]] && continue
+    if [[ "$line" == \#* ]]; then
+      case "$line" in
+        "# ["*"]"*) target_sdk="${line#\# [}"; target_sdk="${target_sdk%%]*}" ;;
+      esac
+      continue
+    fi
 
     # Format: Lcom/example/Class;:methodName or com/example/Class:methodName
     # Wildcards: com/example/pkg/**:* (all methods in package)
@@ -1067,7 +1079,7 @@ patch_custom_targets() {
             patch_all_methods "$smali_file" "Custom"
           else
             local file_class_desc
-            file_class_desc=$(grep -m1 '^\.class ' "$smali_file" | grep -oP 'L[^ ;]+;' | head -1)
+            file_class_desc=$(grep -m1 '^\.class ' "$smali_file" | grep -oE 'L[^ ;]+;' | head -1)
             patch_method "$smali_file" "$method_part" "Custom" "${file_class_desc:-Lunknown;}"
           fi
         done < <(find "$pkg_dir" -name "*.smali" -print0 2>/dev/null)
@@ -1089,7 +1101,22 @@ patch_custom_targets() {
 
     # Standard target: specific class + method (+ optional inject kind)
     local class_desc="L${class_part};"
+    local before=$METHODS_PATCHED class_found=false
+    for smali_dir in "${SMALI_DIRS[@]}"; do
+      [[ -f "$smali_dir/$class_part.smali" ]] && { class_found=true; break; }
+    done
     find_and_patch "$class_part" "$method_part" "Custom" "$class_desc" "$inject_kind"
+    if [[ "$METHODS_PATCHED" -gt "$before" ]]; then
+      printf '%s\t1\n' "$target_sdk" >> "$TARGET_STATS_FILE"
+    else
+      METHODS_SKIPPED=$((METHODS_SKIPPED + 1))
+      printf '%s\t0\n' "$target_sdk" >> "$TARGET_STATS_FILE"
+      if [[ "$class_found" == true ]]; then
+        echo "TARGET_SKIPPED:${target_sdk}:${class_part}:${method_part}:not-patched" >&2
+      else
+        echo "TARGET_SKIPPED:${target_sdk}:${class_part}:${method_part}:class-not-found" >&2
+      fi
+    fi
   done < "$TARGETS_FILE"
 }
 
@@ -1216,6 +1243,14 @@ echo
 echo "=== Neutralization Summary ==="
 echo "Methods patched: $METHODS_PATCHED"
 echo "Manifest components disabled: $COMPONENTS_DISABLED"
+if [[ -s "$TARGET_STATS_FILE" ]]; then
+  echo "Targets-file lines that patched nothing: $METHODS_SKIPPED (see TARGET_SKIPPED lines)"
+  echo
+  echo "Targets applied per SDK (targets-file lines that patched >= 1 method / lines emitted):"
+  awk -F '\t' '{ if (!($1 in n)) ord[++k] = $1; n[$1]++; a[$1] += $2 }
+    END { for (i = 1; i <= k; i++) { s = ord[i]
+            printf "  %-40s %3d / %-3d%s\n", s, a[s], n[s], (a[s] == 0 ? "  <- nothing applied" : "") } }' "$TARGET_STATS_FILE"
+fi
 
 if [[ "$DRY_RUN" == true ]]; then
   echo

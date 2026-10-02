@@ -106,7 +106,7 @@ python3 registry-scan.py <decoded-dir> --registry <registry-path> --depth 1|2|3 
 # Registry-driven mode (preferred):
 bash neutralize.sh <decoded-dir> --no-builtin-targets --targets-file <decoded-dir>/registry-targets.txt --manifest-components-file <decoded-dir>/registry-manifest.txt [--dry-run] [--package <path>]
 # Fallback (builtin targets):
-bash neutralize.sh <decoded-dir> [--ads|--trackers|--all] [--dry-run] [--no-backup] [--no-manifest] [--targets-file <file>] [--replay] [--no-save-manifest]
+bash neutralize.sh <decoded-dir> [--ads|--trackers|--all] [--dry-run] [--backup] [--no-manifest] [--targets-file <file>] [--replay] [--no-save-manifest]
 
 # Rebuild and sign a single APK (zipalign -P 16 / -p — required for stored .so with
 # extractNativeLibs=false; alignment check of all stored entries; ABI warning;
