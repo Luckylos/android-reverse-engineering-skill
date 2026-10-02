@@ -162,7 +162,7 @@ Ask the user which depth level to use. Default to depth 1 unless they request mo
 
 #### Phase 3a — Registry Scan (Known SDKs)
 
-Run `registry-scan.py` to match the decoded APK against the SDK registry (48 neutralizable entries with 373 entry points, 355 ad operations, 31 deep patterns, + 6 detection-only entries that registry-scan skips; `find-ads.sh --list-sdks` / `find-trackers.sh --list-sdks` give the live list with a `neutralizable` column).
+Run `registry-scan.py` to match the decoded APK against the SDK registry (49 neutralizable entries with 377 entry points, 355 ad operations, 31 deep patterns, + 6 detection-only entries that registry-scan skips; `find-ads.sh --list-sdks` / `find-trackers.sh --list-sdks` give the live list with a `neutralizable` column).
 
 **Action**: Run registry scan.
 

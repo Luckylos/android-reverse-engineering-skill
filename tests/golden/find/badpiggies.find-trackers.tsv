@@ -9,6 +9,7 @@ SDK	braze	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_ref
 SDK	clevertap	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	flurry	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	apm-insight	crash_reporting	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appcenter	crash_reporting	HIGH	DETECTED	-	true	files=234	manifest=1	endpoints=2	app_refs=0	calls=0	active=false
 SDK	appmetrica	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	backtrace	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	bugsnag	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
@@ -22,6 +23,10 @@ SDK	sybo	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs
 SDK	tiktok-business	attribution	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 EV	firebase-analytics	namespace	com.google.android.gms.internal.measurement	190
 EV	firebase-analytics	namespace	com.google.android.gms.measurement	14
+EV	appcenter	package	com.microsoft.appcenter	234
+EV	appcenter	marker	com.microsoft.appcenter.AppCenter	1
+EV	appcenter	manifest	provider	com.microsoft.appcenter.loader.AppCenterLoader
+EV	appcenter	domain	in.appcenter.ms	2
 EV	facebook	package	com.facebook	217
 EV	facebook	package	com.facebook.appevents	219
 EV	facebook	package	com.facebook.bolts	54
@@ -54,6 +59,5 @@ EV	facebook	manifest	receiver	com.facebook.CurrentAccessTokenExpirationBroadcast
 EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_ACCESS_TOKEN_CHANGED
 EV	facebook	manifest	receiver	com.facebook.AuthenticationTokenManager$CurrentAuthenticationTokenChangedBroadcastReceiver
 EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_AUTHENTICATION_TOKEN_CHANGED
-HINT	generic-identity	8	11
 HINT	tracker-perms	1	2
 HINT	tracker-manifest-infra	1	3

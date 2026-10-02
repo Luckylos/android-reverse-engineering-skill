@@ -723,6 +723,8 @@ com/hyprmx/android/sdk/placement/PlacementImpl:isAdAvailable
 
 # [InMobi] entry_point
 com/inmobi/sdk/InMobiSdk:init
+# [InMobi] entry_point
+com/inmobi/sdk/InMobiSdk:initFromContentProvider
 # [InMobi] ad_operation
 com/inmobi/ads/InMobiInterstitial:load
 # [InMobi] ad_operation

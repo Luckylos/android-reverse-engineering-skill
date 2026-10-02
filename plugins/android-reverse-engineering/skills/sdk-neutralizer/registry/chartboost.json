@@ -60,6 +60,24 @@
       "class": "com.chartboost.sdk.CBImpressionActivity",
       "action": "disable",
       "note": "Ad impression display activity"
+    },
+    {
+      "type": "activity",
+      "class": "com.chartboost.sdk.view.CBImpressionActivity",
+      "action": "disable",
+      "note": "Ad impression display activity (v9 package; the root-package name above is the older one)"
+    },
+    {
+      "type": "activity",
+      "class": "com.chartboost.sdk.internal.clickthrough.EmbeddedBrowserActivity",
+      "action": "disable",
+      "note": "Ad click-through in-app browser (v9)"
+    },
+    {
+      "type": "service",
+      "class": "com.chartboost.sdk.internal.video.repository.exoplayer.VideoRepositoryDownloadService",
+      "action": "disable",
+      "note": "Ad video pre-download service (v9, ExoPlayer DownloadService)"
     }
   ],
   "protected_patterns": [],

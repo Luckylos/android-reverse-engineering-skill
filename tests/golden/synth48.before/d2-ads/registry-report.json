@@ -91,7 +91,7 @@
         "com.chartboost.sdk"
       ],
       "targets_count": 8,
-      "manifest_components_count": 1,
+      "manifest_components_count": 4,
       "depth_breakdown": {
         "entry_points": 1,
         "ad_operations": 7,
@@ -166,10 +166,10 @@
         "com.inmobi.sdk",
         "com.inmobi.ads"
       ],
-      "targets_count": 6,
-      "manifest_components_count": 0,
+      "targets_count": 7,
+      "manifest_components_count": 3,
       "depth_breakdown": {
-        "entry_points": 1,
+        "entry_points": 2,
         "ad_operations": 5,
         "deep_patterns": 0
       }
@@ -434,7 +434,7 @@
         "com.unity3d.services"
       ],
       "targets_count": 5,
-      "manifest_components_count": 3,
+      "manifest_components_count": 7,
       "depth_breakdown": {
         "entry_points": 1,
         "ad_operations": 4,

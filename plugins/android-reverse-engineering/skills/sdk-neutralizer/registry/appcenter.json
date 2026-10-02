@@ -1,0 +1,44 @@
+{
+  "$schema": "./_schema.json",
+  "sdk_id": "appcenter",
+  "display_name": "Microsoft App Center",
+  "description": "Microsoft App Center SDK (Crashes / Analytics; Unity plugin). The Unity integration auto-starts it from the AppCenterLoader ContentProvider (reads appcenter_app_secret / appcenter_startup_type / appcenter_use_crashes from res/values/strings.xml) and from C# through AppCenter.start/configure. Stubbing configure/start/startFromLibrary leaves the SDK unconfigured: its public getters (isEnabled, getInstallId, Crashes.*) return futures completed with the not-configured value and only log 'App Center hasn't been configured', so callers keep working. App Center itself was retired by Microsoft on 2025-03-31, but shipped apps still bundle and start it.",
+  "vendor": "Microsoft",
+  "category": "crash_reporting",
+  "known_versions": ["4.1.1"],
+  "packages": [
+    "com.microsoft.appcenter"
+  ],
+  "obfuscation": {
+    "public_api": "readable",
+    "internals": "readable"
+  },
+  "targets": {
+    "entry_points": [
+      {
+        "class": "com.microsoft.appcenter.AppCenter",
+        "methods": [
+          { "name": "configure", "signature": "*", "stub": "return-void", "note": "void — configure(Application[, appSecret]): without it the SDK stays unconfigured" },
+          { "name": "start", "signature": "*", "stub": "return-void", "note": "void varargs — start([Application,] [appSecret,] services...): starts Crashes/Analytics and log delivery to in.appcenter.ms" },
+          { "name": "startFromLibrary", "signature": "*", "stub": "return-void", "note": "void varargs — library-initiated start" }
+        ]
+      }
+    ],
+    "ad_operations": [],
+    "deep_patterns": []
+  },
+  "manifest_components": [
+    {
+      "type": "provider",
+      "class": "com.microsoft.appcenter.loader.AppCenterLoader",
+      "action": "disable",
+      "note": "Unity plugin auto-start ContentProvider: onCreate() reads the app secret and startup type and calls AppCenter.configure/start before the game runs"
+    }
+  ],
+  "protected_patterns": [],
+  "detection": {
+    "marker_classes": ["com.microsoft.appcenter.AppCenter"],
+    "domains": ["in.appcenter.ms"],
+    "note": "Verified on Bad Piggies HD 2.4.3379 (App Center 4.1.1, Crashes only)."
+  }
+}

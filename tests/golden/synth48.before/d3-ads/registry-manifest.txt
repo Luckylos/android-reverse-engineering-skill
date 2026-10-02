@@ -17,6 +17,9 @@ com.explorestack.iab.mraid.MraidDialogActivity|Appodeal
 com.explorestack.iab.vast.activity.VastActivity|Appodeal
 io.bidmachine.BidMachineInitProvider|BidMachine
 com.chartboost.sdk.CBImpressionActivity|Chartboost
+com.chartboost.sdk.view.CBImpressionActivity|Chartboost
+com.chartboost.sdk.internal.clickthrough.EmbeddedBrowserActivity|Chartboost
+com.chartboost.sdk.internal.video.repository.exoplayer.VideoRepositoryDownloadService|Chartboost
 com.google.android.gms.ads.MobileAdsInitProvider|Google AdMob
 com.google.android.gms.ads.AdActivity|Google AdMob
 com.google.android.gms.ads.AdService|Google AdMob
@@ -25,6 +28,9 @@ com.hyprmx.android.sdk.activity.HyprMXRequiredInformationActivity|HyprMX
 com.hyprmx.android.sdk.activity.HyprMXNoOffersActivity|HyprMX
 com.hyprmx.android.sdk.overlay.HyprMXBrowserActivity|HyprMX
 com.hyprmx.android.sdk.videoplayer.HyprMXVideoPlayerActivity|HyprMX
+com.inmobi.sdk.InMobiInitProvider|InMobi
+com.inmobi.ads.rendering.InMobiAdActivity|InMobi
+com.inmobi.ads.rendering.InMobiInAppBrowserActivity|InMobi
 com.ironsource.sdk.controller.InterstitialActivity|IronSource / LevelPlay
 com.ironsource.sdk.controller.ControllerActivity|IronSource / LevelPlay
 com.ironsource.sdk.controller.OpenUrlActivity|IronSource / LevelPlay
@@ -99,6 +105,10 @@ com.tradplus.crosspro.ui.ApkConfirmDialogCNActivity|TradPlus
 com.unity3d.ads.adunit.AdUnitActivity|Unity Ads
 com.unity3d.ads.adunit.AdUnitTransparentActivity|Unity Ads
 com.unity3d.services.ads.adunit.AdUnitActivity|Unity Ads
+com.unity3d.services.ads.adunit.AdUnitTransparentActivity|Unity Ads
+com.unity3d.services.ads.adunit.AdUnitSoftwareActivity|Unity Ads
+com.unity3d.services.ads.adunit.AdUnitTransparentSoftwareActivity|Unity Ads
+com.unity3d.ads.adplayer.FullScreenWebViewDisplay|Unity Ads
 com.vungle.ads.internal.ui.VungleActivity|Vungle / Liftoff
 com.vungle.warren.ui.VungleActivity|Vungle / Liftoff
 com.vungle.warren.utility.VungleProvider|Vungle / Liftoff

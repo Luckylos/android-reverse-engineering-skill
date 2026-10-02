@@ -19,7 +19,8 @@
       {
         "class": "com.inmobi.sdk.InMobiSdk",
         "methods": [
-          { "name": "init", "signature": "*", "stub": "return-void", "note": "Main SDK init — all overloads" }
+          { "name": "init", "signature": "*", "stub": "return-void", "note": "Main SDK init — all overloads" },
+          { "name": "initFromContentProvider", "signature": "(Landroid/content/Context;)Z", "stub": "return-false/0", "note": "Pre-init called by InMobiInitProvider.onCreate (InMobi 10.x+); returns boolean, stub false = not initialized. Belt-and-braces with the disabled provider" }
         ]
       }
     ],
@@ -42,7 +43,26 @@
     ],
     "deep_patterns": []
   },
-  "manifest_components": [],
+  "manifest_components": [
+    {
+      "type": "provider",
+      "class": "com.inmobi.sdk.InMobiInitProvider",
+      "action": "disable",
+      "note": "Auto-init ContentProvider: onCreate() calls InMobiSdk.initFromContentProvider(Context) before the app runs"
+    },
+    {
+      "type": "activity",
+      "class": "com.inmobi.ads.rendering.InMobiAdActivity",
+      "action": "disable",
+      "note": "Ad display activity"
+    },
+    {
+      "type": "activity",
+      "class": "com.inmobi.ads.rendering.InMobiInAppBrowserActivity",
+      "action": "disable",
+      "note": "Ad click-through in-app browser"
+    }
+  ],
   "protected_patterns": [],
   "detection": {
     "extra_packages": [

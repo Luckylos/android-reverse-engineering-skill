@@ -19,4 +19,4 @@ The SDK registry `skills/sdk-neutralizer/registry/*.json` is the **single source
 | Braze (formerly Appboy) | Engagement/push. `com.braze` (v4+), `com.appboy` (legacy). | `com.braze:android-sdk-ui` |
 | CleverTap | Engagement/analytics, `CleverTapAPI.getDefaultInstance`; account id in the `CLEVERTAP_ACCOUNT_ID` meta-data. | `com.clevertap.android:clevertap-android-sdk` |
 | Flurry | Yahoo analytics, `new FlurryAgent.Builder()…build(context, apiKey)` (legacy `FlurryAgent.init` / `onStartSession`); detection-only in the registry. | `com.flurry.android:analytics` |
-| Singular, AppMetrica, Google Analytics (legacy), Google Tag Manager, Firebase Crashlytics, Sentry, Bugsnag, Backtrace, Facebook SDK, TikTok Business SDK, ByteDance APM Insight, SYBO in-house analytics | See their registry entries (`--list-sdks`). | — |
+| Singular, AppMetrica, Google Analytics (legacy), Google Tag Manager, Firebase Crashlytics, Sentry, Bugsnag, Backtrace, Microsoft App Center, Facebook SDK, TikTok Business SDK, ByteDance APM Insight, SYBO in-house analytics | See their registry entries (`--list-sdks`). | — |

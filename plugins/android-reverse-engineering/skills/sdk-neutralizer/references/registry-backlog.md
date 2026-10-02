@@ -66,7 +66,7 @@ Computed from the registry by `tests/tools/registry-gaps.sh` (DO, P and A gaps; 
 | consent | Google UMP / IAB TCF Consent | `google-ump-consent` | P | extra: `com.google.unity.ump` |
 | consent | Google UMP / IAB TCF Consent | `google-ump-consent` | A | `UserMessagingPlatform#getConsentInformation,loadConsentForm,showPrivacyOptionsForm` (consent); `ConsentInformation#requestConsentInfoUpdate,canRequestAds,getConsentStatus,reset` (consent); `ConsentForm#show` (consent); `ConsentRequestParameters$Builder#<init>,setTagForUnderAgeOfConsent` (config) |
 
-Entries: 54; detection-only (DO): 6; with P gaps: 17; with A gaps: 20.
+Entries: 55; detection-only (DO): 6; with P gaps: 17; with A gaps: 20.
 
 <!-- END registry-gaps -->
 
@@ -84,7 +84,6 @@ Entries: 54; detection-only (DO): 6; with P gaps: 17; with A gaps: 20.
 | Pangle | `com.pgl.ssdk`, `com.bykv.vk`, `com.bytedance.adsdk` | P | 5 apps | Promote to `packages` |
 | Pangle (components) | `com.bytedance.sdk.component`, `com.bytedance.pag`, `com.bytedance.fm`, `com.bytedance.ycx` | P | af1945, blockcraft, subway | Verify the ownership; today they are only Pangle namespaces (`com.bytedance` as a whole is shared with APM Insight) |
 | Chartboost v8 | `Chartboost#cacheInterstitial/showInterstitial/showRewardedVideo` | A | — | Legacy targets |
-| InMobi (components) | `InMobiInitProvider` (auto-init), `InMobiAdActivity` | M | af1945, subway / 5 apps | Add `manifest_components` (the entry has none today) |
 | InMobi | `com.inmobi.media`, `com.inmobi.commons`, `com.inmobi.adquality`, `com.inmobi.compliance`, `com.inmobi.signals`, `com.inmobi.unification`, `com.inmobi.unifiedId`; `InMobiNative` | P / A | 5 apps (checked on smali) | Promote (deciding which are support-only) and add the target |
 | Vungle v7 | `com.vungle.ads.VungleBannerView` | A | af1945, alto, blockcraft, bulldozer, subway, ttom2 | Load/banner target (the registry covers `BannerAd` / `InterstitialAd` / `RewardedAd` / `VungleAds`) |
 | Meta AN (shaded copy) | `smali_assets/audience_network/com/facebook/...` (DEX in the assets, 3156 smali on alto) | P | 7 of 8 apps | registry-scan reports it as `UNKNOWN_PACKAGE:audience_network/com/facebook`; the audit ignores `smali_assets` (apktool) — check whether stubbing the facade in the main DEX is enough |
@@ -120,7 +119,6 @@ SDK code under a package no entry owns (rows above marked E or P) counts as app 
 | ByteDance APM Insight | `com.apm.insight` | DO | 5 apps | Crash/perf targets |
 | GameAnalytics | `com.gameanalytics.sdk` | E | bulldozer | Entry |
 | Localytics | `com.localytics` | E | blockcraft | Entry |
-| MS App Center | `com.microsoft.appcenter` | E | badpiggies | crash_reporting entry |
 | ByteBrew | `com.bytebrew` | E | bulldozer | Check the category |
 | Branch | `io.branch` | E | — | attribution entry |
 | New Relic / Datadog / Fabric Crashlytics | `com.newrelic`, `com.datadog`, `com.crashlytics.android` | E | — | To evaluate (only in the historical exclusion lists of the old scripts) |

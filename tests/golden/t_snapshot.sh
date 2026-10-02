@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # t_snapshot.sh -- T-SNAPSHOT (invariants I2, I3; rules R1, R2 of DESIGN 3.1).
-# The consumed projection (tests/golden/snapshot.sh) of each of the 48 entries of
-# snapshot.before.jsonl must be byte-identical today: same file, same order, same
+# The consumed projection (tests/golden/snapshot.sh) of each entry of
+# snapshot.before.jsonl (48 at 4c166fe; rebaselined on intended neutralization changes, see
+# tests/README.md "Intended neutralization changes") must be byte-identical today: same file, same order, same
 # sdk_id / display_name / category / packages (order included) / targets /
 # manifest_components / protected_patterns / in_house_wrapper. Entries added later
 # (detection-only, DESIGN 3.3) are allowed only without targets, manifest_components
@@ -21,7 +22,7 @@ jq -r '.file' "$tmp/now.jsonl" >"$tmp/now.files"
 
 # I2: every original file still present, relative order unchanged.
 grep -Fxf "$tmp/before.files" "$tmp/now.files" >"$tmp/kept.files"
-assert_files_eq "$tmp/before.files" "$tmp/kept.files" "I2: the 48 entry files are all present, in the same order"
+assert_files_eq "$tmp/before.files" "$tmp/kept.files" "I2: the baseline entry files are all present, in the same order"
 
 # I3/R1: projection of every original entry unchanged.
 grep -F -f <(sed 's/.*/"file":"&"/' "$tmp/before.files") "$tmp/now.jsonl" >"$tmp/now.kept.jsonl"

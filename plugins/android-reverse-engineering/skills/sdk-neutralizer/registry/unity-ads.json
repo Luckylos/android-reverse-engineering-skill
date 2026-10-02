@@ -60,6 +60,30 @@
       "class": "com.unity3d.services.ads.adunit.AdUnitActivity",
       "action": "disable",
       "note": "Services ad unit activity (newer SDK)"
+    },
+    {
+      "type": "activity",
+      "class": "com.unity3d.services.ads.adunit.AdUnitTransparentActivity",
+      "action": "disable",
+      "note": "Services transparent ad overlay (newer SDK)"
+    },
+    {
+      "type": "activity",
+      "class": "com.unity3d.services.ads.adunit.AdUnitSoftwareActivity",
+      "action": "disable",
+      "note": "Services ad unit activity, software rendering (newer SDK)"
+    },
+    {
+      "type": "activity",
+      "class": "com.unity3d.services.ads.adunit.AdUnitTransparentSoftwareActivity",
+      "action": "disable",
+      "note": "Services transparent ad overlay, software rendering (newer SDK)"
+    },
+    {
+      "type": "activity",
+      "class": "com.unity3d.ads.adplayer.FullScreenWebViewDisplay",
+      "action": "disable",
+      "note": "Unity Ads 4.x full-screen ad player activity"
     }
   ],
   "protected_patterns": [

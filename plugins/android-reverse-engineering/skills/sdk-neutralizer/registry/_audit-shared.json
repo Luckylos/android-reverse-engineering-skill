@@ -127,6 +127,7 @@
     "com.hyprmx.android.sdk.placement.PlacementImpl#showAd",
     "com.hyprmx.android.sdk.placement.PlacementImpl#isAdAvailable",
     "com.inmobi.sdk.InMobiSdk#init",
+    "com.inmobi.sdk.InMobiSdk#initFromContentProvider",
     "com.unity3d.ironsourceads.IronSourceAds#init",
     "com.unity3d.ironsourceads.IronSourceAds#setConsent",
     "com.unity3d.ironsourceads.IronSourceAds#setMetaData",

@@ -52,3 +52,27 @@ Before committing a registry change: `tests/run.sh quick`, `tests/run.sh golden`
 
 Tests follow a tiny protocol (see `lib/common.sh`): exit 0 = PASS, 77 = SKIP, anything
 else = FAIL. Each test can also be run on its own: `bash tests/unit/t_lint.sh`.
+
+## Intended neutralization changes (rebaseline)
+
+The golden suite and T-SNAPSHOT freeze what the neutralizer consumes. A registry change
+that is *meant* to alter neutralization (new `targets`, new `manifest_components`, a new
+neutralizable entry) makes them fail by design. Only **additive** changes are accepted
+without a separate review: never remove or rename an existing target, component or entry.
+
+1. Make the registry change; `tests/run.sh quick` (lint) must pass.
+2. Capture and compare: `tests/golden/capture.sh --no-ps after-x`, then
+   `tests/golden/compare.sh before after-x` lists the differing files.
+3. Prove it is additive: `tests/golden/additive-check.sh before after-x` must print
+   `PURELY ADDITIVE` (no line of any `registry-targets.txt` / `registry-manifest.txt`
+   missing) and list exactly the intended added lines. Review the `stdout` diffs too
+   (only MATCHED counts and UNKNOWN_PACKAGE lines that became entries may change).
+4. Dry-run `neutralize.sh` on the affected pristine decodes: the new targets must be
+   applied (`DRY_RUN:WOULD_*`, no `TARGET_SKIPPED` for them).
+5. Rebaseline, keeping the old one:
+   `mv $ARE_GOLD/before $ARE_GOLD/before-<version>` (and its `.sha256`),
+   `cp -a $ARE_GOLD/after-x/. $ARE_GOLD/before/ && rm -rf $ARE_GOLD/before/synth48`,
+   regenerate `$ARE_GOLD/before.sha256`;
+   `rm -rf tests/golden/synth48.before && cp -a $ARE_GOLD/after-x/synth48 tests/golden/synth48.before`;
+   `tests/golden/snapshot.sh <registry> > tests/golden/snapshot.before.jsonl`.
+6. `tests/run.sh full` must pass, then rebuild and device-test the affected apps.

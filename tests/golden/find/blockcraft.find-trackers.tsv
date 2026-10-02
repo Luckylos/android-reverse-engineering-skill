@@ -9,6 +9,7 @@ SDK	braze	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_ref
 SDK	clevertap	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	flurry	analytics	HIGH	DETECTED	-	false	files=557	manifest=1	endpoints=3	app_refs=1	calls=0	active=true
 SDK	apm-insight	crash_reporting	HIGH	DETECTED	-	false	files=210	manifest=0	endpoints=0	app_refs=2	calls=0	active=true
+SDK	appcenter	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	appmetrica	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	backtrace	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
 SDK	bugsnag	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false

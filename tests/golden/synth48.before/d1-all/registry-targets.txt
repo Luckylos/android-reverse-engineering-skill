@@ -517,6 +517,8 @@ com/hyprmx/android/sdk/core/HyprMX:initialize
 
 # [InMobi] entry_point
 com/inmobi/sdk/InMobiSdk:init
+# [InMobi] entry_point
+com/inmobi/sdk/InMobiSdk:initFromContentProvider
 
 # [IronSource / LevelPlay] entry_point
 com/unity3d/ironsourceads/IronSourceAds:init
