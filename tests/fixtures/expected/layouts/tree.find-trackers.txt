@@ -1,0 +1,84 @@
+
+==== Firebase Analytics — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/com/google/firebase/analytics:0:identity: package com.google.firebase.analytics (1 files)
+<IN>/com/google/firebase/analytics/FirebaseAnalytics.java:0:identity: marker class com.google.firebase.analytics.FirebaseAnalytics
+
+==== Firebase Analytics — Initialization ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);  [FirebaseAnalytics#getInstance FirebaseAnalytics#logEvent?]
+
+==== Firebase Analytics — Event Tracking ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);  [FirebaseAnalytics#logEvent?]
+
+==== Firebase Analytics — Endpoints ====
+
+<IN>/com/example/app/MainActivity.java:12:    static final String ENDPOINT = "https://app-measurement.com/a";  [app-measurement.com]
+
+==== Firebase Analytics — References ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);
+
+==== Flurry — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=no (detection-only) detail=-
+<IN>/com/flurry/android:0:identity: package com.flurry.android (1 files)
+<IN>/com/flurry/android/FlurryAgent.java:0:identity: marker class com.flurry.android.FlurryAgent
+
+==== Flurry — Initialization ====
+
+<IN>/com/example/app/MainActivity.java:18:        new FlurryAgent.Builder().withLogEnabled(true).build(this, "FLURRY_KEY");  [FlurryAgent$Builder#build? FlurryAgent$Builder#<init>]
+
+==== Flurry — Event Tracking ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);  [FlurryAgent#logEvent?]
+
+==== Flurry — Manifest ====
+
+<IN>/AndroidManifest.xml:18:            android:name="com.flurry.android.agent.FlurryContentProvider"
+
+==== Flurry — References ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);
+<IN>/com/example/app/MainActivity.java:18:        new FlurryAgent.Builder().withLogEnabled(true).build(this, "FLURRY_KEY");
+
+==== Generic — Event Tracking Methods ====
+
+<IN>/com/example/app/Helper.java:5:        tracker.trackEvent("x");
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);
+
+==== Generic — User Identification ====
+
+
+
+==== Generic — Analytics Collection Toggle ====
+
+
+
+==== Known Tracker Endpoints ====
+
+<IN>/com/example/app/MainActivity.java:12:    static final String ENDPOINT = "https://app-measurement.com/a";  [firebase-analytics]
+
+==== AndroidManifest — Tracker Services & Receivers ====
+
+<IN>/AndroidManifest.xml:18:            android:name="com.flurry.android.agent.FlurryContentProvider"  [flurry]
+
+==== AndroidManifest — Tracker Permissions ====
+
+<IN>/AndroidManifest.xml:6:    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+==== AndroidManifest — Tracker Meta-data ====
+
+
+
+==== Entry Points — Tracker SDK calls from app code (library packages excluded) ====
+
+<IN>/com/example/app/MainActivity.java:15:        FirebaseAnalytics.getInstance(this).logEvent("open", bundle);  [firebase-analytics/ref firebase-analytics/init flurry/event? firebase-analytics/init? firebase-analytics/event?]
+<IN>/com/example/app/MainActivity.java:18:        new FlurryAgent.Builder().withLogEnabled(true).build(this, "FLURRY_KEY");  [flurry/ref flurry/init? flurry/init]
+
+NOTE: Only calls from app code are shown above. Library-internal calls are excluded.
+If no results appear, tracker SDKs may only be initialized internally (e.g., via ContentProvider).
+
+=== Search complete ===

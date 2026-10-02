@@ -1,0 +1,44 @@
+#sdk-audit	2	tool=find-ads	layout=apktool
+SDK	google-admob	ads	HIGH	DETECTED	-	true	files=2	manifest=2	endpoints=0	app_refs=1	calls=1	active=true
+SDK	unity-ads	ads	HIGH	DETECTED	-	true	files=1	manifest=0	endpoints=0	app_refs=1	calls=1	active=true
+SDK	ironsource	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	applovin	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	meta-audience-network	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	vungle	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	inmobi	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	chartboost	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pangle	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mintegral	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	adcolony	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	amazon-ads	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appodeal	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bidmachine	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bigo-ads	ads	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	fyber	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	google-ump-consent	consent	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	guru-fusion	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	hyprmx	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	kidoz	ads	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	maio	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mobilefuse	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	moloco	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mytarget	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	ogury	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubmatic	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubnative	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	rovio-beacon	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	smaato	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	superawesome	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tapjoy	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tradplus	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	yandex-ads	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+EV	google-admob	package	com.google.android.gms.ads	2
+EV	google-admob	marker	com.google.android.gms.ads.MobileAds	1
+EV	google-admob	manifest	activity	com.google.android.gms.ads.AdActivity
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.APPLICATION_ID
+EV	google-admob	id_prefix	ca-app-pub-	1
+EV	unity-ads	package	com.unity3d.ads	1
+EV	unity-ads	marker	com.unity3d.ads.UnityAds	1
+CALL	google-admob	init	com.google.android.gms.ads.MobileAds#initialize	smali/com/example/app/MainActivity.smali:12	exact
+CALL	unity-ads	init	com.unity3d.ads.UnityAds#initialize	smali/com/example/app/MainActivity.smali:15	exact
+HINT	ad-perms	1	1

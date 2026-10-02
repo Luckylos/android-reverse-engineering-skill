@@ -1,0 +1,84 @@
+
+==== Firebase Analytics — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/smali/com/google/firebase/analytics:0:identity: package com.google.firebase.analytics (1 files)
+<IN>/smali/com/google/firebase/analytics/FirebaseAnalytics.smali:0:identity: marker class com.google.firebase.analytics.FirebaseAnalytics
+
+==== Firebase Analytics — Initialization ====
+
+<IN>/smali/com/example/app/MainActivity.smali:8:    invoke-static {p0}, Lcom/google/firebase/analytics/FirebaseAnalytics;->getInstance(Landroid/content/Context;)Lcom/google/firebase/analytics/FirebaseAnalytics;  [FirebaseAnalytics#getInstance]
+<IN>/smali/com/example/app/MainActivity.smali:11:    invoke-virtual {v0, v1, p1}, Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V  [FirebaseAnalytics#logEvent]
+
+==== Firebase Analytics — Event Tracking ====
+
+<IN>/smali/com/example/app/MainActivity.smali:11:    invoke-virtual {v0, v1, p1}, Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V  [FirebaseAnalytics#logEvent]
+
+==== Firebase Analytics — Endpoints ====
+
+<IN>/smali/com/example/app/MainActivity.smali:4:.field static final ENDPOINT:Ljava/lang/String; = "https://app-measurement.com/a"  [app-measurement.com]
+
+==== Firebase Analytics — References ====
+
+<IN>/smali/com/example/app/MainActivity.smali:8:    invoke-static {p0}, Lcom/google/firebase/analytics/FirebaseAnalytics;->getInstance(Landroid/content/Context;)Lcom/google/firebase/analytics/FirebaseAnalytics;
+<IN>/smali/com/example/app/MainActivity.smali:11:    invoke-virtual {v0, v1, p1}, Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V
+
+==== Flurry — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=no (detection-only) detail=-
+<IN>/smali_classes2/com/flurry/android:0:identity: package com.flurry.android (1 files)
+<IN>/smali_classes2/com/flurry/android/FlurryAgent.smali:0:identity: marker class com.flurry.android.FlurryAgent
+
+==== Flurry — Initialization ====
+
+<IN>/smali/com/example/app/MainActivity.smali:17:    invoke-direct {v0}, Lcom/flurry/android/FlurryAgent$Builder;-><init>()V  [FlurryAgent$Builder#<init>]
+
+==== Flurry — Manifest ====
+
+<IN>/AndroidManifest.xml:6:        <provider android:authorities="com.example.app.FlurryContentProvider" android:name="com.flurry.android.agent.FlurryContentProvider"/>
+
+==== Flurry — References ====
+
+<IN>/smali/com/example/app/MainActivity.smali:16:    new-instance v0, Lcom/flurry/android/FlurryAgent$Builder;
+<IN>/smali/com/example/app/MainActivity.smali:17:    invoke-direct {v0}, Lcom/flurry/android/FlurryAgent$Builder;-><init>()V
+
+==== Generic — Event Tracking Methods ====
+
+<IN>/smali/com/example/app/MainActivity.smali:11:    invoke-virtual {v0, v1, p1}, Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V
+<IN>/smali_classes2/com/example/app/Helper.smali:6:    invoke-virtual {p0, v0}, Lcom/example/app/Tracker;->trackEvent(Ljava/lang/String;)V
+
+==== Generic — User Identification ====
+
+
+
+==== Generic — Analytics Collection Toggle ====
+
+
+
+==== Known Tracker Endpoints ====
+
+<IN>/smali/com/example/app/MainActivity.smali:4:.field static final ENDPOINT:Ljava/lang/String; = "https://app-measurement.com/a"  [firebase-analytics]
+
+==== AndroidManifest — Tracker Services & Receivers ====
+
+<IN>/AndroidManifest.xml:6:        <provider android:authorities="com.example.app.FlurryContentProvider" android:name="com.flurry.android.agent.FlurryContentProvider"/>  [flurry]
+
+==== AndroidManifest — Tracker Permissions ====
+
+<IN>/AndroidManifest.xml:2:    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+==== AndroidManifest — Tracker Meta-data ====
+
+
+
+==== Entry Points — Tracker SDK calls from app code (library packages excluded) ====
+
+<IN>/smali/com/example/app/MainActivity.smali:8:    invoke-static {p0}, Lcom/google/firebase/analytics/FirebaseAnalytics;->getInstance(Landroid/content/Context;)Lcom/google/firebase/analytics/FirebaseAnalytics;  [firebase-analytics/ref firebase-analytics/init]
+<IN>/smali/com/example/app/MainActivity.smali:11:    invoke-virtual {v0, v1, p1}, Lcom/google/firebase/analytics/FirebaseAnalytics;->logEvent(Ljava/lang/String;Landroid/os/Bundle;)V  [firebase-analytics/ref firebase-analytics/init firebase-analytics/event]
+<IN>/smali/com/example/app/MainActivity.smali:16:    new-instance v0, Lcom/flurry/android/FlurryAgent$Builder;  [flurry/ref]
+<IN>/smali/com/example/app/MainActivity.smali:17:    invoke-direct {v0}, Lcom/flurry/android/FlurryAgent$Builder;-><init>()V  [flurry/ref flurry/init]
+
+NOTE: Only calls from app code are shown above. Library-internal calls are excluded.
+If no results appear, tracker SDKs may only be initialized internally (e.g., via ContentProvider).
+
+=== Search complete ===

@@ -1,0 +1,59 @@
+#sdk-audit	2	tool=find-trackers	layout=apktool
+SDK	firebase-analytics	analytics	NONE	NOT FOUND	-	true	files=204	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	adjust	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appsflyer	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mixpanel	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	amplitude	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	segment	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	braze	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	clevertap	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	flurry	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	apm-insight	crash_reporting	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appmetrica	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	backtrace	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bugsnag	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	facebook	social	HIGH	DETECTED	-	true	files=1178	manifest=23	endpoints=0	app_refs=0	calls=0	active=false
+SDK	firebase-crashlytics	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	google-analytics	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	google-tag-manager	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	sentry	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	singular	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	sybo	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tiktok-business	attribution	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+EV	firebase-analytics	namespace	com.google.android.gms.internal.measurement	190
+EV	firebase-analytics	namespace	com.google.android.gms.measurement	14
+EV	facebook	package	com.facebook	217
+EV	facebook	package	com.facebook.appevents	219
+EV	facebook	package	com.facebook.bolts	54
+EV	facebook	package	com.facebook.gamingservices	133
+EV	facebook	package	com.facebook.internal	209
+EV	facebook	package	com.facebook.login	140
+EV	facebook	package	com.facebook.share	165
+EV	facebook	package	com.facebook.unity	41
+EV	facebook	marker	com.facebook.FacebookSdk	1
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityLoginActivity
+EV	facebook	manifest	activity	com.facebook.LoginActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityDeepLinkingActivity
+EV	facebook	manifest	meta-data	com.facebook.sdk.ApplicationId
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityDialogsActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityAppLinkActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityGameRequestActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityCreateGameGroupActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityJoinGameGroupActivity
+EV	facebook	manifest	activity	com.facebook.unity.AppInviteDialogActivity
+EV	facebook	manifest	provider	com.facebook.FacebookContentProvider
+EV	facebook	manifest	meta-data	com.facebook.sdk.AutoLogAppEventsEnabled
+EV	facebook	manifest	meta-data	com.facebook.sdk.AdvertiserIDCollectionEnabled
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityGamingServicesFriendFinderActivity
+EV	facebook	manifest	meta-data	com.facebook.sdk.ClientToken
+EV	facebook	manifest	activity	com.facebook.FacebookActivity
+EV	facebook	manifest	activity	com.facebook.CustomTabMainActivity
+EV	facebook	manifest	activity	com.facebook.CustomTabActivity
+EV	facebook	manifest	provider	com.facebook.internal.FacebookInitProvider
+EV	facebook	manifest	receiver	com.facebook.CurrentAccessTokenExpirationBroadcastReceiver
+EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_ACCESS_TOKEN_CHANGED
+EV	facebook	manifest	receiver	com.facebook.AuthenticationTokenManager$CurrentAuthenticationTokenChangedBroadcastReceiver
+EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_AUTHENTICATION_TOKEN_CHANGED
+HINT	generic-identity	8	11
+HINT	tracker-perms	1	2
+HINT	tracker-manifest-infra	1	3

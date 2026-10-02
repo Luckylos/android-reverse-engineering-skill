@@ -1,0 +1,132 @@
+
+==== AdMob — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/com.example.app/sources/com/google/android/gms/ads:0:identity: package com.google.android.gms.ads (2 files)
+<IN>/com.example.app/sources/com/google/android/gms/ads/MobileAds.java:0:identity: marker class com.google.android.gms.ads.MobileAds
+
+==== AdMob — Initialization ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:16:        MobileAds.initialize(this);  [MobileAds#initialize]
+
+==== AdMob — Ad Operations ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:22:        adView.loadAd(null);  [AdView#loadAd?]
+
+==== AdMob — Manifest ====
+
+<IN>/com.example.app/resources/AndroidManifest.xml:12:            android:name="com.google.android.gms.ads.AdActivity"
+<IN>/com.example.app/resources/AndroidManifest.xml:15:            android:name="com.google.android.gms.ads.APPLICATION_ID"
+
+==== AdMob — Ad Unit IDs ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:11:    static final String AD_UNIT = "ca-app-pub-3940256099942544/6300978111";  [admob_id]
+
+==== AdMob — References ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:16:        MobileAds.initialize(this);
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:21:    public void banner(AdView adView) {
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:22:        adView.loadAd(null);
+
+==== Unity Ads — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/com.example.app/sources/com/unity3d/ads:0:identity: package com.unity3d.ads (1 files)
+<IN>/com.example.app/sources/com/unity3d/ads/UnityAds.java:0:identity: marker class com.unity3d.ads.UnityAds
+
+==== Unity Ads — Initialization ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:17:        UnityAds.initialize(this, "1234567", false);  [UnityAds#initialize]
+
+==== Unity Ads — References ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:17:        UnityAds.initialize(this, "1234567", false);
+
+==== Cross-SDK — All Banner Patterns ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:21:    public void banner(AdView adView) {  [google-admob]
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:22:        adView.loadAd(null);  [google-admob]
+
+==== Cross-SDK — All Interstitial Patterns ====
+
+
+
+==== Cross-SDK — All Rewarded Patterns ====
+
+
+
+==== Cross-SDK — All Native Patterns ====
+
+
+
+==== Cross-SDK — All Rewarded Interstitial Patterns ====
+
+
+
+==== Cross-SDK — All App Open Patterns ====
+
+
+
+==== Cross-SDK — Ad Unit / Placement IDs ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:11:    static final String AD_UNIT = "ca-app-pub-3940256099942544/6300978111";  [google-admob]
+
+==== Mediation — Google AdMob Mediation Adapters ====
+
+
+
+==== Mediation — IronSource / LevelPlay Mediation Adapters ====
+
+
+
+==== Mediation — AppLovin / MAX Mediation Adapters ====
+
+
+
+==== Mediation — Adapter Classes ====
+
+
+
+==== Mediation — Waterfall & Bidding Configuration ====
+
+
+
+==== Consent — Google UMP / Funding Choices ====
+
+
+
+==== Consent — IAB TCF v2 ====
+
+
+
+==== Consent — COPPA / Child-Directed ====
+
+
+
+==== Consent — SDK-specific Opt-out ====
+
+
+
+==== AndroidManifest — Ad Activities & Services ====
+
+<IN>/com.example.app/resources/AndroidManifest.xml:12:            android:name="com.google.android.gms.ads.AdActivity"  [google-admob]
+
+==== AndroidManifest — Ad Permissions ====
+
+<IN>/com.example.app/resources/AndroidManifest.xml:6:    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+==== AndroidManifest — Ad Meta-data ====
+
+<IN>/com.example.app/resources/AndroidManifest.xml:15:            android:name="com.google.android.gms.ads.APPLICATION_ID"  [google-admob]
+
+==== Entry Points — Ad SDK calls from app code (library packages excluded) ====
+
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:16:        MobileAds.initialize(this);  [google-admob/ref google-admob/init]
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:17:        UnityAds.initialize(this, "1234567", false);  [unity-ads/ref unity-ads/init]
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:21:    public void banner(AdView adView) {  [google-admob/ref]
+<IN>/com.example.app/sources/com/example/app/MainActivity.java:22:        adView.loadAd(null);  [google-admob/ad_operation?]
+
+NOTE: Only calls from app code are shown above. Library-internal calls are excluded.
+If no results appear, ad SDKs may only be invoked internally via mediation adapters.
+
+=== Search complete ===

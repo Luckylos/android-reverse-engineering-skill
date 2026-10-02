@@ -305,4 +305,37 @@ manifest_apktool $c \
   '        <receiver android:exported="true" android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver" android:permission="com.google.android.c2dm.permission.SEND"/>'
 app_main_smali $c
 
+# ---- P19 wildcard imports (`import pkg.*;`) make the SDK classes visible like explicit imports ------
+# (DESIGN 5.4 step 4): MobileAds is a class of the tree, FirebaseAnalytics only an API fact (no file);
+# NoWild.java has no wildcard import, so its MobileAds is not the SDK class
+c=p19-wildcard-import
+manifest_jadx $c
+stub_java $c com.google.android.gms.ads.MobileAds
+java $c com.example.app.WildAds <<'JEOF'
+import com.google.android.gms.ads.*;
+
+public class WildAds {
+    public void start() {
+        MobileAds.initialize(this);
+    }
+}
+JEOF
+java $c com.example.app.WildAnalytics <<'JEOF'
+import android.os.Bundle;
+import com.google.firebase.analytics.*;
+
+public class WildAnalytics {
+    public void levelUp(Bundle bundle) {
+        FirebaseAnalytics.getInstance(this).logEvent("level_up", bundle);
+    }
+}
+JEOF
+java $c com.example.app.NoWild <<'JEOF'
+public class NoWild {
+    public void start() {
+        MobileAds.initialize(this);
+    }
+}
+JEOF
+
 echo "pitfall fixtures written to $O"

@@ -313,7 +313,7 @@
       "tokens": ["MediationAdapter", "MediationBannerAdapter", "MediationInterstitialAdapter", "MediationRewardedAd", "IronSourceAdapter", "ISBannerAdapter", "ISInterstitialAdapter", "ISRewardedVideoAdapter", "MediationAdapterBase", "MaxAdapter", "MaxMediatedNetworkInfo"] },
     { "id": "waterfall", "tool": "find-ads", "flag": "mediation", "scope": "app_code", "match": "literal",
       "title": "Mediation — Waterfall & Bidding Configuration",
-      "tokens": ["waterfall", "headerBidding", "realTimeBidding", "mediationConfig", "auctionResponse", "adNetworkId"] },
+      "tokens": ["waterfall", "setWaterfall", "headerBidding", "realTimeBidding", "mediationConfig", "auctionResponse", "adNetworkId"] },
     { "id": "tcf", "tool": "find-ads", "flag": "consent", "scope": "app_code", "match": "literal",
       "title": "Consent — IAB TCF v2",
       "tokens": ["IABTCF_", "IABGPP_", "IABUSPrivacy_String", "gdprApplies", "tcfPolicyVersion", "TCString", "tcString", "GDPR_APPLIES", "GDPR_CONSENT"] },

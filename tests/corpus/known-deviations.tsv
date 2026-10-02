@@ -1,0 +1,24 @@
+# known-deviations.tsv -- expected divergences of the audit (find-trackers / find-ads) from
+# registry-scan and from a naive reading of the ground truth (DESIGN 3.6, 9.2 G-FP-KNOWN),
+# checked by tests/corpus/groundtruth.sh on every corpus layout (apktool pristine, jadx).
+#   kind<TAB>app<TAB>sdk_id<TAB>value<TAB>reason
+#   max   the audit level of <sdk_id> on <app> must be <= value (NONE < LOW < MEDIUM < HIGH)
+#   prec  a HIGH of <sdk_id> on <app> that the ground truth does not list is accepted (value -)
+# Ground truth vs pristine decodes (DESIGN 9.2 "Ground truth"): scratch/pkgtree.sh at depth 3
+# gives identical package trees for the old decoded dirs and the fresh pristine decodes of all
+# 9 apps (2026-10-02), so expected-sdkids.json applies unchanged and no row is needed for it.
+max	af1945	appodeal	NONE	com.explorestack is BidMachine's (exclude_packages com.explorestack.protobuf); registry-scan MATCHED
+max	bulldozer	appodeal	NONE	com.explorestack is BidMachine's (exclude_packages com.explorestack.protobuf); registry-scan MATCHED
+max	subway	appodeal	NONE	com.explorestack is BidMachine's (exclude_packages com.explorestack.protobuf); registry-scan MATCHED
+max	ttom2	appodeal	NONE	com.explorestack is BidMachine's (exclude_packages com.explorestack.protobuf); registry-scan MATCHED
+max	watersort	appodeal	NONE	com.explorestack is BidMachine's (exclude_packages com.explorestack.protobuf); registry-scan MATCHED
+max	heartstar	google-admob	LOW	only gms.ads.identifier (exclude_packages + library_roots); registry-scan MATCHED
+max	alto	facebook	MEDIUM	no Facebook SDK: com.facebook.ads is Meta AN (owned by meta-audience-network) and <queries><package com.facebook.katana> is package visibility, not evidence, so apktool = NONE (pinned by golden/find); jadx = MEDIUM partial from 3 Meta AN files under com.facebook.video.heroplayer / com.facebook.kotlin (jadx decompiles assets/audience_network.dex, apktool leaves it in smali_assets, never scanned); registry-scan MATCHED
+max	ttom2	facebook	MEDIUM	no Facebook SDK: com.facebook.ads is Meta AN (owned by meta-audience-network) and <queries><package com.facebook.katana> is package visibility, not evidence, so apktool = NONE (pinned by golden/find); jadx = MEDIUM partial from 3 Meta AN files under com.facebook.video.heroplayer / com.facebook.kotlin (jadx decompiles assets/audience_network.dex, apktool leaves it in smali_assets, never scanned); registry-scan MATCHED
+max	blockcraft	facebook	MEDIUM	only com.facebook.ads (Meta AN, owned by meta-audience-network) and com.facebook.device (library_roots); the meta-data com.facebook.sdk.ApplicationId (manifest_names) makes it MEDIUM manifest-only on apktool (jadx: MEDIUM partial, + the 3 Meta AN asset-dex files as on alto) (<queries><package com.facebook.katana> is not evidence); registry-scan MATCHED
+max	badpiggies	firebase-analytics	MEDIUM	only analytics/connector (exclude_packages); registry-scan MATCHED
+max	af1945	chartboost	LOW	Chartboost names inside ironSource Ad Quality (library_roots) only
+max	blockcraft	chartboost	LOW	Chartboost names inside ironSource Ad Quality (library_roots) only
+max	bulldozer	chartboost	LOW	Chartboost names inside ironSource Ad Quality (library_roots) only
+max	subway	chartboost	LOW	Chartboost names inside ironSource Ad Quality (library_roots) only
+max	ttom2	ironsource	LOW	no ironSource SDK in this app (ground truth)

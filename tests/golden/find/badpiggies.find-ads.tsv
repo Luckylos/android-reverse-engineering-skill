@@ -1,0 +1,221 @@
+#sdk-audit	2	tool=find-ads	layout=apktool
+SDK	google-admob	ads	HIGH	DETECTED	-	true	files=5790	manifest=5	endpoints=0	app_refs=185	calls=7	active=true
+SDK	unity-ads	ads	HIGH	DETECTED	-	true	files=666	manifest=4	endpoints=0	app_refs=41	calls=4	active=true
+SDK	ironsource	ads_mediation	HIGH	DETECTED	-	true	files=773	manifest=4	endpoints=0	app_refs=100	calls=15	active=true
+SDK	applovin	ads_mediation	HIGH	DETECTED	-	true	files=2336	manifest=14	endpoints=0	app_refs=111	calls=4	active=true
+SDK	meta-audience-network	ads	HIGH	DETECTED	-	true	files=173	manifest=2	endpoints=0	app_refs=94	calls=19	active=true
+SDK	vungle	ads	HIGH	DETECTED	-	true	files=587	manifest=2	endpoints=0	app_refs=87	calls=11	active=true
+SDK	inmobi	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	chartboost	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pangle	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mintegral	ads	HIGH	DETECTED	-	true	files=2466	manifest=3	endpoints=0	app_refs=120	calls=8	active=true
+SDK	adcolony	ads	HIGH	DETECTED	-	true	files=383	manifest=2	endpoints=0	app_refs=40	calls=4	active=true
+SDK	amazon-ads	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appodeal	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bidmachine	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bigo-ads	ads	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	fyber	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	google-ump-consent	consent	HIGH	DETECTED	-	true	files=108	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	guru-fusion	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	hyprmx	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	kidoz	ads	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	maio	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mobilefuse	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	moloco	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mytarget	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	ogury	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubmatic	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubnative	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	rovio-beacon	ads	HIGH	DETECTED	-	true	files=259	manifest=0	endpoints=0	app_refs=0	calls=39	active=true
+SDK	smaato	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	superawesome	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tapjoy	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tradplus	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	yandex-ads	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+EV	google-admob	package	com.google.android.gms.ads	559
+EV	google-admob	namespace	com.google.ads.mediation	7
+EV	google-admob	namespace	com.google.android.gms.internal.ads	5224
+EV	google-admob	marker	com.google.android.gms.ads.MobileAds	1
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.APPLICATION_ID
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT
+EV	google-admob	manifest	activity	com.google.android.gms.ads.AdActivity
+EV	google-admob	manifest	provider	com.google.android.gms.ads.MobileAdsInitProvider
+EV	google-admob	manifest	service	com.google.android.gms.ads.AdService
+EV	google-admob	id_prefix	ca-app-pub-	2
+EV	unity-ads	package	com.unity3d.ads	30
+EV	unity-ads	package	com.unity3d.scar	115
+EV	unity-ads	package	com.unity3d.services	521
+EV	unity-ads	marker	com.unity3d.ads.UnityAds	1
+EV	unity-ads	manifest	activity	com.unity3d.services.ads.adunit.AdUnitActivity
+EV	unity-ads	manifest	activity	com.unity3d.services.ads.adunit.AdUnitTransparentActivity
+EV	unity-ads	manifest	activity	com.unity3d.services.ads.adunit.AdUnitTransparentSoftwareActivity
+EV	unity-ads	manifest	activity	com.unity3d.services.ads.adunit.AdUnitSoftwareActivity
+EV	ironsource	package	com.ironsource.adapters	11
+EV	ironsource	package	com.ironsource.environment	47
+EV	ironsource	package	com.ironsource.lifecycle	16
+EV	ironsource	package	com.ironsource.mediationsdk	424
+EV	ironsource	package	com.ironsource.sdk	258
+EV	ironsource	namespace	com.ironsource	17
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.ControllerActivity
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.InterstitialActivity
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.OpenUrlActivity
+EV	ironsource	manifest	provider	com.ironsource.lifecycle.IronsourceLifecycleProvider
+EV	applovin	package	com.applovin.adview	11
+EV	applovin	package	com.applovin.impl	785
+EV	applovin	package	com.applovin.mediation	84
+EV	applovin	package	com.applovin.sdk	56
+EV	applovin	namespace	com.applovin	1380
+EV	applovin	adapter	com.applovin.mediation.adapters	20
+EV	applovin	marker	com.applovin.sdk.AppLovinSdk	1
+EV	applovin	manifest	provider	com.applovin.sdk.AppLovinInitProvider
+EV	applovin	manifest	activity	com.applovin.adview.AppLovinFullscreenActivity
+EV	applovin	manifest	activity	com.applovin.sdk.AppLovinWebViewActivity
+EV	applovin	manifest	activity	com.applovin.mediation.hybridAds.MaxHybridMRecAdActivity
+EV	applovin	manifest	activity	com.applovin.mediation.hybridAds.MaxHybridNativeAdActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerDetailActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerMultiAdActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAdUnitsListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAdUnitDetailActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTestLiveNetworkActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTestModeNetworkActivity
+EV	applovin	manifest	service	com.applovin.impl.sdk.utils.AppKilledService
+EV	applovin	manifest	service	com.applovin.impl.adview.activity.FullscreenAdService
+EV	meta-audience-network	package	com.facebook.ads	173
+EV	meta-audience-network	marker	com.facebook.ads.AudienceNetworkAds	1
+EV	meta-audience-network	manifest	activity	com.facebook.ads.AudienceNetworkActivity
+EV	meta-audience-network	manifest	provider	com.facebook.ads.AudienceNetworkContentProvider
+EV	vungle	package	com.vungle.warren	587
+EV	vungle	manifest	activity	com.vungle.warren.ui.VungleActivity
+EV	vungle	manifest	provider	com.vungle.warren.utility.VungleProvider
+EV	mintegral	package	com.mbridge.msdk	2466
+EV	mintegral	manifest	activity	com.mbridge.msdk.reward.player.MBRewardVideoActivity
+EV	mintegral	manifest	activity	com.mbridge.msdk.activity.MBCommonActivity
+EV	mintegral	manifest	activity	com.mbridge.msdk.out.LoadingActivity
+EV	adcolony	package	com.adcolony.sdk	368
+EV	adcolony	namespace	com.adcolony	15
+EV	adcolony	manifest	activity	com.adcolony.sdk.AdColonyInterstitialActivity
+EV	adcolony	manifest	activity	com.adcolony.sdk.AdColonyAdViewActivity
+EV	google-ump-consent	package	com.google.android.gms.internal.consent_sdk	90
+EV	google-ump-consent	package	com.google.android.ump	18
+EV	google-ump-consent	marker	com.google.android.ump.UserMessagingPlatform	1
+EV	rovio-beacon	package	com.rovio.beacon	259
+CALL	adcolony	init	com.adcolony.sdk.AdColony#configure	smali_classes2/com/rovio/beacon/ads/AdColonySdk.smali:323	exact
+CALL	adcolony	ad_operation	com.adcolony.sdk.AdColony#requestInterstitial	smali_classes2/com/rovio/beacon/ads/AdColonySdk.smali:330	exact
+CALL	adcolony	ad_operation	com.adcolony.sdk.AdColony#requestInterstitial	smali_classes2/com/rovio/beacon/ads/AdColonySdk.smali:338	exact
+CALL	adcolony	ad_operation	com.adcolony.sdk.AdColonyInterstitial#show	smali_classes2/com/rovio/beacon/ads/AdColonySdk.smali:420	exact
+CALL	google-admob	consent	com.google.android.gms.ads.RequestConfiguration$Builder#setTagForUnderAgeOfConsent	smali_classes2/com/rovio/beacon/ads/AdMobSdk.smali:450	exact
+CALL	google-admob	consent	com.google.android.gms.ads.RequestConfiguration$Builder#setTagForChildDirectedTreatment	smali_classes2/com/rovio/beacon/ads/AdMobSdk.smali:469	exact
+CALL	google-admob	config	com.google.android.gms.ads.MobileAds#setRequestConfiguration	smali_classes2/com/rovio/beacon/ads/AdMobSdk.smali:478	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.AdView#destroy	smali_classes2/com/rovio/beacon/ads/AdMobSdkBanner.smali:61	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.AdView#loadAd	smali_classes2/com/rovio/beacon/ads/AdMobSdkBanner.smali:209	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.interstitial.InterstitialAd#load	smali_classes2/com/rovio/beacon/ads/AdMobSdkInterstitial.smali:125	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.rewarded.RewardedAd#load	smali_classes2/com/rovio/beacon/ads/AdMobSdkRewardVideo.smali:147	exact
+CALL	rovio-beacon	init	com.rovio.beacon.ads.AdsSdk#load	smali_classes2/com/rovio/beacon/ads/AdsSdk$1.smali:11	exact
+CALL	rovio-beacon	init	com.rovio.beacon.ads.AdsSdk#poke	smali_classes2/com/rovio/beacon/ads/AdsSdk$2.smali:11	exact
+CALL	rovio-beacon	init	com.rovio.beacon.ads.AdsSdk#show	smali_classes2/com/rovio/beacon/ads/AdsSdk$3.smali:11	exact
+CALL	rovio-beacon	init	com.rovio.beacon.ads.AdsSdk#hide	smali_classes2/com/rovio/beacon/ads/AdsSdk$4.smali:11	exact
+CALL	applovin	init	com.applovin.sdk.AppLovinSdk#getInstance	smali_classes2/com/rovio/beacon/ads/ApplovinSdkInitializer.smali:202	exact
+CALL	applovin	consent	com.applovin.sdk.AppLovinPrivacySettings#setHasUserConsent	smali_classes2/com/rovio/beacon/ads/ApplovinSdkInitializer.smali:212	exact
+CALL	applovin	consent	com.applovin.sdk.AppLovinPrivacySettings#setIsAgeRestrictedUser	smali_classes2/com/rovio/beacon/ads/ApplovinSdkInitializer.smali:215	exact
+CALL	applovin	init	com.applovin.sdk.AppLovinSdk#initializeSdk	smali_classes2/com/rovio/beacon/ads/ApplovinSdkInitializer.smali:222	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.AdView#destroy	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkBanner.smali:65	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkBanner.smali:288	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkBanner.smali:294	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.AdView#loadAd	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkBanner.smali:381	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.InterstitialAd#destroy	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:43	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:192	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:198	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.InterstitialAd#loadAd	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:244	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.InterstitialAd#isAdLoaded	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:401	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.InterstitialAd#isAdLoaded	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:442	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.InterstitialAd#show	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkInterstitial.smali:454	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.RewardedVideoAd#destroy	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:50	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:199	exact
+CALL	meta-audience-network	consent	com.facebook.ads.AdSettings#setMixedAudience	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:205	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.RewardedVideoAd#loadAd	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:251	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.RewardedVideoAd#isAdLoaded	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:413	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.RewardedVideoAd#isAdLoaded	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:454	exact
+CALL	meta-audience-network	ad_operation	com.facebook.ads.RewardedVideoAd#show	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkRewardVideo.smali:466	exact
+CALL	meta-audience-network	init	com.facebook.ads.AudienceNetworkAds#initialize	smali_classes2/com/rovio/beacon/ads/FBAudienceNetworkSdk.smali:78	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#setMetaData	smali_classes2/com/rovio/beacon/ads/IronSrcSdk.smali:80	exact
+CALL	ironsource	consent	com.ironsource.mediationsdk.IronSource#setMetaData	smali_classes2/com/rovio/beacon/ads/IronSrcSdk.smali:80	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#setConsent	smali_classes2/com/rovio/beacon/ads/IronSrcSdk.smali:92	exact
+CALL	ironsource	consent	com.ironsource.mediationsdk.IronSource#setConsent	smali_classes2/com/rovio/beacon/ads/IronSrcSdk.smali:92	exact
+CALL	ironsource	init	com.ironsource.mediationsdk.IronSource#initISDemandOnly	smali_classes2/com/rovio/beacon/ads/IronSrcSdk.smali:116	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyInterstitialReady	smali_classes2/com/rovio/beacon/ads/IronSrcSdkInterstitial.smali:182	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#loadISDemandOnlyInterstitial	smali_classes2/com/rovio/beacon/ads/IronSrcSdkInterstitial.smali:206	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyInterstitialReady	smali_classes2/com/rovio/beacon/ads/IronSrcSdkInterstitial.smali:535	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyInterstitialReady	smali_classes2/com/rovio/beacon/ads/IronSrcSdkInterstitial.smali:564	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#showISDemandOnlyInterstitial	smali_classes2/com/rovio/beacon/ads/IronSrcSdkInterstitial.smali:578	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyRewardedVideoAvailable	smali_classes2/com/rovio/beacon/ads/IronSrcSdkRewardedVideo.smali:187	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#loadISDemandOnlyRewardedVideo	smali_classes2/com/rovio/beacon/ads/IronSrcSdkRewardedVideo.smali:211	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyRewardedVideoAvailable	smali_classes2/com/rovio/beacon/ads/IronSrcSdkRewardedVideo.smali:561	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#isISDemandOnlyRewardedVideoAvailable	smali_classes2/com/rovio/beacon/ads/IronSrcSdkRewardedVideo.smali:590	exact
+CALL	ironsource	ad_operation	com.ironsource.mediationsdk.IronSource#showISDemandOnlyRewardedVideo	smali_classes2/com/rovio/beacon/ads/IronSrcSdkRewardedVideo.smali:604	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBBannerView#release	smali_classes2/com/rovio/beacon/ads/MintegralSdkBanner.smali:88	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBBannerView#loadFromBid	smali_classes2/com/rovio/beacon/ads/MintegralSdkBanner.smali:240	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBBannerView#load	smali_classes2/com/rovio/beacon/ads/MintegralSdkBanner.smali:248	exact
+CALL	mintegral	init	com.mbridge.msdk.out.MBridgeSDKFactory#getMBridgeSDK	smali_classes2/com/rovio/beacon/ads/MintegralSdkInitializer.smali:233	exact
+CALL	mintegral	init	com.mbridge.msdk.MBridgeSDK#init	smali_classes2/com/rovio/beacon/ads/MintegralSdkInitializer.smali:298	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBRewardVideoHandler#load	smali_classes2/com/rovio/beacon/ads/MintegralSdkRewardedVideo.smali:158	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBRewardVideoHandler#isReady	smali_classes2/com/rovio/beacon/ads/MintegralSdkRewardedVideo.smali:492	exact
+CALL	mintegral	ad_operation	com.mbridge.msdk.out.MBRewardVideoHandler#show	smali_classes2/com/rovio/beacon/ads/MintegralSdkRewardedVideo.smali:501	exact
+CALL	unity-ads	ad_operation	com.unity3d.ads.UnityAds#load	smali_classes2/com/rovio/beacon/ads/UnityAdsSdk.smali:151	exact
+CALL	unity-ads	ad_operation	com.unity3d.ads.UnityAds#show	smali_classes2/com/rovio/beacon/ads/UnityAdsSdk.smali:499	exact
+CALL	unity-ads	ad_operation	com.unity3d.ads.UnityAds#isInitialized	smali_classes2/com/rovio/beacon/ads/UnityAdsSdkInitializer.smali:122	exact
+CALL	unity-ads	init	com.unity3d.ads.UnityAds#initialize	smali_classes2/com/rovio/beacon/ads/UnityAdsSdkInitializer.smali:192	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:500	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:908	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:923	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#show	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1122	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#show	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1355	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1430	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1435	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1516	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1544	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayer#emitTrackEvent	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1574	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#destroy	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1664	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/VideoPlayer.smali:1708	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAdFactory#preloadWebViewAd	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$1.smali:64	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalVideoTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:199	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalEndCardTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:206	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalVideoTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:237	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalEndCardTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:244	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalVideoTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:289	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.VideoPlayerBridge$VideoPlayerWrapper#signalEndCardTrackEvents	smali_classes2/com/rovio/beacon/ads/VideoPlayerBridge$VideoPlayerWrapper.smali:296	exact
+CALL	vungle	init	com.vungle.warren.Vungle#isInitialized	smali_classes2/com/rovio/beacon/ads/VungleSdk.smali:65	exact
+CALL	vungle	ad_operation	com.vungle.warren.Banners#loadBanner	smali_classes2/com/rovio/beacon/ads/VungleSdkBanner.smali:224	exact
+CALL	vungle	ad_operation	com.vungle.warren.Banners#canPlayAd	smali_classes2/com/rovio/beacon/ads/VungleSdkBanner.smali:513	exact
+CALL	vungle	ad_operation	com.vungle.warren.Banners#canPlayAd	smali_classes2/com/rovio/beacon/ads/VungleSdkBanner.smali:580	exact
+CALL	vungle	ad_operation	com.vungle.warren.Banners#getBanner	smali_classes2/com/rovio/beacon/ads/VungleSdkBanner.smali:601	exact
+CALL	vungle	init	com.vungle.warren.Vungle#isInitialized	smali_classes2/com/rovio/beacon/ads/VungleSdkInitializer.smali:161	exact
+CALL	vungle	init	com.vungle.warren.Vungle#init	smali_classes2/com/rovio/beacon/ads/VungleSdkInitializer.smali:240	exact
+CALL	vungle	ad_operation	com.vungle.warren.Vungle#loadAd	smali_classes2/com/rovio/beacon/ads/VungleSdkVideo.smali:139	exact
+CALL	vungle	ad_operation	com.vungle.warren.Vungle#canPlayAd	smali_classes2/com/rovio/beacon/ads/VungleSdkVideo.smali:392	exact
+CALL	vungle	ad_operation	com.vungle.warren.Vungle#canPlayAd	smali_classes2/com/rovio/beacon/ads/VungleSdkVideo.smali:428	exact
+CALL	vungle	ad_operation	com.vungle.warren.Vungle#playAd	smali_classes2/com/rovio/beacon/ads/VungleSdkVideo.smali:483	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#show	smali_classes2/com/rovio/beacon/ads/WebViewAd$1.smali:11	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#show	smali_classes2/com/rovio/beacon/ads/WebViewAd$2.smali:11	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/WebViewAd$3.smali:11	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#destroy	smali_classes2/com/rovio/beacon/ads/WebViewAd$3.smali:60	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/WebViewAd$MraidListener$1.smali:62	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/WebViewAd$RovioTrackingInterface$1.smali:48	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/WebViewAd.smali:1310	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAdFactory#preloadWebViewAd	smali_classes2/com/rovio/beacon/ads/WebViewAdFactory$1.smali:11	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#loadUrl	smali_classes2/com/rovio/beacon/ads/WebViewAdFactory.smali:167	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#loadHtml	smali_classes2/com/rovio/beacon/ads/WebViewAdFactory.smali:176	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#show	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$10.smali:48	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#hide	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$11.smali:54	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#destroy	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$6.smali:48	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#loadUrl	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$7.smali:55	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#loadHtml	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$8.smali:55	exact
+CALL	rovio-beacon	ad_operation	com.rovio.beacon.ads.WebViewAd#reload	smali_classes2/com/rovio/beacon/ads/WebViewWrapper$9.smali:48	exact
+HINT	ad-unit-ids	9	9
+HINT	ad-unit-setters	1	1
+HINT	coppa	1	1
+HINT	ad-perms	1	2
+HINT	ad-meta	1	1
+ADAPTER	google-admob	admob	1
+ADAPTER	ironsource	ironsource	6
+ADAPTER	ironsource	supersonicads	5

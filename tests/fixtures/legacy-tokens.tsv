@@ -1,0 +1,461 @@
+# legacy-tokens.tsv -- every regex alternative of the legacy find-trackers.sh / find-ads.sh of 4c166fe
+# (run_grep, run_grep_xml, ENTRYPOINT_PATTERN, --exclude-dir) and its home in the registry-driven audit
+# (DESIGN 3.5). T-TOKENS (tests/unit/t_tokens.sh): column 1 == the extracted tokens; column 2 is checked.
+# token<TAB>home<TAB>note    home: api:<sdk_id>:<Class#method> | ref:<sdk_id> | identity:<sdk_id> |
+#   namespace:<sdk_id> | adapter:<sdk_id> | domain:<sdk_id>:<domain> | manifest_name:<sdk_id>:<name> |
+#   id_prefix:<sdk_id>:<prefix> | hint:<hint_id> | format:<format> | library:<root> | ownership | dismissed
+#   (ownership and dismissed need a note)
+FirebaseAnalytics\.getInstance	api:firebase-analytics:FirebaseAnalytics#getInstance	-
+FirebaseAnalytics\.newInstance	dismissed	not public Firebase API, absent from the corpus (DEVIATIONS 6a.1)
+FirebaseApp\.initializeApp	library:com.google.firebase	core Firebase init, not Analytics; com.google.firebase is a catch-all library root
+\.logEvent\s*\(	hint:generic-events	also an import-scoped call of FirebaseAnalytics/AppsFlyerLib/Amplitude#logEvent
+\.setDefaultEventParameters	api:firebase-analytics:FirebaseAnalytics#setDefaultEventParameters	import-scoped instance call
+FirebaseAnalytics\.Event\.	ref:firebase-analytics	class reference, app code only
+FirebaseAnalytics\.Param\.	ref:firebase-analytics	class reference, app code only (the com/bytedance false positive is gone)
+\.setUserId\s*\(	hint:generic-identity	also an import-scoped call of the setUserId APIs
+\.setUserProperty\s*\(	api:firebase-analytics:FirebaseAnalytics#setUserProperty	import-scoped instance call
+\.setAnalyticsCollectionEnabled	api:firebase-analytics:FirebaseAnalytics#setAnalyticsCollectionEnabled	role consent
+\.setConsent\s*\(	api:firebase-analytics:FirebaseAnalytics#setConsent	role consent
+ConsentType\.	ref:firebase-analytics	FirebaseAnalytics.ConsentType reference
+ConsentStatus\.	ref:firebase-analytics	FirebaseAnalytics.ConsentStatus reference
+setAnalyticsCollectionEnabled\s*\(\s*false	api:firebase-analytics:FirebaseAnalytics#setAnalyticsCollectionEnabled	the (false) specialisation is lost; the row keeps its text
+AdjustConfig\s*\(	api:adjust:AdjustConfig#<init>	-
+Adjust\.onCreate\s*\(	api:adjust:Adjust#onCreate	-
+Adjust\.create\s*\(	dismissed	not Adjust API (v4 init is onCreate, v5 initSdk; DEVIATIONS 6a.1)
+AdjustConfig\.ENVIRONMENT_	ref:adjust	class constant reference
+AdjustEvent\s*\(	api:adjust:AdjustEvent#<init>	-
+Adjust\.trackEvent\s*\(	api:adjust:Adjust#trackEvent	-
+\.setRevenue\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.setCallbackId\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.setOnAttributionChangedListener	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+AdjustAttribution	ref:adjust	class reference
+Adjust\.addSessionCallbackParameter	api:adjust:Adjust#addSessionCallbackParameter	-
+Adjust\.getAdid\s*\(	api:adjust:Adjust#getAdid	-
+AppsFlyerLib\.getInstance	api:appsflyer:AppsFlyerLib#getInstance	-
+AppsFlyerConversionListener	ref:appsflyer	listener reference
+\.init\s*\(.*AF_DEV_KEY	api:appsflyer:AppsFlyerLib#init	import-scoped instance call (no variable-name heuristics)
+\.start\s*\(	api:appsflyer:AppsFlyerLib#start	import-scoped instance call
+\.logEvent\s*\(.*AppsFlyerLib	api:appsflyer:AppsFlyerLib#logEvent	-
+AFInAppEventType\.	ref:appsflyer	class constant reference
+AFInAppEventParameterName\.	ref:appsflyer	class constant reference
+\.trackEvent\s*\(	hint:generic-events	-
+\.setCustomerUserId\s*\(	api:appsflyer:AppsFlyerLib#setCustomerUserId	-
+\.setCustomerIdAndLogSession	api:appsflyer:AppsFlyerLib#setCustomerIdAndLogSession	-
+\.getAppsFlyerUID\s*\(	api:appsflyer:AppsFlyerLib#getAppsFlyerUID	-
+\.setAdditionalData\s*\(	api:appsflyer:AppsFlyerAndroidWrapper#setAdditionalData	Unity wrapper target; a bare call elsewhere is not evidence
+MixpanelAPI\.getInstance\s*\(	api:mixpanel:MixpanelAPI#getInstance	-
+MixpanelAPI\.init\s*\(	dismissed	not Mixpanel API (init is getInstance; DEVIATIONS 6a.1)
+\.track\s*\(	api:mixpanel:MixpanelAPI#track	import-scoped instance call; the bare call was the HeartStar false positive
+\.trackMap\s*\(	api:mixpanel:MixpanelAPI#trackMap	-
+\.timeEvent\s*\(	api:mixpanel:MixpanelAPI#timeEvent	-
+\.registerSuperProperties\s*\(	api:mixpanel:MixpanelAPI#registerSuperProperties	-
+\.identify\s*\(	hint:generic-identity	also import-scoped MixpanelAPI/AmplitudeClient#identify
+\.alias\s*\(	api:mixpanel:MixpanelAPI#alias	-
+\.getPeople\s*\(	api:mixpanel:MixpanelAPI#getPeople	-
+\.getDistinctId\s*\(	api:mixpanel:MixpanelAPI#getDistinctId	-
+\.set\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.increment\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+Amplitude\.getInstance\s*\(	api:amplitude:Amplitude#getInstance	-
+AmplitudeClient	ref:amplitude	class reference
+\.initialize\s*\(.*amplitude	api:amplitude:AmplitudeClient#initialize	-
+amplitude\.init\s*\(	dismissed	variable-name heuristic; Amplitude init is AmplitudeClient#initialize
+\.logRevenue\s*\(	api:amplitude:AmplitudeClient#logRevenue	-
+\.setEventProperties	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+EventOptions\s*\(	ref:amplitude	class reference
+\.setUserProperties\s*\(	api:amplitude:AmplitudeClient#setUserProperties	-
+\.setDeviceId\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.setGroup\s*\(	api:amplitude:AmplitudeClient#setGroup	-
+Identify\s*\(\)	ref:amplitude	class reference
+Analytics\.with\s*\(	api:segment:Analytics#with	-
+Analytics\.Builder	ref:segment	class reference; needs the com.segment import (GuruAnalytics.Builder is not Segment)
+Analytics\.setSingletonInstance	api:segment:Analytics#setSingletonInstance	-
+com\.segment\.analytics	identity:segment	-
+\.screen\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.group\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+TrackPayload	ref:segment	class reference
+ScreenPayload	ref:segment	class reference
+Traits\s*\(\)	ref:segment	class reference
+IdentifyPayload	ref:segment	class reference
+Braze\.configure\s*\(	api:braze:Braze#configure	-
+BrazeConfig\.Builder	api:braze:BrazeConfig$Builder#setApiKey	builder reference; its setters are API facts
+Appboy\.configure\s*\(	api:braze:Appboy#configure	-
+AppboyConfig\.Builder	ref:braze	class reference (com.appboy is a braze package)
+\.logCustomEvent\s*\(	hint:generic-events	also import-scoped Braze#logCustomEvent
+\.logPurchase\s*\(	api:braze:Braze#logPurchase	-
+BrazeProperties\s*\(	ref:braze	class reference
+\.logClick\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.getCurrentUser\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.changeUser\s*\(	api:braze:Braze#changeUser	-
+BrazeUser	ref:braze	class reference
+\.setEmail\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.setCustomUserAttribute\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+CleverTapAPI\.getDefaultInstance	api:clevertap:CleverTapAPI#getDefaultInstance	-
+CleverTapAPI\.changeCredentials	api:clevertap:CleverTapAPI#changeCredentials	-
+ActivityLifecycleCallback\.register	api:clevertap:ActivityLifecycleCallback#register	-
+\.pushEvent\s*\(	api:clevertap:CleverTapAPI#pushEvent	-
+\.recordEvent\s*\(	api:clevertap:CleverTapAPI#recordEvent	-
+\.pushChargedEvent\s*\(	api:clevertap:CleverTapAPI#pushChargedEvent	-
+\.pushProfile\s*\(	api:clevertap:CleverTapAPI#pushProfile	-
+\.onUserLogin\s*\(	api:clevertap:CleverTapAPI#onUserLogin	-
+\.profilePush\s*\(	dismissed	bare .method( call: not evidence (DESIGN 3.5); no API fact
+\.getCleverTapID\s*\(	api:clevertap:CleverTapAPI#getCleverTapID	-
+FlurryAgent\.Builder	api:flurry:FlurryAgent$Builder#<init>	-
+FlurryAgent\.init\s*\(	api:flurry:FlurryAgent#init	-
+FlurryAgent\.onStartSession\s*\(	api:flurry:FlurryAgent#onStartSession	-
+\.withLogEnabled\s*\(	dismissed	builder setter; the chain is attributed through FlurryAgent$Builder#<init>/build
+FlurryAgent\.logEvent\s*\(	api:flurry:FlurryAgent#logEvent	-
+FlurryAgent\.endTimedEvent	api:flurry:FlurryAgent#endTimedEvent	-
+FlurryAgent\.logPayment\s*\(	api:flurry:FlurryAgent#logPayment	-
+FlurryAgent\.setUserId\s*\(	api:flurry:FlurryAgent#setUserId	-
+FlurryAgent\.setAge\s*\(	api:flurry:FlurryAgent#setAge	-
+FlurryAgent\.setGender\s*\(	api:flurry:FlurryAgent#setGender	-
+trackEvent	hint:generic-events	-
+logEvent	hint:generic-events	-
+recordEvent	hint:generic-events	-
+pushEvent	hint:generic-events	-
+logCustomEvent	hint:generic-events	-
+setUserId	hint:generic-identity	-
+setCustomerUserId	hint:generic-identity	-
+identify	hint:generic-identity	-
+setDistinctId	hint:generic-identity	-
+onUserLogin	hint:generic-identity	-
+changeUser	hint:generic-identity	-
+setAnalyticsCollectionEnabled	hint:generic-toggle	-
+setOptOut	hint:generic-toggle	-
+setDataCollectionEnabled	hint:generic-toggle	-
+setSendingEnabled	hint:generic-toggle	-
+optOut	hint:generic-toggle	-
+gdprForgetMe	hint:generic-toggle	also api adjust Adjust#gdprForgetMe (role consent)
+app-measurement\.com	domain:firebase-analytics:app-measurement.com	-
+firebase-settings\.crashlytics\.com	domain:firebase-crashlytics:firebase-settings.crashlytics.com	-
+firebaselogging	hint:tracker-endpoint-infra	Firelog transport, not attributable
+google-analytics\.com/collect	domain:google-analytics:google-analytics.com	-
+app\.adjust\.com	domain:adjust:adjust.com	-
+app\.adjust\.io	domain:adjust:adjust.io	-
+app\.adjust\.world	domain:adjust:adjust.world	-
+cdn\.adjust\.com	domain:adjust:adjust.com	-
+appsflyer\.com	domain:appsflyer:appsflyer.com	-
+appsflyersdk\.com	domain:appsflyer:appsflyersdk.com	-
+onelink\.me	domain:appsflyer:onelink.me	-
+api\.mixpanel\.com	domain:mixpanel:mixpanel.com	-
+decide\.mixpanel\.com	domain:mixpanel:mixpanel.com	-
+api-js\.mixpanel\.com	domain:mixpanel:mixpanel.com	-
+api\.amplitude\.com	domain:amplitude:amplitude.com	-
+api2\.amplitude\.com	domain:amplitude:amplitude.com	-
+cdn\.amplitude\.com	domain:amplitude:amplitude.com	-
+api\.segment\.io	domain:segment:api.segment.io	-
+api\.segment\.com	domain:segment:api.segment.com	-
+cdn-settings\.segment\.com	domain:segment:cdn-settings.segment.com	-
+sdk\.iad-[0-9]+\.braze\.com	domain:braze:braze.com	registrable suffix
+rest\.iad-[0-9]+\.braze\.com	domain:braze:braze.com	registrable suffix
+appboy\.com	domain:braze:appboy.com	-
+wzrkt\.com	domain:clevertap:wzrkt.com	-
+clevertap-prod\.com	domain:clevertap:clevertap-prod.com	-
+in\.clevertap\.com	domain:clevertap:clevertap.com	-
+data\.flurry\.com	domain:flurry:flurry.com	-
+flurry\.com/sdk	domain:flurry:flurry.com	-
+com\.google\.firebase\.analytics	identity:firebase-analytics	manifest identity prefix
+com\.google\.android\.gms\.measurement	namespace:firebase-analytics	manifest_components under the NS are pertinent (DESIGN 2.4)
+com\.google\.firebase\.iid	hint:tracker-manifest-infra	FCM, informational: no longer firebase-analytics evidence
+com\.adjust\.	identity:adjust	manifest identity prefix
+com\.appsflyer\.	identity:appsflyer	manifest identity prefix
+com\.mixpanel\.	identity:mixpanel	manifest identity prefix
+com\.amplitude\.	identity:amplitude	manifest identity prefix
+com\.segment\.	identity:segment	manifest identity prefix
+com\.braze\.	identity:braze	manifest identity prefix
+com\.appboy\.	identity:braze	manifest identity prefix
+com\.clevertap\.	identity:clevertap	manifest identity prefix
+com\.flurry\.	identity:flurry	manifest identity prefix
+AD_ID	hint:tracker-perms	bare AD_ID also matched ACCESS_ADSERVICES_AD_ID: both names are listed (exact)
+com\.google\.android\.gms\.permission\.AD_ID	hint:tracker-perms	also hint ad-perms
+ACCESS_FINE_LOCATION	hint:tracker-perms	android.permission.* (exact)
+ACCESS_COARSE_LOCATION	hint:tracker-perms	android.permission.* (exact)
+GET_ACCOUNTS	hint:tracker-perms	android.permission.* (exact)
+firebase_analytics_collection_enabled	manifest_name:firebase-analytics:firebase_analytics_collection_enabled	-
+google_analytics_adid_collection_enabled	manifest_name:firebase-analytics:google_analytics_adid_collection_enabled	-
+ADJUST_	hint:tracker-meta-prefix	-
+APPSFLYER_	hint:tracker-meta-prefix	-
+MIXPANEL_	hint:tracker-meta-prefix	-
+AMPLITUDE_	hint:tracker-meta-prefix	-
+SEGMENT_	hint:tracker-meta-prefix	-
+BRAZE_	hint:tracker-meta-prefix	-
+CLEVERTAP_	hint:tracker-meta-prefix	-
+FLURRY_	hint:tracker-meta-prefix	-
+--exclude-dir=com/google	ownership	library_roots com.google.android.gms / com.google.firebase / ... and the Google entries
+--exclude-dir=com/adjust	identity:adjust	registry ownership replaces --exclude-dir
+--exclude-dir=com/appsflyer	identity:appsflyer	registry ownership replaces --exclude-dir
+--exclude-dir=com/mixpanel	identity:mixpanel	registry ownership replaces --exclude-dir
+--exclude-dir=com/amplitude	identity:amplitude	registry ownership replaces --exclude-dir
+--exclude-dir=com/segment	identity:segment	registry ownership replaces --exclude-dir
+--exclude-dir=com/braze	identity:braze	registry ownership replaces --exclude-dir
+--exclude-dir=com/appboy	identity:braze	registry ownership replaces --exclude-dir
+--exclude-dir=com/clevertap	identity:clevertap	registry ownership replaces --exclude-dir
+--exclude-dir=com/flurry	identity:flurry	registry ownership replaces --exclude-dir
+--exclude-dir=com/facebook	identity:facebook	plus the Meta library_roots (soloader, react, ...)
+--exclude-dir=com/newrelic	dismissed	no entry and not in the corpus (registry-backlog B)
+--exclude-dir=com/crashlytics	dismissed	legacy Fabric Crashlytics: no entry, not in the corpus (registry-backlog B)
+--exclude-dir=io/sentry	identity:sentry	registry ownership replaces --exclude-dir
+--exclude-dir=com/bugsnag	identity:bugsnag	registry ownership replaces --exclude-dir
+--exclude-dir=com/datadog	dismissed	no entry and not in the corpus (registry-backlog B)
+Adjust\.onCreate	api:adjust:Adjust#onCreate	-
+Adjust\.trackEvent	api:adjust:Adjust#trackEvent	-
+\.start\s*\(.*AppsFlyerLib	api:appsflyer:AppsFlyerLib#start	-
+MixpanelAPI\.getInstance	api:mixpanel:MixpanelAPI#getInstance	-
+\.track\s*\(.*MixpanelAPI	api:mixpanel:MixpanelAPI#track	-
+\.identify\s*\(.*Mixpanel	api:mixpanel:MixpanelAPI#identify	-
+Amplitude\.getInstance	api:amplitude:Amplitude#getInstance	-
+\.logEvent\s*\(.*Amplitude	api:amplitude:AmplitudeClient#logEvent	-
+\.track\s*\(.*Segment	ref:segment	Segment track/identify are not API facts; the line is a Segment reference when it uses an imported Segment class
+\.identify\s*\(.*Segment	ref:segment	see .track(.*Segment
+Braze\.configure	api:braze:Braze#configure	-
+\.changeUser\s*\(.*Braze	api:braze:Braze#changeUser	-
+FlurryAgent\.logEvent	api:flurry:FlurryAgent#logEvent	-
+FlurryAgent\.setUserId	api:flurry:FlurryAgent#setUserId	-
+MobileAds\.initialize\s*\(	api:google-admob:MobileAds#initialize	-
+MobileAds\.setRequestConfiguration	api:google-admob:MobileAds#setRequestConfiguration	-
+com\.google\.android\.gms\.ads	identity:google-admob	minus exclude gms.ads.identifier
+AdView\s	ref:google-admob	class reference
+AdSize\.	ref:google-admob	class reference
+\.loadAd\s*\(	api:google-admob:AdView#loadAd	import-scoped instance call (any imported ad class with loadAd)
+AdRequest\.Builder	ref:google-admob	class reference
+com\.google\.android\.gms\.ads\.AdView	ref:google-admob	FQCN reference
+InterstitialAd\.load\s*\(	api:google-admob:InterstitialAd#load	-
+InterstitialAdLoadCallback	ref:google-admob	listener reference
+FullScreenContentCallback	ref:google-admob	listener reference
+com\.google\.android\.gms\.ads\.interstitial	identity:google-admob	-
+RewardedAd\.load\s*\(	api:google-admob:RewardedAd#load	-
+RewardedAdLoadCallback	ref:google-admob	listener reference
+OnUserEarnedRewardListener	ref:google-admob	listener reference; format rewarded
+RewardedInterstitialAd\.load	api:google-admob:RewardedInterstitialAd#load	-
+AdLoader\.Builder	api:google-admob:AdLoader$Builder#<init>	-
+NativeAd\.	ref:google-admob	class reference
+NativeAdView	ref:google-admob	class reference
+UnifiedNativeAd	ref:google-admob	class reference (legacy)
+NativeAdOptions	ref:google-admob	class reference
+com\.google\.android\.gms\.ads\.nativead	identity:google-admob	-
+AppOpenAd\.load\s*\(	api:google-admob:AppOpenAd#load	-
+AppOpenAd\.AppOpenAdLoadCallback	ref:google-admob	listener reference
+AppOpenAdManager	ref:google-admob	app-side helper of the AdMob samples: its lines reference AppOpenAd
+ca-app-pub-	id_prefix:google-admob:ca-app-pub-	-
+/[0-9]+/[0-9]+	dismissed	pure regex, noise (dates, versions, paths): no regex in the data (DESIGN 3.5)
+adUnitId	hint:ad-unit-ids	-
+setAdUnitId\s*\(	hint:ad-unit-setters	-
+UnityAds\.initialize\s*\(	api:unity-ads:UnityAds#initialize	-
+UnityAds\.isInitialized	api:unity-ads:UnityAds#isInitialized	-
+IUnityAdsInitializationListener	ref:unity-ads	listener reference
+com\.unity3d\.ads	identity:unity-ads	-
+UnityAds\.load\s*\(	api:unity-ads:UnityAds#load	-
+UnityAds\.show\s*\(	api:unity-ads:UnityAds#show	-
+IUnityAdsLoadListener	ref:unity-ads	listener reference
+IUnityAdsShowListener	ref:unity-ads	listener reference
+BannerView\s*\(	api:unity-ads:BannerView#<init>	-
+UnityBannerSize	ref:unity-ads	class reference
+com\.unity3d\.services\.banners	identity:unity-ads	under com.unity3d.services
+IronSource\.init\s*\(	api:ironsource:IronSource#init	-
+IronSource\.setUserId	api:ironsource:IronSource#setUserId	-
+IronSourceConfig	ref:ironsource	class reference
+com\.ironsource\.mediationsdk	identity:ironsource	-
+IronSource\.loadInterstitial	api:ironsource:IronSource#loadInterstitial	-
+IronSource\.showInterstitial	api:ironsource:IronSource#showInterstitial	-
+IronSource\.isInterstitialReady	api:ironsource:IronSource#isInterstitialReady	-
+InterstitialListener	ref:ironsource	class reference
+IronSource\.showRewardedVideo	api:ironsource:IronSource#showRewardedVideo	-
+IronSource\.isRewardedVideoAvailable	api:ironsource:IronSource#isRewardedVideoAvailable	-
+RewardedVideoListener	ref:ironsource	class reference
+IronSource\.loadBanner	api:ironsource:IronSource#loadBanner	-
+IronSource\.destroyBanner	api:ironsource:IronSource#destroyBanner	-
+IronSourceBannerLayout	ref:ironsource	class reference
+BannerListener	ref:ironsource	class reference
+LevelPlay	api:ironsource:LevelPlay#init	LevelPlay facade; other LevelPlay* classes are references
+LevelPlayAdError	ref:ironsource	class reference
+LevelPlayBannerAdView	api:ironsource:LevelPlayBannerAdView#loadAd	-
+LevelPlayInterstitialAd	api:ironsource:LevelPlayInterstitialAd#loadAd	-
+LevelPlayRewardedAd	api:ironsource:LevelPlayRewardedAd#loadAd	-
+AppLovinSdk\.getInstance	api:applovin:AppLovinSdk#getInstance	-
+AppLovinSdk\.initializeSdk	api:applovin:AppLovinSdk#initializeSdk	-
+AppLovinSdkSettings	ref:applovin	class reference
+com\.applovin\.sdk	identity:applovin	-
+MaxAdView\s	ref:applovin	class reference; format banner
+MaxAdViewAdListener	ref:applovin	listener reference
+maxAdView\.loadAd	api:applovin:MaxAdView#loadAd	import-scoped instance call (no variable-name heuristics)
+maxAdView\.startAutoRefresh	api:applovin:MaxAdView#startAutoRefresh	import-scoped instance call
+MaxInterstitialAd\s*\(	ref:applovin	constructor of MaxInterstitialAd: class reference (format interstitial)
+MaxAdListener	ref:applovin	listener reference
+interstitialAd\.loadAd	api:applovin:MaxInterstitialAd#loadAd	import-scoped instance call
+interstitialAd\.showAd	api:applovin:MaxInterstitialAd#showAd	import-scoped instance call
+MaxRewardedAd\.getInstance	api:applovin:MaxRewardedAd#getInstance	-
+MaxRewardedAdListener	ref:applovin	listener reference
+rewardedAd\.loadAd	api:applovin:MaxRewardedAd#loadAd	import-scoped instance call
+rewardedAd\.showAd	api:applovin:MaxRewardedAd#showAd	import-scoped instance call
+MaxNativeAdLoader	api:applovin:MaxNativeAdLoader#<init>	-
+MaxNativeAdView	ref:applovin	class reference
+MaxNativeAdListener	ref:applovin	listener reference
+AudienceNetworkAds\.initialize	api:meta-audience-network:AudienceNetworkAds#initialize	-
+AudienceNetworkAds\.buildInitSettings	api:meta-audience-network:AudienceNetworkAds#buildInitSettings	-
+com\.facebook\.ads	identity:meta-audience-network	facebook excludes it (audit only)
+com\.facebook\.ads\.AdView	ref:meta-audience-network	FQCN reference
+com\.facebook\.ads\.AdSize	ref:meta-audience-network	FQCN reference
+\.loadAd\s*\(.*AdView	api:meta-audience-network:AdView#loadAd	import-scoped instance call
+com\.facebook\.ads\.InterstitialAd	ref:meta-audience-network	FQCN reference
+InterstitialAdListener	ref:meta-audience-network	listener/class reference
+InterstitialAdExtendedListener	ref:meta-audience-network	listener/class reference
+RewardedVideoAd\s*\(	ref:meta-audience-network	constructor: class reference (format rewarded)
+RewardedVideoAdListener	ref:meta-audience-network	listener/class reference
+RewardedVideoAdExtendedListener	ref:meta-audience-network	listener/class reference
+com\.facebook\.ads\.RewardedVideoAd	ref:meta-audience-network	FQCN reference
+NativeAd\s*\(	ref:meta-audience-network	constructor: class reference (format native)
+NativeBannerAd	api:meta-audience-network:NativeBannerAd#<init>	-
+NativeAdListener	ref:meta-audience-network	listener/class reference
+com\.facebook\.ads\.NativeAd	ref:meta-audience-network	FQCN reference
+NativeAdLayout	ref:meta-audience-network	listener/class reference
+Vungle\.init\s*\(	api:vungle:Vungle#init	-
+VungleInitListener	ref:vungle	listener reference
+Vungle\.loadAd\s*\(	api:vungle:Vungle#loadAd	-
+Vungle\.playAd\s*\(	api:vungle:Vungle#playAd	-
+Vungle\.isInitialized	api:vungle:Vungle#isInitialized	-
+com\.vungle\.warren	identity:vungle	-
+VungleBanner	ref:vungle	class reference (VungleBanner v6, VungleBannerView v7)
+VungleInterstitial	dismissed	no such Vungle class (dead path of the neutralize.sh fallback, registry-backlog C); v7 InterstitialAd is a vungle reference
+VungleRewarded	dismissed	no such Vungle class (dead path of the neutralize.sh fallback, registry-backlog C); v7 RewardedAd is a vungle reference
+VungleNativeAd	ref:vungle	class reference
+com\.vungle\.ads	identity:vungle	-
+InMobiSdk\.init\s*\(	api:inmobi:InMobiSdk#init	-
+InMobiBanner	api:inmobi:InMobiBanner#load	class reference; its load is a target
+InMobiInterstitial	api:inmobi:InMobiInterstitial#load	class reference; its load/show are targets
+InMobiNative	api:inmobi:InMobiNative#<init>	-
+com\.inmobi\.sdk	identity:inmobi	-
+com\.inmobi\.ads	identity:inmobi	-
+Chartboost\.startWithAppId	api:chartboost:Chartboost#startWithAppId	-
+Chartboost\.showInterstitial	api:chartboost:Chartboost#showInterstitial	-
+Chartboost\.showRewardedVideo	api:chartboost:Chartboost#showRewardedVideo	-
+Chartboost\.cacheInterstitial	api:chartboost:Chartboost#cacheInterstitial	-
+com\.chartboost\.sdk	namespace:chartboost	com.chartboost namespace; identity packages are listed in the entry
+TTAdSdk\.init\s*\(	api:pangle:TTAdSdk#init	-
+TTAdConfig\.Builder	ref:pangle	legacy Pangle class reference (registry-backlog A)
+TTAdNative	ref:pangle	legacy Pangle class reference (registry-backlog A)
+TTFullScreenVideoAd	ref:pangle	legacy Pangle class reference (registry-backlog A)
+TTRewardVideoAd	ref:pangle	legacy Pangle class reference (registry-backlog A)
+TTBannerAd	ref:pangle	legacy Pangle class reference (registry-backlog A)
+com\.bytedance\.sdk\.openadsdk	identity:pangle	-
+PAGSdk\.init\s*\(	api:pangle:PAGSdk#init	-
+PAGConfig\.Builder	ref:pangle	class reference
+PAGBannerAd	api:pangle:PAGBannerAd#loadAd	-
+PAGInterstitialAd	api:pangle:PAGInterstitialAd#loadAd	-
+PAGRewardedAd	api:pangle:PAGRewardedAd#loadAd	-
+com\.pgl\.sys	identity:pangle	corrected to com.pgl.ssdk (extra_packages): the old package did not exist
+MBridgeSDKFactory\.getMBridgeSDK	api:mintegral:MBridgeSDKFactory#getMBridgeSDK	-
+MBBannerView	api:mintegral:MBBannerView#load	-
+MBInterstitialVideoHandler	ref:mintegral	class reference (format interstitial)
+MBRewardVideoHandler	api:mintegral:MBRewardVideoHandler#load	-
+MBNewInterstitialHandler	api:mintegral:MBNewInterstitialHandler#load	-
+com\.mbridge\.msdk	identity:mintegral	-
+BannerView	format:banner	format_by_* tables (T-FORMAT)
+AdView	format:banner	format_by_* tables (T-FORMAT)
+BannerAd	format:banner	format_by_* tables (T-FORMAT)
+MaxAdView	format:banner	format_by_* tables (T-FORMAT)
+InterstitialAd	format:interstitial	format_by_* tables (T-FORMAT)
+showInterstitial	format:interstitial	format_by_* tables (T-FORMAT)
+loadInterstitial	format:interstitial	format_by_* tables (T-FORMAT)
+MaxInterstitialAd	format:interstitial	format_by_* tables (T-FORMAT)
+RewardedAd	format:rewarded	format_by_* tables (T-FORMAT)
+RewardedVideo	format:rewarded	format_by_* tables (T-FORMAT)
+showRewardedVideo	format:rewarded	format_by_* tables (T-FORMAT)
+MaxRewardedAd	format:rewarded	format_by_* tables (T-FORMAT)
+NativeAd	format:native	format_by_* tables (T-FORMAT)
+NativeAdLoader	format:native	format_by_* tables (T-FORMAT)
+setAdUnitId	hint:ad-unit-setters	-
+placementId	hint:ad-unit-ids	-
+setPlacementId	hint:ad-unit-setters	-
+PLACEMENT_ID	hint:ad-unit-consts	-
+AD_UNIT_ID	hint:ad-unit-consts	-
+BANNER_ID	hint:ad-unit-consts	-
+INTERSTITIAL_ID	hint:ad-unit-consts	-
+REWARDED_ID	hint:ad-unit-consts	-
+com\.google\.ads\.mediation	adapter:google-admob	-
+MediationAdapter	hint:mediation-classes	-
+MediationBannerAdapter	hint:mediation-classes	-
+MediationInterstitialAdapter	hint:mediation-classes	-
+MediationRewardedAd	hint:mediation-classes	-
+com\.ironsource\.adapters	adapter:ironsource	-
+IronSourceAdapter	hint:mediation-classes	-
+ISBannerAdapter	hint:mediation-classes	-
+ISInterstitialAdapter	hint:mediation-classes	-
+ISRewardedVideoAdapter	hint:mediation-classes	-
+com\.applovin\.mediation\.adapters	adapter:applovin	-
+MediationAdapterBase	hint:mediation-classes	-
+MaxAdapter	hint:mediation-classes	-
+MaxMediatedNetworkInfo	hint:mediation-classes	-
+waterfall	hint:waterfall	-
+bidding	dismissed	substring of countless identifiers (headerBidding/realTimeBidding stay)
+headerBidding	hint:waterfall	-
+realTimeBidding	hint:waterfall	-
+setWaterfall	hint:waterfall	token setWaterfall of the hint (the literal waterfall is case-sensitive)
+mediationConfig	hint:waterfall	-
+adNetworkId	hint:waterfall	-
+networkName	dismissed	too generic
+ConsentInformation	api:google-ump-consent:ConsentInformation#requestConsentInfoUpdate	UMP section: identity + references + consent/config calls
+ConsentRequestParameters	api:google-ump-consent:ConsentRequestParameters$Builder#<init>	-
+ConsentForm\.load	api:google-ump-consent:UserMessagingPlatform#loadConsentForm	ConsentForm.load -> UserMessagingPlatform#loadConsentForm
+UserMessagingPlatform	api:google-ump-consent:UserMessagingPlatform#getConsentInformation	-
+com\.google\.android\.ump	identity:google-ump-consent	-
+IABTCF_	hint:tcf	-
+TCString	hint:tcf	-
+GDPR_APPLIES	hint:tcf	-
+GDPR_CONSENT	hint:tcf	-
+gdprApplies	hint:tcf	-
+tcfPolicyVersion	hint:tcf	-
+tcString	hint:tcf	-
+tagForChildDirectedTreatment	hint:coppa	-
+COPPA	hint:coppa-consts	constants with _ are literal
+TAG_FOR_CHILD_DIRECTED	hint:coppa-consts	constants with _ are literal
+setTagForUnderAgeOfConsent	hint:coppa	-
+maxAdContentRating	hint:coppa	-
+setHasUserConsent	api:applovin:AppLovinPrivacySettings#setHasUserConsent	-
+setDoNotSell	api:applovin:AppLovinPrivacySettings#setDoNotSell	-
+setCCPADoNotSell	hint:optout-unmapped	owner not verified
+setGDPRConsent	hint:optout-unmapped	owner not verified
+setDataProcessingOptions	api:facebook:FacebookSdk#setDataProcessingOptions	tracker-group consent API, listed by find-ads --consent as [facebook/trackers] (Q8)
+setNonPersonalizedOnly	hint:optout-unmapped	owner not verified
+AdActivity	hint:ad-activity-generic	only on names no entry claims
+com\.ironsource	namespace:ironsource	identity packages + namespace
+com\.applovin	namespace:applovin	identity packages + namespace
+com\.vungle	namespace:vungle	identity packages + namespace
+com\.inmobi	namespace:inmobi	identity packages + namespace
+com\.chartboost	namespace:chartboost	identity packages + namespace
+com\.bytedance	identity:pangle	narrowed to pangle (com.bytedance.sdk.openadsdk + namespaces): com.bytedance is shared with APM Insight
+BIND_GET_INSTALL_REFERRER_SERVICE	hint:ad-perms	-
+com\.google\.android\.gms\.ads\.APPLICATION_ID	identity:google-admob	identity prefix of google-admob (DEVIATIONS 6b.1)
+com\.google\.android\.gms\.ads\.AD_MANAGER_APP	identity:google-admob	identity prefix of google-admob (DEVIATIONS 6b.1)
+applovin\.sdk\.key	manifest_name:applovin:applovin.sdk.key	-
+com\.facebook\.sdk\.ApplicationId	hint:ad-meta	in find-trackers also facebook evidence (prefix com.facebook)
+unity\.ads\.gameId	hint:ad-meta	-
+--exclude-dir=com/unity3d	ownership	unity-ads (com.unity3d.ads, com.unity3d.services) and ironsource (com.unity3d.mediation, com.unity3d.ironsourceads); com.unity3d.player is app code
+--exclude-dir=com/ironsource	namespace:ironsource	registry ownership replaces --exclude-dir
+--exclude-dir=com/applovin	namespace:applovin	registry ownership replaces --exclude-dir
+--exclude-dir=com/vungle	namespace:vungle	registry ownership replaces --exclude-dir
+--exclude-dir=com/inmobi	namespace:inmobi	registry ownership replaces --exclude-dir
+--exclude-dir=com/chartboost	namespace:chartboost	registry ownership replaces --exclude-dir
+--exclude-dir=com/bytedance	ownership	pangle (com.bytedance.sdk.openadsdk + its namespaces); com.bytedance is shared with APM Insight
+--exclude-dir=com/pgl	namespace:pangle	registry ownership replaces --exclude-dir
+--exclude-dir=com/mbridge	namespace:mintegral	registry ownership replaces --exclude-dir
+--exclude-dir=com/mintegral	identity:mintegral	extra_packages (legacy)
+--exclude-dir=com/adcolony	namespace:adcolony	registry ownership replaces --exclude-dir
+--exclude-dir=com/tapjoy	identity:tapjoy	registry ownership replaces --exclude-dir
+--exclude-dir=com/fyber	namespace:fyber	registry ownership replaces --exclude-dir
+--exclude-dir=com/amazon/device/ads	identity:amazon-ads	registry ownership replaces --exclude-dir
+--exclude-dir=io/vungle	dismissed	no known SDK uses io.vungle (registry-backlog A)
+MobileAds\.initialize	api:google-admob:MobileAds#initialize	-
+InterstitialAd\.load	api:google-admob:InterstitialAd#load	-
+RewardedAd\.load	api:google-admob:RewardedAd#load	-
+AppOpenAd\.load	api:google-admob:AppOpenAd#load	-
+AdView\.loadAd	api:google-admob:AdView#loadAd	-
+UnityAds\.initialize	api:unity-ads:UnityAds#initialize	-
+UnityAds\.load	api:unity-ads:UnityAds#load	-
+UnityAds\.show	api:unity-ads:UnityAds#show	-
+IronSource\.init	api:ironsource:IronSource#init	-
+Vungle\.init	api:vungle:Vungle#init	-
+Vungle\.loadAd	api:vungle:Vungle#loadAd	-
+Vungle\.playAd	api:vungle:Vungle#playAd	-
+InMobiSdk\.init	api:inmobi:InMobiSdk#init	-
+TTAdSdk\.init	api:pangle:TTAdSdk#init	-
+PAGSdk\.init	api:pangle:PAGSdk#init	-

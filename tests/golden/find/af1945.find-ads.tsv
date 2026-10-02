@@ -1,0 +1,248 @@
+#sdk-audit	2	tool=find-ads	layout=apktool
+SDK	google-admob	ads	HIGH	DETECTED	-	true	files=7301	manifest=8	endpoints=0	app_refs=1137	calls=13	active=true
+SDK	unity-ads	ads	HIGH	DETECTED	-	true	files=2546	manifest=2	endpoints=0	app_refs=1	calls=0	active=true
+SDK	ironsource	ads_mediation	HIGH	DETECTED	-	true	files=2312	manifest=7	endpoints=0	app_refs=16	calls=0	active=true
+SDK	applovin	ads_mediation	HIGH	DETECTED	-	true	files=2013	manifest=21	endpoints=0	app_refs=0	calls=0	active=false
+SDK	meta-audience-network	ads	HIGH	DETECTED	-	true	files=173	manifest=2	endpoints=0	app_refs=1	calls=0	active=true
+SDK	vungle	ads	HIGH	DETECTED	-	true	files=733	manifest=2	endpoints=0	app_refs=0	calls=0	active=false
+SDK	inmobi	ads	HIGH	DETECTED	-	true	files=2070	manifest=3	endpoints=0	app_refs=204	calls=6	active=true
+SDK	chartboost	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pangle	ads	HIGH	DETECTED	-	true	files=4107	manifest=18	endpoints=0	app_refs=2	calls=0	active=true
+SDK	mintegral	ads	HIGH	DETECTED	-	true	files=3601	manifest=6	endpoints=0	app_refs=0	calls=0	active=false
+SDK	adcolony	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	amazon-ads	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appodeal	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bidmachine	ads	HIGH	DETECTED	-	true	files=7410	manifest=6	endpoints=0	app_refs=1	calls=0	active=true
+SDK	bigo-ads	ads	HIGH	DETECTED	-	false	files=1878	manifest=11	endpoints=0	app_refs=2	calls=0	active=true
+SDK	fyber	ads	HIGH	DETECTED	-	true	files=1675	manifest=5	endpoints=0	app_refs=8	calls=0	active=true
+SDK	google-ump-consent	consent	HIGH	DETECTED	-	true	files=556	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	guru-fusion	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	hyprmx	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	kidoz	ads	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	maio	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mobilefuse	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	moloco	ads	HIGH	DETECTED	-	true	files=2789	manifest=4	endpoints=0	app_refs=1	calls=0	active=true
+SDK	mytarget	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	ogury	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubmatic	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	pubnative	ads	HIGH	DETECTED	-	true	files=1077	manifest=7	endpoints=0	app_refs=0	calls=0	active=false
+SDK	rovio-beacon	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	smaato	ads	HIGH	DETECTED	-	true	files=1161	manifest=7	endpoints=0	app_refs=0	calls=0	active=false
+SDK	superawesome	ads	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tapjoy	ads	MEDIUM	LIKELY	manifest-only	true	files=0	manifest=3	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tradplus	ads_mediation	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	yandex-ads	ads	HIGH	DETECTED	-	true	files=8621	manifest=4	endpoints=0	app_refs=489	calls=0	active=true
+EV	google-admob	package	com.google.android.gms.ads	654
+EV	google-admob	namespace	com.google.android.gms.internal.ads	6640
+EV	google-admob	namespace	com.google.ads.mediation	7
+EV	google-admob	marker	com.google.android.gms.ads.MobileAds	1
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.APPLICATION_ID
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION
+EV	google-admob	manifest	meta-data	com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING
+EV	google-admob	manifest	activity	com.google.android.gms.ads.AdActivity
+EV	google-admob	manifest	provider	com.google.android.gms.ads.MobileAdsInitProvider
+EV	google-admob	manifest	service	com.google.android.gms.ads.AdService
+EV	google-admob	manifest	activity	com.google.android.gms.ads.OutOfContextTestingActivity
+EV	google-admob	manifest	activity	com.google.android.gms.ads.NotificationHandlerActivity
+EV	google-admob	id_prefix	ca-app-pub-	4
+EV	unity-ads	package	com.unity3d.ads	1222
+EV	unity-ads	package	com.unity3d.services	574
+EV	unity-ads	package	gatewayprotocol	750
+EV	unity-ads	marker	com.unity3d.ads.UnityAds	1
+EV	unity-ads	manifest	activity	com.unity3d.ads.adplayer.FullScreenWebViewDisplay
+EV	unity-ads	manifest	meta-data	com.unity3d.services.core.configuration.AdsSdkInitializer
+EV	ironsource	package	com.ironsource.adapters	16
+EV	ironsource	package	com.ironsource.environment	31
+EV	ironsource	package	com.ironsource.mediationsdk	220
+EV	ironsource	package	com.ironsource.sdk	190
+EV	ironsource	package	com.unity3d.ironsourceads	42
+EV	ironsource	package	com.unity3d.mediation	43
+EV	ironsource	package	com.ironsource.lifecycle	12
+EV	ironsource	namespace	com.ironsource	1758
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.ControllerActivity
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.InterstitialActivity
+EV	ironsource	manifest	activity	com.ironsource.sdk.controller.OpenUrlActivity
+EV	ironsource	manifest	activity	com.unity3d.ironsourceads.internal.services.InlineStoreActivity
+EV	ironsource	manifest	activity	com.ironsource.mediationsdk.testSuite.TestSuiteActivity
+EV	ironsource	manifest	provider	com.ironsource.lifecycle.IronsourceLifecycleProvider
+EV	ironsource	manifest	provider	com.ironsource.lifecycle.LevelPlayActivityLifecycleProvider
+EV	applovin	package	com.applovin.impl	1136
+EV	applovin	package	com.applovin.mediation	144
+EV	applovin	package	com.applovin.sdk	50
+EV	applovin	package	com.applovin.adview	15
+EV	applovin	namespace	com.applovin	435
+EV	applovin	adapter	com.applovin.mediation.adapters	233
+EV	applovin	marker	com.applovin.sdk.AppLovinSdk	1
+EV	applovin	manifest	provider	com.applovin.sdk.AppLovinInitProvider
+EV	applovin	manifest	activity	com.applovin.adview.AppLovinFullscreenActivity
+EV	applovin	manifest	activity	com.applovin.adview.AppLovinFullscreenImmersiveActivity
+EV	applovin	manifest	activity	com.applovin.sdk.AppLovinWebViewActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerDetailActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerMultiAdActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAdUnitsListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAdUnitWaterfallsListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAdUnitDetailActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerCmpNetworksListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTcfConsentStatusesListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTcfInfoListActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTcfStringActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTestLiveNetworkActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerTestModeNetworkActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerUnifiedFlowActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerWaterfallSegmentsActivity
+EV	applovin	manifest	activity	com.applovin.mediation.MaxDebuggerAxonEventsListActivity
+EV	applovin	manifest	service	com.applovin.impl.adview.activity.FullscreenAdService
+EV	applovin	manifest	service	com.applovin.impl.adview.activity.AppRestartDuringAdDetectionService
+EV	meta-audience-network	package	com.facebook.ads	173
+EV	meta-audience-network	marker	com.facebook.ads.AudienceNetworkAds	1
+EV	meta-audience-network	manifest	activity	com.facebook.ads.AudienceNetworkActivity
+EV	meta-audience-network	manifest	provider	com.facebook.ads.AudienceNetworkContentProvider
+EV	vungle	package	com.vungle.ads	733
+EV	vungle	manifest	activity	com.vungle.ads.internal.ui.VungleActivity
+EV	vungle	manifest	provider	com.vungle.ads.VungleProvider
+EV	inmobi	package	com.inmobi.media	1980
+EV	inmobi	package	com.inmobi.ads	55
+EV	inmobi	package	com.inmobi.sdk	13
+EV	inmobi	namespace	com.inmobi	22
+EV	inmobi	manifest	activity	com.inmobi.ads.rendering.InMobiAdActivity
+EV	inmobi	manifest	activity	com.inmobi.ads.rendering.InMobiInAppBrowserActivity
+EV	inmobi	manifest	provider	com.inmobi.sdk.InMobiInitProvider
+EV	pangle	package	com.bykv.vk	246
+EV	pangle	package	com.bytedance.adsdk	613
+EV	pangle	package	com.bytedance.sdk.openadsdk	2468
+EV	pangle	package	com.pgl.ssdk	81
+EV	pangle	namespace	com.bytedance.pag	18
+EV	pangle	namespace	com.bytedance.sdk.component	654
+EV	pangle	namespace	com.bytedance.ycx	27
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTCeilingLandingPageActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.IABLandingPageActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTLandingPageActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTPlayableLandingPageActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTVideoLandingPageLink2Activity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTHistoryLandingPageActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTHistoryActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTDelegateActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTWebsiteActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTAppOpenAdActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTAppOpenAdTransActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTRewardVideoActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.TTRewardWebActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.TTFullWebActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTRewardExpressVideoActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTFullScreenVideoActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTFullScreenExpressVideoActivity
+EV	pangle	manifest	activity	com.bytedance.sdk.openadsdk.activity.single.TTAdActivity
+EV	mintegral	package	com.mbridge.msdk	3601
+EV	mintegral	manifest	provider	com.mbridge.msdk.config.component.status.MBComponentLifecycleProvider
+EV	mintegral	manifest	activity	com.mbridge.msdk.config.activity.MBRewardVideoActivity
+EV	mintegral	manifest	activity	com.mbridge.msdk.activity.MBCommonActivity
+EV	mintegral	manifest	activity	com.mbridge.msdk.out.LoadingActivity
+EV	mintegral	manifest	activity	com.mbridge.msdk.reward.player.MBRewardVideoActivity
+EV	mintegral	manifest	receiver	com.mbridge.msdk.foundation.same.broadcast.NetWorkChangeReceiver
+EV	bidmachine	package	io.bidmachine	6446
+EV	bidmachine	namespace	com.explorestack.protobuf	964
+EV	bidmachine	manifest	provider	io.bidmachine.BidMachineInitProvider
+EV	bidmachine	manifest	activity	io.bidmachine.nativead.view.VideoPlayerActivity
+EV	bidmachine	manifest	activity	io.bidmachine.rendering.ad.fullscreen.FullScreenActivity
+EV	bidmachine	manifest	activity	io.bidmachine.rendering.ad.view.ExpandActivity
+EV	bidmachine	manifest	activity	io.bidmachine.iab.mraid.MraidActivity
+EV	bidmachine	manifest	activity	io.bidmachine.iab.vast.activity.VastActivity
+EV	bigo-ads	package	sg.bigo.ads	1878
+EV	bigo-ads	marker	sg.bigo.ads.BigoAdSdk	1
+EV	bigo-ads	manifest	activity	sg.bigo.ads.ad.splash.AdSplashActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.ad.splash.LandscapeAdSplashActivity
+EV	bigo-ads	manifest	provider	sg.bigo.ads.controller.provider.BigoAdsProvider
+EV	bigo-ads	manifest	activity	sg.bigo.ads.controller.form.AdFormActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.AdActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.PopupAdActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.LandingStyleableActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.LandscapeAdActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.CompanionAdActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.api.LandscapeCompanionAdActivity
+EV	bigo-ads	manifest	activity	sg.bigo.ads.core.mraid.MraidVideoActivity
+EV	fyber	package	com.fyber.inneractive.sdk	1636
+EV	fyber	package	com.fyber.marketplace	39
+EV	fyber	manifest	activity	com.fyber.inneractive.sdk.activities.InneractiveInternalBrowserActivity
+EV	fyber	manifest	activity	com.fyber.inneractive.sdk.activities.InneractiveFullscreenAdActivity
+EV	fyber	manifest	activity	com.fyber.inneractive.sdk.activities.InneractiveRichMediaVideoPlayerActivityCore
+EV	fyber	manifest	activity	com.fyber.inneractive.sdk.activities.InternalStoreWebpageActivity
+EV	fyber	manifest	activity	com.fyber.inneractive.sdk.activities.FyberReportAdActivity
+EV	google-ump-consent	package	com.google.android.ump	19
+EV	google-ump-consent	package	com.google.android.gms.internal.consent_sdk	533
+EV	google-ump-consent	package	com.google.unity.ump	4
+EV	google-ump-consent	marker	com.google.android.ump.UserMessagingPlatform	1
+EV	moloco	package	com.moloco.sdk	2789
+EV	moloco	manifest	activity	com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.templates.renderer.fullscreen.FullscreenWebviewActivity
+EV	moloco	manifest	activity	com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.vast.VastActivity
+EV	moloco	manifest	activity	com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.staticrenderer.StaticAdActivity
+EV	moloco	manifest	activity	com.moloco.sdk.xenoss.sdkdevkit.android.adrenderer.internal.mraid.MraidActivity
+EV	pubnative	package	net.pubnative.lite.sdk	1077
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.consent.UserConsentActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.interstitial.activity.MraidInterstitialActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.interstitial.activity.VastInterstitialActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.rewarded.activity.MraidRewardedActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.rewarded.activity.VastRewardedActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.contentinfo.AdFeedbackActivity
+EV	pubnative	manifest	activity	net.pubnative.lite.sdk.utils.browser.BrowserActivity
+EV	smaato	package	com.smaato.sdk	1161
+EV	smaato	manifest	activity	com.smaato.sdk.ng.consent.UserConsentActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.interstitial.activity.MraidInterstitialActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.interstitial.activity.VastInterstitialActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.rewarded.activity.MraidRewardedActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.rewarded.activity.VastRewardedActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.contentinfo.AdFeedbackActivity
+EV	smaato	manifest	activity	com.smaato.sdk.ng.utils.browser.BrowserActivity
+EV	tapjoy	manifest	meta-data	com.tapjoy.appstore
+EV	tapjoy	manifest	activity	com.tapjoy.TJAdUnitActivity
+EV	tapjoy	manifest	activity	com.tapjoy.TJContentActivity
+EV	yandex-ads	package	com.monetization.ads	157
+EV	yandex-ads	package	com.yandex.mobile.ads	216
+EV	yandex-ads	package	yads	8248
+EV	yandex-ads	manifest	activity	com.yandex.mobile.ads.common.AdActivity
+EV	yandex-ads	manifest	provider	com.yandex.mobile.ads.core.initializer.YandexAdsInitializeProvider
+EV	yandex-ads	manifest	activity	com.yandex.mobile.ads.features.debugpanel.ui.IntegrationInspectorActivity
+EV	yandex-ads	manifest	provider	com.yandex.mobile.ads.features.debugpanel.data.local.DebugPanelFileProvider
+CALL	google-admob	load	com.google.android.gms.ads.AdLoader$Builder#<init>	smali/falcon/modules/core/thirdparty/mediation/fsnads/FsnAd.smali:263	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.AdLoader#loadAd	smali/falcon/modules/core/thirdparty/mediation/fsnads/FsnAd.smali:363	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.nativead.NativeAd#destroy	smali/falcon/modules/core/thirdparty/mediation/fsnads/FsnAd.smali:838	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.nativead.NativeAd#destroy	smali/falcon/modules/core/thirdparty/mediation/fsnads/FsnAd.smali:1119	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.nativead.NativeAd#destroy	smali/falcon/modules/core/thirdparty/mediation/fsnads/FsnAd.smali:1419	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.nativead.NativeAd#destroy	smali_classes10/com/google/android/ads/nativetemplates/TemplateView.smali:810	exact
+CALL	google-admob	init	com.google.android.gms.ads.MobileAds#initialize	smali_classes10/com/google/unity/ads/UnityMobileAds.smali:83	exact
+CALL	google-admob	config	com.google.android.gms.ads.MobileAds#setRequestConfiguration	smali_classes10/com/google/unity/ads/UnityMobileAds.smali:231	exact
+CALL	inmobi	init	com.inmobi.sdk.InMobiSdk#init	smali_classes10/com/unity/inmobi/plugin/InMobiPlugin.smali:395	exact
+CALL	inmobi	ad_operation	com.inmobi.ads.InMobiBanner#load	smali_classes15/com/unity/inmobi/plugin/Banner$7.smali:56	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.interstitial.InterstitialAd#load	smali_classes4/com/google/unity/ads/Interstitial.smali:207	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.rewarded.RewardedAd#load	smali_classes4/com/google/unity/ads/UnityRewardedAd.smali:300	exact
+CALL	google-admob	load	com.google.android.gms.ads.AdLoader$Builder#<init>	smali_classes4/com/google/unity/ads/nativead/UnityNativeTemplateAd$1.smali:86	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.AdLoader#loadAd	smali_classes4/com/google/unity/ads/nativead/UnityNativeTemplateAd$1.smali:121	exact
+CALL	inmobi	ad_operation	com.inmobi.ads.InMobiInterstitial#load	smali_classes6/com/unity/inmobi/plugin/Interstitial$4.smali:56	exact
+CALL	inmobi	ad_operation	com.inmobi.ads.InMobiInterstitial#isReady	smali_classes6/com/unity/inmobi/plugin/Interstitial$5.smali:56	exact
+CALL	inmobi	ad_operation	com.inmobi.ads.InMobiInterstitial#show	smali_classes6/com/unity/inmobi/plugin/Interstitial$5.smali:69	exact
+CALL	inmobi	ad_operation	com.inmobi.ads.InMobiInterstitial#isReady	smali_classes6/com/unity/inmobi/plugin/Interstitial.smali:111	exact
+CALL	google-admob	ad_operation	com.google.android.gms.ads.appopen.AppOpenAd#load	smali_classes8/com/google/unity/ads/UnityAppOpenAd.smali:220	exact
+HINT	ad-unit-ids	20	55
+HINT	ad-unit-setters	11	22
+HINT	mediation-classes	1	2
+HINT	ad-perms	1	3
+HINT	ad-meta	1	1
+HINT	ad-activity-generic	1	1
+ADAPTER	applovin	yandex	2
+ADAPTER	applovin	facebook	2
+ADAPTER	applovin	google	2
+ADAPTER	ironsource	ironsource	16
+ADAPTER	applovin	bidmachine	2
+ADAPTER	applovin	bytedance	2
+ADAPTER	applovin	smaato	2
+ADAPTER	applovin	unityads	2
+ADAPTER	applovin	verve	2
+ADAPTER	applovin	ironsource	2
+ADAPTER	applovin	mintegral	2
+ADAPTER	applovin	inneractive	2
+ADAPTER	applovin	bigoads	2
+ADAPTER	applovin	googleadmanager	2
+ADAPTER	applovin	inmobi	2
+ADAPTER	applovin	moloco	2
+ADAPTER	applovin	vungle	2
+ADAPTER	google-admob	admob	1

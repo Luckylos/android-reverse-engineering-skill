@@ -1,0 +1,87 @@
+#sdk-audit	2	tool=find-trackers	layout=apktool
+SDK	firebase-analytics	analytics	HIGH	DETECTED	-	true	files=1418	manifest=3	endpoints=6	app_refs=0	calls=0	active=false
+SDK	adjust	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appsflyer	attribution	HIGH	DETECTED	-	true	files=564	manifest=1	endpoints=3	app_refs=0	calls=0	active=false
+SDK	mixpanel	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	amplitude	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	segment	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	braze	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	clevertap	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	flurry	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	apm-insight	crash_reporting	HIGH	DETECTED	-	false	files=209	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appmetrica	analytics	HIGH	DETECTED	-	true	files=2306	manifest=3	endpoints=1	app_refs=28	calls=4	active=true
+SDK	backtrace	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bugsnag	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	facebook	social	HIGH	DETECTED	-	true	files=1193	manifest=19	endpoints=0	app_refs=0	calls=0	active=false
+SDK	firebase-crashlytics	crash_reporting	HIGH	DETECTED	-	true	files=413	manifest=0	endpoints=2	app_refs=0	calls=0	active=false
+SDK	google-analytics	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	google-tag-manager	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	sentry	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	singular	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	sybo	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tiktok-business	attribution	HIGH	DETECTED	-	false	files=151	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+EV	firebase-analytics	package	com.google.firebase.analytics	18
+EV	firebase-analytics	namespace	com.google.android.gms.measurement	453
+EV	firebase-analytics	namespace	com.google.android.gms.internal.measurement	947
+EV	firebase-analytics	marker	com.google.firebase.analytics.FirebaseAnalytics	1
+EV	firebase-analytics	manifest	receiver	com.google.android.gms.measurement.AppMeasurementReceiver
+EV	firebase-analytics	manifest	service	com.google.android.gms.measurement.AppMeasurementService
+EV	firebase-analytics	manifest	service	com.google.android.gms.measurement.AppMeasurementJobService
+EV	firebase-analytics	domain	app-measurement.com	6
+EV	adjust	lib_domain_hits	-	4
+EV	appsflyer	package	com.appsflyer	564
+EV	appsflyer	marker	com.appsflyer.AppsFlyerLib	1
+EV	appsflyer	manifest	action	com.appsflyer.referrer.INSTALL_PROVIDER
+EV	appsflyer	domain	appsflyersdk.com	2
+EV	appsflyer	domain	onelink.me	1
+EV	appsflyer	lib_domain_hits	-	2
+EV	apm-insight	package	com.apm.insight	209
+EV	appmetrica	package	io.appmetrica.analytics	2306
+EV	appmetrica	marker	io.appmetrica.analytics.AppMetrica	1
+EV	appmetrica	manifest	service	io.appmetrica.analytics.internal.AppMetricaService
+EV	appmetrica	manifest	action	io.appmetrica.analytics.IAppMetricaService
+EV	appmetrica	manifest	provider	io.appmetrica.analytics.internal.PreloadInfoContentProvider
+EV	appmetrica	domain	startup.mobile.yandex.net	1
+EV	facebook	package	com.facebook	217
+EV	facebook	package	com.facebook.appevents	234
+EV	facebook	package	com.facebook.bolts	54
+EV	facebook	package	com.facebook.internal	209
+EV	facebook	package	com.facebook.login	140
+EV	facebook	package	com.facebook.share	165
+EV	facebook	package	com.facebook.unity	41
+EV	facebook	package	com.facebook.gamingservices	133
+EV	facebook	marker	com.facebook.FacebookSdk	1
+EV	facebook	manifest	provider	com.facebook.FacebookContentProvider
+EV	facebook	manifest	meta-data	com.facebook.sdk.ApplicationId
+EV	facebook	manifest	meta-data	com.facebook.sdk.ClientToken
+EV	facebook	manifest	meta-data	com.facebook.sdk.AutoLogAppEventsEnabled
+EV	facebook	manifest	meta-data	com.facebook.sdk.AdvertiserIDCollectionEnabled
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityLoginActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityDialogsActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityGamingServicesFriendFinderActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityAppLinkActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityDeepLinkingActivity
+EV	facebook	manifest	activity	com.facebook.unity.FBUnityGameRequestActivity
+EV	facebook	manifest	activity	com.facebook.FacebookActivity
+EV	facebook	manifest	activity	com.facebook.CustomTabMainActivity
+EV	facebook	manifest	activity	com.facebook.CustomTabActivity
+EV	facebook	manifest	provider	com.facebook.internal.FacebookInitProvider
+EV	facebook	manifest	receiver	com.facebook.CurrentAccessTokenExpirationBroadcastReceiver
+EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_ACCESS_TOKEN_CHANGED
+EV	facebook	manifest	receiver	com.facebook.AuthenticationTokenManager$CurrentAuthenticationTokenChangedBroadcastReceiver
+EV	facebook	manifest	action	com.facebook.sdk.ACTION_CURRENT_AUTHENTICATION_TOKEN_CHANGED
+EV	firebase-crashlytics	package	com.google.firebase.crashlytics	413
+EV	firebase-crashlytics	marker	com.google.firebase.crashlytics.FirebaseCrashlytics	1
+EV	firebase-crashlytics	domain	firebase-settings.crashlytics.com	2
+EV	firebase-crashlytics	lib_domain_hits	-	2
+EV	google-analytics	lib_domain_hits	-	3
+EV	google-tag-manager	lib_domain_hits	-	1
+EV	singular	lib_domain_hits	-	1
+EV	tiktok-business	package	com.tiktok	151
+EV	tiktok-business	marker	com.tiktok.TikTokBusinessSdk	1
+CALL	appmetrica	init	io.appmetrica.analytics.AppMetrica#reportEvent	smali_classes3/com/yandex/varioqub/appmetricaadapter/impl/c.smali:64	exact
+CALL	appmetrica	init	io.appmetrica.analytics.ModulesFacade#setSessionExtra	smali_classes3/com/yandex/varioqub/appmetricaadapter/impl/c.smali:86	exact
+CALL	appmetrica	init	com.yandex.metrica.YandexMetrica#reportEvent	smali_classes3/com/yandex/varioqub/appmetricaadapter/impl/i.smali:57	exact
+CALL	appmetrica	init	com.yandex.metrica.ModulesFacade#setSessionExtra	smali_classes3/com/yandex/varioqub/appmetricaadapter/impl/i.smali:68	exact
+HINT	tracker-perms	1	4
+HINT	tracker-manifest-infra	1	2

@@ -1,0 +1,84 @@
+# ep-allowlist.tsv -- G-EP (DESIGN 9.1 I24, 9.2): the code a find-* "Entry Points" row may
+# come from, per app (tests/corpus/groundtruth.sh, apktool pristine and jadx layouts).
+#   app<TAB>prefix<TAB>reason        app = an app name or * (every app)
+# prefix: a class path prefix under the code root (smali*/, sources/, <split>/sources/), on a
+# "/" boundary; <r8> = a class in a one-segment package or in no package (R8-obfuscated code).
+# The app's manifest package is always allowed. A row never makes these allowed: com/google/
+# android/gms, com/google/firebase, com/json, org/json (SDK code, or jadx package aliases).
+# Reasons start with a category:
+#   app:       the app's own code
+#   in-house:  publisher wrappers (registry in_house_wrapper entries, or not mapped yet)
+#   plugin:    engine / Unity / third-party plugin glue that calls the SDKs (real callers)
+#   r8:        obfuscated app code
+#   library:   a pure library that is not in library_roots; its rows are references through
+#              constants R8 merged or jadx inlined (B11), not real SDK calls
+#   sdk-gap:   code of an SDK with no registry entry, or under a package its entry does not
+#              list (registry-backlog.md): owned by nobody, hence app code for the audit
+*	com/unity3d/player	plugin: Unity engine runtime (UnityPlayerActivity and friends)
+*	com/unity/androidnotifications	plugin: Unity Mobile Notifications
+*	com/unity/purchasing	plugin: Unity IAP
+*	com/unity3d/coherence	plugin: Unity runtime module
+*	com/google/unity	plugin: Google Mobile Ads / UMP Unity plugins (com.google.unity.ads, .ump)
+*	com/google/android/ads/nativetemplates	plugin: AdMob native templates (Google sample library compiled into the app)
+*	com/onevcat/uniwebview	plugin: UniWebView (Unity)
+*	com/yasirkula/unity	plugin: yasirkula Unity plugins
+*	com/prime31	plugin: prime31 Unity plugins
+*	com/pubmatic/unity	plugin: PubMatic Unity plugin
+*	com/unity/inmobi	plugin: InMobi Unity plugin
+*	com/singular/unitybridge	plugin: Singular Unity bridge
+*	com/unitymedved/rootchecker	plugin: root checker Unity plugin
+*	net/codestage/actk	plugin: Anti-Cheat Toolkit (Unity)
+*	api/natsuite	plugin: NatSuite NatCorder (Unity)
+*	org/cocos2dx/lib	plugin: Cocos2d-x engine
+*	com/byrobin/unityads	plugin: byRobin Unity Ads extension for Stencyl (DESIGN 5.4)
+*	com/android/billingclient	library: Google Play Billing
+*	com/android/installreferrer	library: Play Install Referrer
+*	com/android/volley	library: Volley
+*	com/google/zxing	library: ZXing
+*	com/google/androidgamesdk	library: Android Game SDK
+*	com/google/android/libraries	library: Google Play Games / Android libraries (jadx-inlined SDK constants)
+*	com/amazon/device/iap	library: Amazon In-App Purchasing
+*	com/pairip	library: Google Play licensing/integrity (PairIP)
+*	com/loopj	library: android-async-http
+*	com/zendesk	library: Zendesk support
+*	com/helpshift	library: Helpshift support
+*	me/leolin	library: ShortcutBadger
+*	io/grpc	library: gRPC
+*	com/lofelt/haptics	library: Lofelt haptics
+*	com/miui_jar	library: Xiaomi MIUI helpers
+*	com/xiaomi/gamecenter	library: Xiaomi game center
+*	com/mapzen/valhalla	library: Mapzen Valhalla client
+*	com/yandex/div	library: Yandex DivKit (bundled with Yandex Mobile Ads)
+*	com/yandex/div2	library: Yandex DivKit (bundled with Yandex Mobile Ads)
+*	com/yandex/yatagan	library: Yatagan DI (bundled with Yandex Mobile Ads)
+*	com/yandex/android	library: Yandex DivKit beacon (bundled with Yandex Mobile Ads)
+af1945	falcon	in-house: Falcon / FsnAds publisher mediation (registry-backlog C)
+af1945	com/digitalturbine/ignite	sdk-gap: DT Ignite (Fyber / Digital Turbine), not in fyber.packages (registry-backlog A)
+af1945	com/yandex/ads	sdk-gap: Yandex Mobile Ads code under com.yandex.ads, not in yandex-ads.packages
+af1945	com/yandex/varioqub	sdk-gap: Yandex Varioqub, no entry (registry-backlog B)
+badpiggies	com/rovio	in-house: Rovio Beacon (rovio-beacon, in_house_wrapper) and Rovio code
+badpiggies	com/google/ads	sdk-gap: legacy AdMob (com.google.ads.AdRequest ...), not in google-admob.packages (registry-backlog A)
+badpiggies	com/microsoft/appcenter	sdk-gap: Microsoft App Center Crashes, no entry (registry-backlog B)
+blockcraft	com/tfg	in-house: TFG libs (ads, analytics, GDPR; registry-backlog C)
+blockcraft	com/digitalturbine/ignite	sdk-gap: DT Ignite (Fyber / Digital Turbine), not in fyber.packages (registry-backlog A)
+blockcraft	com/localytics	sdk-gap: Localytics, no entry (registry-backlog B)
+blockcraft	com/nefta/sdk	sdk-gap: Nefta, no entry (registry-backlog A)
+blockcraft	com/wildlifestudios/ageassurance	sdk-gap: Wildlife Age Assurance (consent), no entry (registry-backlog C)
+blockcraft	com/wildlifestudios/ageassurance_unity	sdk-gap: Wildlife Age Assurance Unity bridge, no entry (registry-backlog C)
+bulldozer	com/digitalturbine/ignite	sdk-gap: DT Ignite (Fyber / Digital Turbine), not in fyber.packages (registry-backlog A)
+bulldozer	com/five_corp/ad	sdk-gap: FiveAd (LINE), no entry (registry-backlog A)
+bulldozer	com/gameanalytics	sdk-gap: GameAnalytics, no entry (registry-backlog B)
+bulldozer	com/bytebrew	sdk-gap: ByteBrew, no entry (registry-backlog B)
+bulldozer	com/yandex/varioqub	sdk-gap: Yandex Varioqub, no entry (registry-backlog B)
+subway	<r8>	r8: obfuscated top-level packages (Firebase/Helpshift/SuperAwesome/TikTok code renamed by R8)
+subway	com/sybo	in-house: SYBO (sybo analytics entry; com.sybo.ads/consent/... not mapped, registry-backlog C)
+subway	com/sybogames	in-house: SYBO
+subway	com/kpadplayer	in-house: Kidoz core used by SYBO, kept out of kidoz.packages (DESIGN Q2)
+ttom2	com/digitalturbine/ignite	sdk-gap: DT Ignite (Fyber / Digital Turbine), not in fyber.packages (registry-backlog A)
+watersort	<r8>	r8: obfuscated top-level packages
+watersort	guru	in-house: Guru (guru-fusion in_house_wrapper; guru.core analytics/consent not mapped, registry-backlog C)
+watersort	com/guru	in-house: Guru Unity bridges and receivers
+watersort	com/mobilefuse/videoplayer	sdk-gap: MobileFuse video player, not in mobilefuse.packages
+watersort	com/tradplus/crosspro	sdk-gap: TradPlus cross-promotion, not in tradplus.packages
+watersort	com/tp	sdk-gap: TradPlus com.tp.* (registry-backlog A: verify the prefix first)
+watersort	com/p278tp	sdk-gap: TradPlus com.tp.* as renamed by jadx --deobf (com.p278tp)

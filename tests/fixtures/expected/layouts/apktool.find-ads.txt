@@ -1,0 +1,123 @@
+
+==== AdMob — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/smali/com/google/android/gms/ads:0:identity: package com.google.android.gms.ads (2 files)
+<IN>/smali/com/google/android/gms/ads/MobileAds.smali:0:identity: marker class com.google.android.gms.ads.MobileAds
+
+==== AdMob — Initialization ====
+
+<IN>/smali/com/example/app/MainActivity.smali:12:    invoke-static {p0}, Lcom/google/android/gms/ads/MobileAds;->initialize(Landroid/content/Context;)V  [MobileAds#initialize]
+
+==== AdMob — Manifest ====
+
+<IN>/AndroidManifest.xml:4:        <activity android:exported="false" android:name="com.google.android.gms.ads.AdActivity" android:theme="@android:style/Theme.Translucent"/>
+<IN>/AndroidManifest.xml:5:        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+==== AdMob — Ad Unit IDs ====
+
+<IN>/smali/com/example/app/MainActivity.smali:3:.field static final AD_UNIT:Ljava/lang/String; = "ca-app-pub-3940256099942544/6300978111"  [admob_id]
+
+==== AdMob — References ====
+
+<IN>/smali/com/example/app/MainActivity.smali:12:    invoke-static {p0}, Lcom/google/android/gms/ads/MobileAds;->initialize(Landroid/content/Context;)V
+
+==== Unity Ads — Identity ====
+
+# confidence=HIGH status=DETECTED neutralizable=yes detail=-
+<IN>/smali_classes2/com/unity3d/ads:0:identity: package com.unity3d.ads (1 files)
+<IN>/smali_classes2/com/unity3d/ads/UnityAds.smali:0:identity: marker class com.unity3d.ads.UnityAds
+
+==== Unity Ads — Initialization ====
+
+<IN>/smali/com/example/app/MainActivity.smali:15:    invoke-static {p0, v1, v2}, Lcom/unity3d/ads/UnityAds;->initialize(Landroid/content/Context;Ljava/lang/String;Z)V  [UnityAds#initialize]
+
+==== Unity Ads — References ====
+
+<IN>/smali/com/example/app/MainActivity.smali:15:    invoke-static {p0, v1, v2}, Lcom/unity3d/ads/UnityAds;->initialize(Landroid/content/Context;Ljava/lang/String;Z)V
+
+==== Cross-SDK — All Banner Patterns ====
+
+
+
+==== Cross-SDK — All Interstitial Patterns ====
+
+
+
+==== Cross-SDK — All Rewarded Patterns ====
+
+
+
+==== Cross-SDK — All Native Patterns ====
+
+
+
+==== Cross-SDK — All Rewarded Interstitial Patterns ====
+
+
+
+==== Cross-SDK — All App Open Patterns ====
+
+
+
+==== Cross-SDK — Ad Unit / Placement IDs ====
+
+<IN>/smali/com/example/app/MainActivity.smali:3:.field static final AD_UNIT:Ljava/lang/String; = "ca-app-pub-3940256099942544/6300978111"  [google-admob]
+
+==== Mediation — Google AdMob Mediation Adapters ====
+
+
+
+==== Mediation — IronSource / LevelPlay Mediation Adapters ====
+
+
+
+==== Mediation — AppLovin / MAX Mediation Adapters ====
+
+
+
+==== Mediation — Adapter Classes ====
+
+
+
+==== Mediation — Waterfall & Bidding Configuration ====
+
+
+
+==== Consent — Google UMP / Funding Choices ====
+
+
+
+==== Consent — IAB TCF v2 ====
+
+
+
+==== Consent — COPPA / Child-Directed ====
+
+
+
+==== Consent — SDK-specific Opt-out ====
+
+
+
+==== AndroidManifest — Ad Activities & Services ====
+
+<IN>/AndroidManifest.xml:4:        <activity android:exported="false" android:name="com.google.android.gms.ads.AdActivity" android:theme="@android:style/Theme.Translucent"/>  [google-admob]
+
+==== AndroidManifest — Ad Permissions ====
+
+<IN>/AndroidManifest.xml:2:    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+
+==== AndroidManifest — Ad Meta-data ====
+
+<IN>/AndroidManifest.xml:5:        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/>  [google-admob]
+
+==== Entry Points — Ad SDK calls from app code (library packages excluded) ====
+
+<IN>/smali/com/example/app/MainActivity.smali:12:    invoke-static {p0}, Lcom/google/android/gms/ads/MobileAds;->initialize(Landroid/content/Context;)V  [google-admob/ref google-admob/init]
+<IN>/smali/com/example/app/MainActivity.smali:15:    invoke-static {p0, v1, v2}, Lcom/unity3d/ads/UnityAds;->initialize(Landroid/content/Context;Ljava/lang/String;Z)V  [unity-ads/ref unity-ads/init]
+
+NOTE: Only calls from app code are shown above. Library-internal calls are excluded.
+If no results appear, ad SDKs may only be invoked internally via mediation adapters.
+
+=== Search complete ===

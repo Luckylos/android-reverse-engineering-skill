@@ -8,7 +8,7 @@
 #           tool group, NONE included), `EV<TAB>sdk_id<TAB>kind<TAB>...`,
 #           `CALL<TAB>sdk_id<TAB>role<TAB>FQCN#method<TAB>path:line`
 #   text    `==== <Section> ====` headers, `path:line:text` rows, `=== Search complete ===`
-# Until the engine exists (DESIGN 10, commit 8) this test is SKIP(requires).
+# Entry Points rows exclude the two historical footer lines (NOTE: ... / If no results ...).
 # requires: NS/sdk-audit.sh
 # requires: cmd: have_jq16
 set -uo pipefail
@@ -52,10 +52,11 @@ section() { # section <text-output> <exact title> -> the rows of that section
     on && (/^==== .* ====$/ || /^=== Search complete ===$/) { on = 0 }
     on && NF { print }' "$1"
 }
-entry_points() { # rows of every "Entry Points — ..." section
+entry_points() { # rows of every "Entry Points — ..." section (without the two historical
+  # footer lines "NOTE: Only calls from app code ..." / "If no results appear, ...")
   awk '/^==== Entry Points/ { on = 1; next }
        on && (/^==== .* ====$/ || /^=== Search complete ===$/) { on = 0 }
-       on && NF && !/^NOTE:/ { print }' "$1"
+       on && NF && !/^NOTE:/ && !/^If no results appear, / { print }' "$1"
 }
 
 # P01
@@ -171,5 +172,23 @@ assert_eq "" "$(entry_points "$tmp/$c.txt")" "$c: gms/internal is library, Entry
 c=p18-fcm-receiver-only
 run "$FT" $c tsv --tsv
 assert_level "$tmp/$c.tsv" firebase-analytics NONE
+
+# P19
+c=p19-wildcard-import
+run "$FA" $c tsv --tsv
+assert_true "$c: exact CALL google-admob init MobileAds#initialize in WildAds.java (import pkg.*)" \
+  has_call "$tmp/$c.tsv" google-admob init initialize com/example/app/WildAds.java
+assert_eq "exact" "$(calls_in_file "$tmp/$c.tsv" com/example/app/WildAds.java | awk -F '\t' '$4 ~ /MobileAds#initialize$/ { print $6 }' | sort -u)" \
+  "$c: the WildAds.java init CALL is exact"
+assert_eq "" "$(calls_in_file "$tmp/$c.tsv" com/example/app/NoWild.java)" "$c: no call from NoWild.java (no wildcard import)"
+run "$FT" $c ft.tsv --tsv
+assert_true "$c: exact CALL firebase-analytics init FirebaseAnalytics#getInstance in WildAnalytics.java" \
+  has_call "$tmp/$c.ft.tsv" firebase-analytics init getInstance com/example/app/WildAnalytics.java
+assert_true "$c: import-scoped CALL firebase-analytics event #logEvent in WildAnalytics.java" \
+  has_call "$tmp/$c.ft.tsv" firebase-analytics event logEvent com/example/app/WildAnalytics.java
+run "$FA" $c txt --entrypoints
+entry_points "$tmp/$c.txt" >"$tmp/$c.ep"
+assert_true "$c: Entry Points has WildAds.java" grep -q 'com/example/app/WildAds.java:[0-9]' "$tmp/$c.ep"
+assert_false "$c: Entry Points has nothing from NoWild.java" grep -q 'NoWild.java' "$tmp/$c.ep"
 
 t_done

@@ -1,0 +1,217 @@
+{
+ "_comment": [
+  "Reduced ground truth for tests/corpus/groundtruth.sh (DESIGN 9.2), derived from",
+  "registry-unification/ground-truth.json (built on the old decoded dirs; the package trees of the",
+  "fresh pristine decodes are identical at depth 3, see known-deviations.tsv) and the registry of",
+  "commit 8. Per app: sdk_id -> expected presence: 'high' / 'medium' (an active SDK the audit must",
+  "find at HIGH or MEDIUM; a HIGH elsewhere is a precision error) or 'residue' (leftover code: not",
+  "a positive). registry_sdk_id given as a string is taken as is; as an array (an SDK two entries",
+  "claim, e.g. Meta AN = facebook + meta-audience-network) or null (no entry when the ground",
+  "truth was built: flurry, tiktok, bigo, apm, kidoz) it maps to the entries whose identity roots",
+  "(packages + extra_packages, minus exclude_packages) overlap the item's packages."
+ ],
+ "apps": {
+  "af1945": {
+   "manifest_package": "com.os.airforce",
+   "sdks": {
+    "apm-insight": "high",
+    "applovin": "high",
+    "appmetrica": "high",
+    "appsflyer": "high",
+    "bidmachine": "high",
+    "bigo-ads": "high",
+    "facebook": "high",
+    "firebase-analytics": "high",
+    "firebase-crashlytics": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "inmobi": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "moloco": "high",
+    "pangle": "high",
+    "pubnative": "high",
+    "smaato": "high",
+    "tiktok-business": "high",
+    "unity-ads": "high",
+    "vungle": "high",
+    "yandex-ads": "high"
+   }
+  },
+  "alto": {
+   "manifest_package": "com.noodlecake.altosadventure",
+   "sdks": {
+    "applovin": "high",
+    "chartboost": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  },
+  "badpiggies": {
+   "manifest_package": "com.rovio.BadPiggiesHD",
+   "sdks": {
+    "adcolony": "high",
+    "applovin": "high",
+    "facebook": "high",
+    "firebase-analytics": "residue",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "rovio-beacon": "high",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  },
+  "blockcraft": {
+   "manifest_package": "com.fungames.blockcraft",
+   "sdks": {
+    "amazon-ads": "high",
+    "apm-insight": "high",
+    "applovin": "high",
+    "facebook": "residue",
+    "firebase-analytics": "high",
+    "firebase-crashlytics": "high",
+    "flurry": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-analytics": "high",
+    "google-tag-manager": "high",
+    "google-ump-consent": "high",
+    "inmobi": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "moloco": "high",
+    "pangle": "high",
+    "pubnative": "high",
+    "singular": "high",
+    "tiktok-business": "high",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  },
+  "bulldozer": {
+   "manifest_package": "io.supercent.bulldozermasters",
+   "sdks": {
+    "apm-insight": "high",
+    "applovin": "high",
+    "appmetrica": "high",
+    "appsflyer": "high",
+    "bidmachine": "high",
+    "bigo-ads": "high",
+    "facebook": "high",
+    "firebase-analytics": "high",
+    "firebase-crashlytics": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "inmobi": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "moloco": "high",
+    "pangle": "high",
+    "pubmatic": "high",
+    "smaato": "high",
+    "tiktok-business": "high",
+    "unity-ads": "high",
+    "vungle": "high",
+    "yandex-ads": "high"
+   }
+  },
+  "heartstar": {
+   "manifest_package": "com.adventureislands.heartstar",
+   "sdks": {
+    "unity-ads": "high"
+   }
+  },
+  "subway": {
+   "manifest_package": "com.kiloo.subwaysurf",
+   "sdks": {
+    "applovin": "high",
+    "bidmachine": "high",
+    "facebook": "high",
+    "firebase-analytics": "high",
+    "firebase-crashlytics": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "inmobi": "high",
+    "ironsource": "high",
+    "kidoz": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "moloco": "high",
+    "pangle": "high",
+    "singular": "high",
+    "superawesome": "high",
+    "sybo": "high",
+    "tiktok-business": "medium",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  },
+  "ttom2": {
+   "manifest_package": "com.gt.zoo.sound.land.game",
+   "sdks": {
+    "apm-insight": "high",
+    "applovin": "high",
+    "appsflyer": "high",
+    "bidmachine": "high",
+    "firebase-analytics": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "inmobi": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "moloco": "high",
+    "pangle": "high",
+    "tiktok-business": "high",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  },
+  "watersort": {
+   "manifest_package": "water.sort.puzzle.game.color.sorting.free",
+   "sdks": {
+    "amazon-ads": "high",
+    "apm-insight": "high",
+    "applovin": "high",
+    "appsflyer": "high",
+    "bidmachine": "high",
+    "chartboost": "high",
+    "facebook": "high",
+    "firebase-analytics": "high",
+    "firebase-crashlytics": "high",
+    "fyber": "high",
+    "google-admob": "high",
+    "google-ump-consent": "high",
+    "guru-fusion": "high",
+    "inmobi": "high",
+    "ironsource": "high",
+    "meta-audience-network": "high",
+    "mintegral": "high",
+    "mobilefuse": "high",
+    "moloco": "high",
+    "ogury": "high",
+    "pangle": "high",
+    "pubmatic": "high",
+    "pubnative": "high",
+    "smaato": "high",
+    "tiktok-business": "medium",
+    "tradplus": "high",
+    "unity-ads": "high",
+    "vungle": "high"
+   }
+  }
+ }
+}

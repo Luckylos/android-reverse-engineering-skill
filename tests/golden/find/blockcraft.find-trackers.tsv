@@ -1,0 +1,82 @@
+#sdk-audit	2	tool=find-trackers	layout=apktool
+SDK	firebase-analytics	analytics	HIGH	DETECTED	-	true	files=1002	manifest=3	endpoints=6	app_refs=4	calls=6	active=true
+SDK	adjust	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	appsflyer	attribution	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	mixpanel	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	amplitude	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	segment	analytics	NONE	NOT FOUND	-	false	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	braze	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	clevertap	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	flurry	analytics	HIGH	DETECTED	-	false	files=557	manifest=1	endpoints=3	app_refs=1	calls=0	active=true
+SDK	apm-insight	crash_reporting	HIGH	DETECTED	-	false	files=210	manifest=0	endpoints=0	app_refs=2	calls=0	active=true
+SDK	appmetrica	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	backtrace	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	bugsnag	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	facebook	social	MEDIUM	LIKELY	manifest-only	true	files=0	manifest=1	endpoints=0	app_refs=0	calls=0	active=false
+SDK	firebase-crashlytics	crash_reporting	HIGH	DETECTED	-	true	files=391	manifest=1	endpoints=2	app_refs=8	calls=4	active=true
+SDK	google-analytics	analytics	HIGH	DETECTED	-	true	files=47	manifest=3	endpoints=1	app_refs=0	calls=0	active=false
+SDK	google-tag-manager	analytics	HIGH	DETECTED	-	true	files=191	manifest=0	endpoints=1	app_refs=0	calls=0	active=false
+SDK	sentry	crash_reporting	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	singular	attribution	HIGH	DETECTED	-	true	files=181	manifest=0	endpoints=8	app_refs=17	calls=9	active=true
+SDK	sybo	analytics	NONE	NOT FOUND	-	true	files=0	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+SDK	tiktok-business	attribution	HIGH	DETECTED	-	false	files=150	manifest=0	endpoints=0	app_refs=0	calls=0	active=false
+EV	firebase-analytics	package	com.google.firebase.analytics	19
+EV	firebase-analytics	namespace	com.google.android.gms.internal.measurement	547
+EV	firebase-analytics	namespace	com.google.android.gms.measurement	436
+EV	firebase-analytics	marker	com.google.firebase.analytics.FirebaseAnalytics	1
+EV	firebase-analytics	manifest	receiver	com.google.android.gms.measurement.AppMeasurementReceiver
+EV	firebase-analytics	manifest	service	com.google.android.gms.measurement.AppMeasurementService
+EV	firebase-analytics	manifest	service	com.google.android.gms.measurement.AppMeasurementJobService
+EV	firebase-analytics	domain	app-measurement.com	6
+EV	flurry	package	com.flurry.android	56
+EV	flurry	package	com.flurry.sdk	501
+EV	flurry	marker	com.flurry.android.FlurryAgent	1
+EV	flurry	manifest	provider	com.flurry.android.agent.FlurryContentProvider
+EV	flurry	domain	flurry.com	3
+EV	apm-insight	package	com.apm.insight	210
+EV	facebook	manifest	meta-data	com.facebook.sdk.ApplicationId
+EV	firebase-crashlytics	package	com.google.firebase.crashlytics	391
+EV	firebase-crashlytics	marker	com.google.firebase.crashlytics.FirebaseCrashlytics	1
+EV	firebase-crashlytics	manifest	meta-data	firebase_crashlytics_collection_enabled
+EV	firebase-crashlytics	domain	firebase-settings.crashlytics.com	2
+EV	firebase-crashlytics	lib_domain_hits	-	2
+EV	google-analytics	package	com.google.android.gms.analytics	47
+EV	google-analytics	marker	com.google.android.gms.analytics.GoogleAnalytics	1
+EV	google-analytics	manifest	receiver	com.google.android.gms.analytics.AnalyticsReceiver
+EV	google-analytics	manifest	service	com.google.android.gms.analytics.AnalyticsService
+EV	google-analytics	manifest	service	com.google.android.gms.analytics.AnalyticsJobService
+EV	google-analytics	domain	google-analytics.com	1
+EV	google-analytics	lib_domain_hits	-	5
+EV	google-tag-manager	package	com.google.android.gms.tagmanager	191
+EV	google-tag-manager	marker	com.google.android.gms.tagmanager.TagManager	1
+EV	google-tag-manager	domain	googletagmanager.com	1
+EV	google-tag-manager	lib_domain_hits	-	1
+EV	singular	package	com.singular.sdk	181
+EV	singular	marker	com.singular.sdk.Singular	1
+EV	singular	domain	singular.net	8
+EV	tiktok-business	package	com.tiktok	150
+EV	tiktok-business	marker	com.tiktok.TikTokBusinessSdk	1
+CALL	firebase-analytics	init	com.google.firebase.analytics.FirebaseAnalytics#getInstance	smali_classes5/com/fungames/blockcraft/MainApplication.smali:28	exact
+CALL	firebase-analytics	consent	com.google.firebase.analytics.FirebaseAnalytics#setAnalyticsCollectionEnabled	smali_classes5/com/fungames/blockcraft/MainApplication.smali:34	exact
+CALL	firebase-analytics	init	com.google.firebase.analytics.FirebaseAnalytics#setAnalyticsCollectionEnabled	smali_classes5/com/fungames/blockcraft/MainApplication.smali:34	exact
+CALL	singular	init	com.singular.sdk.Singular#adRevenue	smali_classes9/com/tfg/libs/jni/AdsManagerWrapper.smali:3773	exact
+CALL	firebase-analytics	init	com.google.firebase.analytics.FirebaseAnalytics#getInstance	smali_classes9/com/tfg/libs/jni/AdsManagerWrapper.smali:3829	exact
+CALL	firebase-analytics	event	com.google.firebase.analytics.FirebaseAnalytics#logEvent	smali_classes9/com/tfg/libs/jni/AdsManagerWrapper.smali:3835	exact
+CALL	firebase-analytics	init	com.google.firebase.analytics.FirebaseAnalytics#logEvent	smali_classes9/com/tfg/libs/jni/AdsManagerWrapper.smali:3835	exact
+CALL	singular	init	com.singular.sdk.Singular#event	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:325	exact
+CALL	singular	init	com.singular.sdk.Singular#init	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:500	exact
+CALL	singular	init	com.singular.sdk.Singular#setGlobalProperty	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:513	exact
+CALL	singular	init	com.singular.sdk.Singular#unsetCustomUserId	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:516	exact
+CALL	singular	init	com.singular.sdk.Singular#setCustomUserId	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:521	exact
+CALL	singular	init	com.singular.sdk.Singular#onActivityPaused	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:650	exact
+CALL	singular	init	com.singular.sdk.Singular#onActivityResumed	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:665	exact
+CALL	singular	init	com.singular.sdk.Singular#event	smali_classes9/com/tfg/libs/jni/AnalyticsManagerWrapper.smali:989	exact
+CALL	firebase-crashlytics	init	com.google.firebase.crashlytics.FirebaseCrashlytics#setCustomKey	smali_classes9/com/tfg/libs/jni/FirebaseCrashlyticsWrapper.smali:36	exact
+CALL	firebase-crashlytics	init	com.google.firebase.crashlytics.FirebaseCrashlytics#log	smali_classes9/com/tfg/libs/jni/FirebaseCrashlyticsWrapper.smali:39	exact
+CALL	firebase-crashlytics	init	com.google.firebase.crashlytics.FirebaseCrashlytics#setCustomKey	smali_classes9/com/tfg/libs/jni/FirebaseCrashlyticsWrapper.smali:53	exact
+CALL	firebase-crashlytics	init	com.google.firebase.crashlytics.FirebaseCrashlytics#setUserId	smali_classes9/com/tfg/libs/jni/FirebaseCrashlyticsWrapper.smali:67	exact
+HINT	generic-events	3	3
+HINT	generic-identity	14	17
+HINT	generic-toggle	4	4
+HINT	tracker-perms	1	4
+HINT	tracker-manifest-infra	1	1
