@@ -388,7 +388,7 @@ The authors disclaim any liability for misuse of this tool.
 
 Apache 2.0 — see [LICENSE](LICENSE).
 
-The decompilers and other tools this plugin drives (jadx, Vineflower/Fernflower, dex2jar, Apktool, APKEditor, smali/baksmali, jq, adb, the Android SDK build-tools, Java) are third-party software, not bundled with the plugin and distributed under their own licenses — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+The decompilers and other tools this plugin drives (jadx, Vineflower/Fernflower, dex2jar, Apktool, APKEditor, smali/baksmali, jq, adb, the Android SDK build-tools, Java) are third-party software, not bundled with the plugin and distributed under their own licenses — see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Privacy: [PRIVACY.md](PRIVACY.md).
 
 ## Deprecations / future changes
 

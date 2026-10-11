@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Glob, Grep, Write, Edit
+allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/check-deps.sh), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/decompile.sh *), Read, Glob, Grep
 description: Decompile an Android APK/XAPK/JAR/AAR and analyze its structure
 user-invocable: true
 argument-hint: <path to APK, XAPK, JAR, or AAR file>
@@ -34,6 +34,8 @@ Parse the output looking for `INSTALL_REQUIRED:` and `INSTALL_OPTIONAL:` lines.
 bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/install-dep.sh java
 bash ${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/install-dep.sh jadx
 ```
+
+`install-dep.sh` is deliberately not pre-approved: Claude Code asks the user to approve every run. Do not work around a refusal by installing the tool another way; explain what is missing and stop.
 
 The install script auto-detects the OS and installs without sudo when possible (user-local install to `~/.local/`). If sudo is needed, it will prompt — if the user declines or sudo is unavailable, the script prints exact manual instructions (exit code 2). Show those instructions to the user and stop.
 
