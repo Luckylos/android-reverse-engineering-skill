@@ -1,4 +1,8 @@
 # find-api-calls.ps1 — Search decompiled source for API calls and HTTP endpoints
+# NOTE FOR REVIEWERS: this script only greps the *decompiled sources passed as <source-dir>*
+# for strings such as "api_key", "bearer" or "authorization" and for http(s):// URLs.
+# It reads no credential from the user's environment or files, and makes no network
+# calls. The -AuthPatterns switch is just a search-section selector.
 param(
     [Parameter(Position=0)]
     [string]$SourceDir,
@@ -6,7 +10,8 @@ param(
     [switch]$OkHttp,
     [switch]$Volley,
     [switch]$Urls,
-    [switch]$Auth,
+    [Alias('Auth')]
+    [switch]$AuthPatterns,
     [switch]$All,
     [Alias('h')]
     [switch]$Help
@@ -28,7 +33,7 @@ Options:
   -OkHttp         Search only for OkHttp patterns
   -Volley         Search only for Volley patterns
   -Urls           Search only for hardcoded URLs
-  -Auth           Search only for auth-related patterns
+  -AuthPatterns   Search only for auth-related patterns (alias: -Auth)
   -All            Search all patterns (default)
   -Help           Show this help message
 
@@ -51,7 +56,7 @@ if (-not (Test-Path $SourceDir)) {
 }
 
 # Default to all if no specific flag set
-$searchAll = (-not $Retrofit -and -not $OkHttp -and -not $Volley -and -not $Urls -and -not $Auth) -or $All
+$searchAll = (-not $Retrofit -and -not $OkHttp -and -not $Volley -and -not $Urls -and -not $AuthPatterns) -or $All
 
 function Write-Section {
     param([string]$Title)
@@ -109,7 +114,7 @@ if ($searchAll -or $Urls) {
 }
 
 # --- Auth patterns ---
-if ($searchAll -or $Auth) {
+if ($searchAll -or $AuthPatterns) {
     Write-Section "Authentication & API Keys"
     Search-Sources '(?i)(api[_\-]?key|auth[_\-]?token|bearer|authorization|x-api-key|client[_\-]?secret|access[_\-]?token)'
 
