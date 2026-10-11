@@ -5,9 +5,11 @@
 # DETECTION ONLY: nothing in the decoded directory is modified, and the
 # neutralizer never removes, disables or works around a protection.
 #
-# Signatures come from the APKiD rule set (github.com/rednaga/APKiD,
-# apkid/rules/{apk,dex,elf}/*.yara) and from Google Play protected apps checked
-# by hand (PairIP). Same rule table as detect-protection.sh.
+# What it looks for (same as detect-protection.sh): Google Play automatic
+# protection (PairIP, seen in protected apps), the Play Licensing library (LVL),
+# Play Integrity and SafetyNet clients (public Google package names), and
+# packed or hidden app code detected generically (components declared in the
+# manifest that are missing from the decoded code). No vendor list is used.
 #
 # Exit codes:
 #   0 - check completed (whatever it found: the result is informational)
@@ -50,7 +52,8 @@ Output:
 Categories (the summary is the most severe one found):
   signature-vm - Google Play PairIP with signature check / encrypted VM code:
                  a re-signed APK does not start
-  hardener     - commercial packer or RASP: a re-signed APK does not start
+  hardener     - packed or hidden app code (declared components absent from the
+                 decoded code): a re-signed APK does not start
   license      - license gate (PairIP license check, LVL): the app may stop at
                  a "get this app from Play" screen or refuse to run
   integrity    - Play Integrity / SafetyNet client: the app starts, a backend
@@ -120,7 +123,8 @@ $maxEvidence = 5
 
 # =====================================================================
 # Rules - id|category|confidence|kind|pattern (see detect-protection.sh for
-# the kinds and the source of every rule; keep both tables identical)
+# the kinds and the source of every rule; keep both tables identical).
+# Packed code is not a rule: it is the generic Test-PackedCode below.
 # =====================================================================
 $rules = @(
     'pairip-license|license|high|manifest|com.pairip.application.Application'
@@ -132,50 +136,6 @@ $rules = @(
     'pairip-signature-vm|signature-vm|high|class|com/pairip/VmDecryptor'
     'pairip-signature-vm|signature-vm|high|file|libpairipcore.so'
     'lvl|license|medium|class|com/google/android/vending/licensing'
-    'dexguard|hardener|high|class|com/guardsquare/dexguard'
-    'dexguard|hardener|high|class|dexguard/util/TamperDetector'
-    'dexguard|hardener|high|class|dexguard/util/TamperDetection'
-    'dexguard|hardener|high|class|dexguard/util/CertificateChecker'
-    'promon|hardener|medium|file|libshield.so'
-    'appdome|hardener|high|class|runtime/loading/InjectedActivity'
-    'verimatrix|hardener|high|path|lib/*/libmfjava.so'
-    'verimatrix|hardener|high|class|com/insidesecure/core'
-    'arxan|hardener|medium|file|guardit4j.fin'
-    'secneo-bangcle|hardener|high|file|libDexHelper.so'
-    'secneo-bangcle|hardener|high|file|libDexHelper-x86.so'
-    'secneo-bangcle|hardener|high|file|libsecexe.so'
-    'secneo-bangcle|hardener|high|file|libsecmain.so'
-    'secneo-bangcle|hardener|high|file|libSecShell.so'
-    'secneo-bangcle|hardener|high|file|libSecShell-x86.so'
-    'secneo-bangcle|hardener|high|path|assets/bangcleplugin/container.dex'
-    'secneo-bangcle|hardener|medium|path|assets/classes0.jar'
-    'jiagu-360|hardener|high|file|libjiagu.so'
-    'jiagu-360|hardener|high|file|libjiagu_art.so'
-    'jiagu-360|hardener|high|file|libprotectClass.so'
-    'tencent-legu|hardener|high|path|lib/*/libshella-*.so'
-    'tencent-legu|hardener|high|path|lib/*/libshellx-*.so'
-    'tencent-legu|hardener|high|path|lib/*/libmobisecy.so'
-    'tencent-legu|hardener|medium|path|lib/*/libshell.so'
-    'tencent-legu|hardener|high|path|assets/0OO00l111l1l'
-    'ijiami|hardener|high|path|assets/ijiami.dat'
-    'ijiami|hardener|high|path|assets/ijm_lib'
-    'ijiami|hardener|high|path|assets/IJMDal.Data'
-    'ijiami|hardener|high|path|assets/libijmDataEncryption.so'
-    'ijiami|hardener|high|file|ijiami.ajm'
-    'ijiami|hardener|high|file|ijiami3.ajm'
-    'baidu|hardener|high|file|libbaiduprotect.so'
-    'baidu|hardener|high|file|baiduprotect1.jar'
-    'alibaba|hardener|high|file|libmobisec.so'
-    'netease-yidun|hardener|medium|file|libnesec.so'
-    'netease-yidun|hardener|high|class|com/netease/nis/wrapper/Entry'
-    'dexprotector|hardener|high|path|assets/dp.*.so.dat'
-    'dexprotector|hardener|high|path|lib/*/libdexprotector.*.so'
-    'appsealing|hardener|high|file|libcovault.so'
-    'appsealing|hardener|high|file|libcovault-appsec.so'
-    'appsealing|hardener|high|path|assets/AppSealing'
-    'appsealing|hardener|high|path|assets/appsealing.dex'
-    'liapp|hardener|high|path|assets/LIAPP.ini'
-    'liapp|hardener|high|file|LIAPPClient.sc'
     'play-integrity|integrity|low|class|com/google/android/play/core/integrity'
     'safetynet|integrity|low|class|com/google/android/gms/safetynet'
 )
@@ -264,25 +224,56 @@ foreach ($rule in $rules) {
     }
 }
 
+# Packed or hidden app code: a packer ships a stub and keeps the real classes
+# in an encrypted payload, so most components declared in the manifest have no
+# class in the decoded smali. Clean apps miss only a few. Needs >= 3 declared
+# classes and >= 3 missing; >= 50% missing -> medium, >= 80% -> high.
+function Test-PackedCode {
+    $id = 'packed-code'
+    if ($script:smaliDirs.Count -eq 0) { return }
+    $present = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
+    foreach ($sd in $script:smaliDirs) {
+        $prefixLen = $sd.TrimEnd('\', '/').Length + 1
+        foreach ($f in [System.IO.Directory]::EnumerateFiles($sd, '*.smali', [System.IO.SearchOption]::AllDirectories)) {
+            [void]$present.Add(($f.Substring($prefixLen, $f.Length - $prefixLen - 6) -replace '\\', '/'))
+        }
+    }
+    # activity-alias is not matched (its name is not a class); android.* classes
+    # belong to the framework and are never in the APK.
+    $pkg = ''
+    $declared = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
+    foreach ($m in [regex]::Matches($script:manifestText, '<(manifest|application|activity|service|receiver|provider)[\s][^>]*>')) {
+        if ($m.Groups[1].Value -eq 'manifest') {
+            $pm = [regex]::Match($m.Value, 'package="([^"]*)"')
+            if ($pm.Success) { $pkg = $pm.Groups[1].Value }
+            continue
+        }
+        $nm = [regex]::Match($m.Value, 'android:name="([^"]*)"')
+        if (-not $nm.Success) { continue }
+        $n = $nm.Groups[1].Value
+        if ($n.StartsWith('.')) { $n = $pkg + $n } elseif ($n.IndexOf('.') -lt 0) { $n = $pkg + '.' + $n }
+        if ($n.StartsWith('android.', [StringComparison]::Ordinal)) { continue }
+        [void]$declared.Add($n.Replace('.', '/'))
+    }
+    $missing = @(Get-OrdinalSorted @($declared | Where-Object { -not $present.Contains($_) }))
+    $total = $declared.Count
+    $miss = $missing.Count
+    if ($total -lt 3 -or $miss -lt 3) { return }
+    $pct = [int][math]::Floor($miss * 100 / $total)
+    $conf = ''
+    if ($pct -ge 80) { $conf = 'high' } elseif ($pct -ge 50) { $conf = 'medium' }
+    if (-not $conf) { return }
+    if (-not $script:ids.Contains($id)) { $script:ids.Add($id); $script:categoryOf[$id] = 'hardener' }
+    Add-Evidence $id $conf "declared-classes-missing=$miss/$total"
+    foreach ($c in ($missing | Select-Object -First 3)) { Add-Evidence $id $conf "absent=$c" }
+}
+Test-PackedCode
+
 $names = @{
     'pairip-signature-vm' = 'Google Play automatic protection (PairIP: signature check + encrypted VM code)'
     'pairip-license'      = 'Google Play automatic protection (PairIP: license check only)'
     'lvl'                 = 'Google Play Licensing library (LVL)'
-    'dexguard'            = 'DexGuard (Guardsquare)'
-    'promon'              = 'Promon SHIELD'
-    'appdome'             = 'Appdome'
-    'verimatrix'          = 'Verimatrix / Inside Secure'
-    'arxan'               = 'Arxan / Digital.ai GuardIT'
-    'secneo-bangcle'      = 'SecNeo / Bangcle'
-    'jiagu-360'           = 'Qihoo 360 Jiagu'
-    'tencent-legu'        = 'Tencent Legu / Mobile Tencent Protect'
-    'ijiami'              = 'Ijiami'
-    'baidu'               = 'Baidu protect'
-    'alibaba'             = 'Alibaba mobisec'
-    'netease-yidun'       = 'NetEase Yidun'
-    'dexprotector'        = 'DexProtector (Licel)'
-    'appsealing'          = 'AppSealing'
-    'liapp'               = 'LIAPP'
+    'packed-code'         = 'a packer: app code hidden in a payload (declared components missing from the decoded code)'
     'play-integrity'      = 'Play Integrity API client'
     'safetynet'           = 'SafetyNet Attestation client'
 }
@@ -338,7 +329,7 @@ switch ($summary) {
         } else {
             Write-Host '!!! A rebuilt and re-signed APK will most likely NOT run (medium-confidence match):' -ForegroundColor Red
         }
-        Write-Host '!!! the protection checks the signing certificate and/or its own encrypted code at startup.' -ForegroundColor Red
+        Write-Host '!!! the protection checks the signing certificate and/or hides its code in an encrypted payload loaded at startup.' -ForegroundColor Red
         Write-Host '!!! Neutralization can still produce a report, but the rebuilt APK will not be usable.' -ForegroundColor Red
         Write-Host '!!! The neutralizer does not remove or bypass protections. Tell the user before spending' -ForegroundColor Red
         Write-Host '!!! time on a rebuild.' -ForegroundColor Red
@@ -353,7 +344,8 @@ switch ($summary) {
         Write-Host 'a backend that enforces the verdict may refuse the re-signed APK (login, purchases, online play).'
     }
     'none' {
-        Write-Host 'No known anti-tamper, integrity or licensing protection detected.'
+        Write-Host 'No PairIP, Google licensing/integrity client or packed code detected (this does not rule out'
+        Write-Host 'an app-specific protection that hides nothing from the decoded tree).'
     }
 }
 exit 0

@@ -6,11 +6,17 @@
 # DETECTION ONLY: nothing in the decoded directory is modified, and the
 # neutralizer never removes, disables or works around a protection.
 #
-# Signatures come from the APKiD rule set (github.com/rednaga/APKiD,
-# apkid/rules/{apk,dex,elf}/*.yara) and from Google Play protected apps checked
-# by hand (PairIP). APKiD scans the raw APK with YARA and knows far more
-# protectors; this check only needs the decoded tree the neutralizer already
-# has, so it runs with no extra dependency right after decode-apk.sh.
+# What it looks for:
+#   - Google Play automatic protection (PairIP): class and file names seen in
+#     PairIP-protected apps decoded by hand;
+#   - Play Licensing library (LVL), Play Integrity and SafetyNet clients: the
+#     public package names of those Google APIs;
+#   - packed or hidden app code, detected generically: the components declared
+#     in AndroidManifest.xml (Application, activities, services, receivers,
+#     providers) are missing from the decoded code, because a packer keeps the
+#     real classes in an encrypted payload. No vendor list is used, so the
+#     protector is never named (apktool decodes only what is in the APK; run a
+#     dedicated scanner such as APKiD when the vendor matters).
 #
 # Portable: bash 3.2+ (macOS) and BSD/GNU userland.
 #
@@ -39,7 +45,8 @@ Output:
 Categories (the summary is the most severe one found):
   signature-vm — Google Play PairIP with signature check / encrypted VM code:
                  a re-signed APK does not start
-  hardener     — commercial packer or RASP: a re-signed APK does not start
+  hardener     — packed or hidden app code (declared components absent from the
+                 decoded code): a re-signed APK does not start
   license      — license gate (PairIP license check, LVL): the app may stop at
                  a "get this app from Play" screen or refuse to run
   integrity    — Play Integrity / SafetyNet client: the app starts, a backend
@@ -103,9 +110,9 @@ MAX_EVIDENCE=5
 #   class:    smali*/<pattern>.smali or the package dir smali*/<pattern>/ exists
 #   file:     a file named <pattern> (glob) anywhere under lib/, assets/, unknown/
 #   path:     <decoded-dir>/<pattern> (glob) exists (file or directory)
-# Sources: [T] = verified in PairIP-protected test apps; [A:<rule>] = APKiD rule.
-# Rules whose APKiD condition needs more than a file name (ELF sections, byte
-# patterns, "2 of") are kept at medium confidence.
+# Sources: PairIP = seen in PairIP-protected apps; LVL, Play Integrity and
+# SafetyNet = public package names of Google APIs. Packed code is not a rule
+# table: it is the generic check_packed_code below.
 # =====================================================================
 RULES='
 pairip-license|license|high|manifest|com.pairip.application.Application
@@ -117,65 +124,9 @@ pairip-signature-vm|signature-vm|high|class|com/pairip/VMRunner
 pairip-signature-vm|signature-vm|high|class|com/pairip/VmDecryptor
 pairip-signature-vm|signature-vm|high|file|libpairipcore.so
 lvl|license|medium|class|com/google/android/vending/licensing
-dexguard|hardener|high|class|com/guardsquare/dexguard
-dexguard|hardener|high|class|dexguard/util/TamperDetector
-dexguard|hardener|high|class|dexguard/util/TamperDetection
-dexguard|hardener|high|class|dexguard/util/CertificateChecker
-promon|hardener|medium|file|libshield.so
-appdome|hardener|high|class|runtime/loading/InjectedActivity
-verimatrix|hardener|high|path|lib/*/libmfjava.so
-verimatrix|hardener|high|class|com/insidesecure/core
-arxan|hardener|medium|file|guardit4j.fin
-secneo-bangcle|hardener|high|file|libDexHelper.so
-secneo-bangcle|hardener|high|file|libDexHelper-x86.so
-secneo-bangcle|hardener|high|file|libsecexe.so
-secneo-bangcle|hardener|high|file|libsecmain.so
-secneo-bangcle|hardener|high|file|libSecShell.so
-secneo-bangcle|hardener|high|file|libSecShell-x86.so
-secneo-bangcle|hardener|high|path|assets/bangcleplugin/container.dex
-secneo-bangcle|hardener|medium|path|assets/classes0.jar
-jiagu-360|hardener|high|file|libjiagu.so
-jiagu-360|hardener|high|file|libjiagu_art.so
-jiagu-360|hardener|high|file|libprotectClass.so
-tencent-legu|hardener|high|path|lib/*/libshella-*.so
-tencent-legu|hardener|high|path|lib/*/libshellx-*.so
-tencent-legu|hardener|high|path|lib/*/libmobisecy.so
-tencent-legu|hardener|medium|path|lib/*/libshell.so
-tencent-legu|hardener|high|path|assets/0OO00l111l1l
-ijiami|hardener|high|path|assets/ijiami.dat
-ijiami|hardener|high|path|assets/ijm_lib
-ijiami|hardener|high|path|assets/IJMDal.Data
-ijiami|hardener|high|path|assets/libijmDataEncryption.so
-ijiami|hardener|high|file|ijiami.ajm
-ijiami|hardener|high|file|ijiami3.ajm
-baidu|hardener|high|file|libbaiduprotect.so
-baidu|hardener|high|file|baiduprotect1.jar
-alibaba|hardener|high|file|libmobisec.so
-netease-yidun|hardener|medium|file|libnesec.so
-netease-yidun|hardener|high|class|com/netease/nis/wrapper/Entry
-dexprotector|hardener|high|path|assets/dp.*.so.dat
-dexprotector|hardener|high|path|lib/*/libdexprotector.*.so
-appsealing|hardener|high|file|libcovault.so
-appsealing|hardener|high|file|libcovault-appsec.so
-appsealing|hardener|high|path|assets/AppSealing
-appsealing|hardener|high|path|assets/appsealing.dex
-liapp|hardener|high|path|assets/LIAPP.ini
-liapp|hardener|high|file|LIAPPClient.sc
 play-integrity|integrity|low|class|com/google/android/play/core/integrity
 safetynet|integrity|low|class|com/google/android/gms/safetynet
 '
-# Sources (see the header):
-#   pairip-*        [T] + [A:google_aip_elf, google_aip_installer_check]
-#   lvl             Google LVL library package (developer.android.com/google/play/licensing)
-#   dexguard        [A:dexguard_c, dexguard_d]     promon       [A:promon] (+ ELF sections)
-#   appdome         [A:appdome_dex]                verimatrix   [A:verimatrix, insidesecure]
-#   arxan           [A:arxan_guardit] (#cfg > 1)   secneo-bangcle [A:secneo_base, bangcle, bangcle_secshell]
-#   jiagu-360       [A:jiagu, qihoo360]            tencent-legu [A:tencent, tencent_a, tencent_legu]
-#   ijiami          [A:ijiami]                     baidu        [A:baidu]
-#   alibaba         [A:alibaba]                    netease-yidun [A:yidun] (lib needs #lib > 1)
-#   dexprotector    [A:dexprotector, dexprotector_d]  appsealing [A:appsealing, appsealing_a]
-#   liapp           [A:liapp]                      play-integrity [A:google_playintegrity_api]
-#   safetynet       Google Play services SafetyNet client package
 
 FOUND=""   # lines: id|confidence|evidence
 add_evidence() { FOUND="${FOUND}$1|$2|$3"$'\n'; }
@@ -246,7 +197,53 @@ while IFS='|' read -r id cat conf kind pat; do
   esac
 done <<< "$RULES"
 
+# Packed or hidden app code: a packer ships a stub and keeps the real classes
+# in an encrypted payload, so most components declared in the manifest have no
+# class in the decoded smali. Clean apps miss only a few (library activities
+# stripped by the shrinker). Needs >= 3 declared classes and >= 3 missing.
+#   >= 50% missing -> medium, >= 80% -> high.
+check_packed_code() {
+  local id=packed-code tmp present declared missing total miss pct conf n=0 c
+  if [[ ${#SMALI_DIRS[@]} -eq 0 ]]; then return 0; fi
+  tmp=$(mktemp -d "${TMPDIR:-/tmp}/detect-protection.XXXXXX") || return 0
+  present="$tmp/present"; declared="$tmp/declared"; missing="$tmp/missing"
+  local s
+  for s in "${SMALI_DIRS[@]}"; do
+    (cd "$s" && find . -type f -name '*.smali' 2>/dev/null | sed -e 's#^\./##' -e 's#\.smali$##')
+  done | LC_ALL=C sort -u > "$present"
+  # activity-alias is not matched (its name is not a class); android.* classes
+  # belong to the framework and are never in the APK.
+  tr '\n' ' ' < "$MANIFEST" | grep -oE '<(manifest|application|activity|service|receiver|provider)[[:space:]][^>]*>' | awk '
+    /^<manifest/ { if (match($0, /package="[^"]*"/)) pkg = substr($0, RSTART + 9, RLENGTH - 10); next }
+    { if (match($0, /android:name="[^"]*"/)) {
+        nm = substr($0, RSTART + 14, RLENGTH - 15)
+        if (nm ~ /^\./) nm = pkg nm
+        else if (nm !~ /\./) nm = pkg "." nm
+        if (nm ~ /^android\./) next
+        gsub(/\./, "/", nm); print nm } }' | LC_ALL=C sort -u > "$declared"
+  total=$(wc -l < "$declared" | tr -d ' ')
+  LC_ALL=C comm -23 "$declared" "$present" > "$missing"
+  miss=$(wc -l < "$missing" | tr -d ' ')
+  if [[ "$total" -ge 3 ]] && [[ "$miss" -ge 3 ]]; then
+    pct=$(( miss * 100 / total ))
+    conf=""
+    if [[ $pct -ge 80 ]]; then conf=high; elif [[ $pct -ge 50 ]]; then conf=medium; fi
+    if [[ -n "$conf" ]]; then
+      case " $IDS " in *" $id "*) ;; *) IDS="$IDS $id" ;; esac
+      add_evidence "$id" "$conf" "declared-classes-missing=$miss/$total"
+      while IFS= read -r c; do
+        add_evidence "$id" "$conf" "absent=$c"
+        n=$((n + 1)); if [[ $n -ge 3 ]]; then break; fi
+      done < "$missing"
+    fi
+  fi
+  rm -rf "$tmp"
+  return 0
+}
+check_packed_code
+
 category_of() {
+  if [[ "$1" == packed-code ]]; then echo hardener; return 0; fi
   printf '%s\n' "$RULES" | awk -F'|' -v id="$1" '$1 == id { print $2; exit }'
 }
 name_of() {
@@ -254,21 +251,7 @@ name_of() {
     pairip-signature-vm) echo "Google Play automatic protection (PairIP: signature check + encrypted VM code)" ;;
     pairip-license)      echo "Google Play automatic protection (PairIP: license check only)" ;;
     lvl)                 echo "Google Play Licensing library (LVL)" ;;
-    dexguard)            echo "DexGuard (Guardsquare)" ;;
-    promon)              echo "Promon SHIELD" ;;
-    appdome)             echo "Appdome" ;;
-    verimatrix)          echo "Verimatrix / Inside Secure" ;;
-    arxan)               echo "Arxan / Digital.ai GuardIT" ;;
-    secneo-bangcle)      echo "SecNeo / Bangcle" ;;
-    jiagu-360)           echo "Qihoo 360 Jiagu" ;;
-    tencent-legu)        echo "Tencent Legu / Mobile Tencent Protect" ;;
-    ijiami)              echo "Ijiami" ;;
-    baidu)               echo "Baidu protect" ;;
-    alibaba)             echo "Alibaba mobisec" ;;
-    netease-yidun)       echo "NetEase Yidun" ;;
-    dexprotector)        echo "DexProtector (Licel)" ;;
-    appsealing)          echo "AppSealing" ;;
-    liapp)               echo "LIAPP" ;;
+    packed-code)         echo "a packer: app code hidden in a payload (declared components missing from the decoded code)" ;;
     play-integrity)      echo "Play Integrity API client" ;;
     safetynet)           echo "SafetyNet Attestation client" ;;
     *)                   echo "$1" ;;
@@ -329,7 +312,7 @@ case "$SUMMARY" in
     else
       echo "!!! A rebuilt and re-signed APK will most likely NOT run (medium-confidence match):"
     fi
-    echo "!!! the protection checks the signing certificate and/or its own encrypted code at startup."
+    echo "!!! the protection checks the signing certificate and/or hides its code in an encrypted payload loaded at startup."
     echo "!!! Neutralization can still produce a report, but the rebuilt APK will not be usable."
     echo "!!! The neutralizer does not remove or bypass protections. Tell the user before spending"
     echo "!!! time on a rebuild." ;;
@@ -341,6 +324,7 @@ case "$SUMMARY" in
     echo "Note: Play Integrity / SafetyNet client code found (often bundled by SDKs). The app starts;"
     echo "a backend that enforces the verdict may refuse the re-signed APK (login, purchases, online play)." ;;
   none)
-    echo "No known anti-tamper, integrity or licensing protection detected." ;;
+    echo "No PairIP, Google licensing/integrity client or packed code detected (this does not rule out"
+    echo "an app-specific protection that hides nothing from the decoded tree)." ;;
 esac
 exit 0

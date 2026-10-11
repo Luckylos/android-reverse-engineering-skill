@@ -85,7 +85,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/detect-protection.sh "
 ```
 
 Read `PROTECTION_DETECTED:<id>:<category>:<confidence>:<evidence>` and `PROTECTION_SUMMARY:<none|integrity|license|hardener|signature-vm>`, then set expectations **before** spending time on targets and a rebuild:
-- `signature-vm` (Google Play PairIP with signature check / encrypted VM) or `hardener` (commercial packer / RASP): a rebuilt, re-signed APK **will not run**. Offer to stop, or to continue for the SDK report only.
+- `signature-vm` (Google Play PairIP with signature check / encrypted VM) or `hardener` (packed or hidden app code: components declared in the manifest are missing from the decoded code; the vendor is not named): a rebuilt, re-signed APK **will not run**. Offer to stop, or to continue for the SDK report only.
 - `license` (PairIP license check, LVL): the rebuilt APK may stop at a "Get this app from Play" screen. Ask whether to continue.
 - `integrity` (Play Integrity / SafetyNet client, often bundled by SDKs): the app starts; note it in the report.
 

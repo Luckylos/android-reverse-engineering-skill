@@ -122,10 +122,10 @@ Parse:
 - `PROTECTION_SUMMARY:<none|integrity|license|hardener|signature-vm>` — the most severe category
 
 Set expectations with the user **before** Phase 3, according to the summary:
-- **`signature-vm`** (Google Play PairIP with `SignatureCheck` / `VMRunner` / `libpairipcore.so`) or **`hardener`** (commercial packer or RASP: DexGuard, Promon, Appdome, Verimatrix, Arxan, SecNeo/Bangcle, Jiagu, Legu, ...): tell the user that a rebuilt, re-signed APK **will not run**. Neutralization can still produce a report of the SDKs and what would be patched, but the rebuilt APK will not be usable. Ask whether to stop, or continue for the report only.
+- **`signature-vm`** (Google Play PairIP with `SignatureCheck` / `VMRunner` / `libpairipcore.so`) or **`hardener`** (packed or hidden app code: most components declared in the manifest are missing from the decoded code; the vendor is not named): tell the user that a rebuilt, re-signed APK **will not run**. Neutralization can still produce a report of the SDKs and what would be patched, but the rebuilt APK will not be usable. Ask whether to stop, or continue for the report only.
 - **`license`** (PairIP license check only, or the LVL library): the rebuilt APK may stop at a "Get this app from Play" screen or refuse to run. Tell the user and ask whether to continue.
 - **`integrity`** (Play Integrity / SafetyNet client, low confidence, often bundled by SDKs): the app starts; online features whose backend enforces the verdict may fail. Mention it in the report.
-- **`none`**: continue.
+- **`none`**: continue. This only means that no PairIP, Google licensing/integrity client or packed code was found; it does not rule out an app-specific protection that hides nothing (e.g. a native anti-tamper SDK).
 
 **Never try to remove, disable, patch around or otherwise defeat a protection.** This skill only detects it and informs the user. With a `medium` confidence hardener match, say that the match is probable, not certain.
 

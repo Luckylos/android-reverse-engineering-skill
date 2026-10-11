@@ -84,8 +84,10 @@ bash check-neutralize-deps.sh [<input>]
 # (writes .merged-from-splits.json; --keep-splits = deprecated base-only decode + .xapk-origin/)
 bash decode-apk.sh <file.apk|file.xapk|file.apkm|file.apks|dir> [-o <decoded-dir>] [--keep-splits]
 
-# Detect anti-tamper / integrity / licensing protection (PairIP, LVL, packers/RASP from
-# APKiD signatures) — detection only, never bypassed; run automatically by decode-apk,
+# Detect anti-tamper / integrity / licensing protection (PairIP, LVL, Play Integrity/SafetyNet
+# clients, and packed code found generically: manifest components missing from the decoded
+# smali; no vendor list, the protector is never named) — detection only, never bypassed;
+# run automatically by decode-apk,
 # always exits 0; PROTECTION_DETECTED:<id>:<category>:<confidence>:<evidence> +
 # PROTECTION_SUMMARY:<none|integrity|license|hardener|signature-vm>
 bash detect-protection.sh <decoded-dir>
