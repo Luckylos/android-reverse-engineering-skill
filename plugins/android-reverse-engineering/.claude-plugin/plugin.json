@@ -5,8 +5,13 @@
   "author": {
     "name": "Simone Avogadro"
   },
+  "homepage": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill",
   "repository": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill",
+  "documentationUrl": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill#readme",
   "license": "Apache-2.0",
+  "supportUrl": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill/issues/new",
+  "termsOfServiceUrl": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill/blob/master/LICENSE",
+  "privacyPolicyUrl": "https://github.com/SimoneAvogadro/android-reverse-engineering-skill/blob/master/PRIVACY.md",
   "keywords": ["android", "reverse-engineering", "apk", "jadx", "decompile", "api-extraction", "tracker-analysis", "ad-analysis", "privacy", "sdk-neutralizer", "enterprise"],
   "skills": "./skills/",
   "commands": "./commands/"
