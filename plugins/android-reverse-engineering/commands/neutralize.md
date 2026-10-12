@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Glob, Grep, Write, Edit
+allowed-tools: Bash(file *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/check-neutralize-deps.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/decode-apk.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/detect-protection.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/detect-adwrapper.sh *), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-scan.py *), Bash(python3 -I ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-scan.py *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/neutralize.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/rebuild-apk.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/registry-query.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh *), Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh *), Read, Glob, Grep
 description: Neutralize tracker/ad SDK entry points in an Android APK for enterprise deployment
 user-invocable: true
 argument-hint: <path to APK file>
@@ -64,11 +64,13 @@ Never run `install-dep.sh` itself with `sudo`: it installs per-user tools (apkto
 
 Decode the APK or split bundle using decode-apk.sh. A split bundle (`.xapk`, `.apkm`, `.apks`) is first merged into one APK with APKEditor, then decoded, so resources that live only in the splits are kept (decoding the base alone turns them into `@null`):
 
+Pick the output directory yourself: the APK path without its `.apk`/`.xapk`/`.apkm`/`.apks` extension plus `-decoded`, written out as a literal path (not a shell parameter expansion such as `${APK_PATH%.*}`, which Claude Code cannot check in advance and so asks about). Use that same literal path for `${DECODED_DIR}` in the later steps.
+
 ```bash
-# Strip the .apk/.xapk/.apkm/.apks extension for the output dir name
-DECODED_DIR="${APK_PATH%.*}-decoded"
-bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/decode-apk.sh "$APK_PATH" -o "$DECODED_DIR"
+bash ${CLAUDE_PLUGIN_ROOT}/skills/sdk-neutralizer/scripts/decode-apk.sh "<apk path>" -o "<decoded dir>"
 ```
+
+Run each script of this workflow as its own Bash call: do not chain scripts with `;` or `&&`, and do not pipe them into `tail`/`echo`. A bare script call is pre-approved by this command; a chained one makes Claude Code ask for every part.
 
 Verify the decoded directory contains `smali/` and `AndroidManifest.xml` (the script does this automatically and outputs `DECODED_DIR:<path>`).
 

@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Glob, Grep, Write
+allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/tracker-analysis/scripts/find-trackers.sh *), Read, Glob, Grep
 description: Detect and analyze tracker/analytics SDKs in a decoded or decompiled Android app
 user-invocable: true
 argument-hint: <path to the apktool or jadx output directory (or its sources/)>

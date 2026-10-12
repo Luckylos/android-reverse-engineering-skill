@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash, Read, Glob, Grep, Write
+allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/skills/ad-analysis/scripts/find-ads.sh *), Read, Glob, Grep
 description: Detect and analyze advertising SDKs in a decoded or decompiled Android app
 user-invocable: true
 argument-hint: <path to the apktool or jadx output directory (or its sources/)>
