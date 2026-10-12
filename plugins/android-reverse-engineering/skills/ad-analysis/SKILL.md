@@ -1,4 +1,5 @@
 ---
+name: ad-analysis
 description: Detect and analyze advertising SDKs in decoded (apktool) or decompiled (jadx) Android apps. Covers every ads / ads_mediation entry of the SDK registry plus consent frameworks — e.g. AdMob, Unity Ads, IronSource/LevelPlay, AppLovin/MAX, Meta Audience Network, Vungle/Liftoff, InMobi, Chartboost, Pangle, Mintegral, Fyber/DT, BidMachine, Moloco, Google UMP — with HIGH/MEDIUM/LOW/NONE confidence. Extracts ad formats (banner, interstitial, rewarded, native), mediation setup, ad unit IDs, and consent/privacy frameworks.
 trigger: find ads|ad analysis|advertising SDK|detect ads|ad network|AdMob|Unity Ads|IronSource|AppLovin|Facebook ads|Meta Audience Network|Vungle|InMobi|Chartboost|Pangle|Mintegral|Fyber|DT Exchange|BidMachine|Moloco|Amazon APS|PubNative|Ogury|BIGO Ads|Kidoz|Google UMP|consent framework|mediation|ad format|rewarded ad|interstitial ad|banner ad
 ---

@@ -1,4 +1,5 @@
 ---
+name: tracker-analysis
 description: Detect and analyze analytics/tracker SDKs in decoded (apktool) or decompiled (jadx) Android apps. Covers every tracker entry of the SDK registry (analytics, attribution, crash reporting, social) — e.g. Firebase Analytics, Adjust, AppsFlyer, Mixpanel, Amplitude, Segment, Braze, CleverTap, Flurry, Singular, AppMetrica, Crashlytics, Facebook SDK, TikTok Business — with HIGH/MEDIUM/LOW/NONE confidence. Extracts initialization patterns, event logging, user identification, consent mechanisms, and data exfiltration endpoints.
 trigger: find trackers|tracker analysis|analytics SDK|detect trackers|privacy analysis trackers|telemetry SDK|Firebase Analytics|Adjust SDK|AppsFlyer|Mixpanel|Amplitude|Segment|Braze|CleverTap|Flurry|Singular|AppMetrica|Crashlytics|what trackers|which analytics|tracking SDK
 ---

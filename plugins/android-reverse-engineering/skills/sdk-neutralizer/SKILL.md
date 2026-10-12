@@ -1,4 +1,5 @@
 ---
+name: sdk-neutralizer
 description: Neutralize tracker and ad SDK entry points in Android APKs at the smali bytecode level. Replaces SDK method bodies with stubs (return-void, return null) and disables manifest components. Produces sanitized APKs for enterprise sideloading with telemetry and advertising disabled.
 trigger: neutralize SDK|neutralize trackers|neutralize ads|remove trackers|disable telemetry|sanitize APK|enterprise APK|strip trackers|strip ads|kill telemetry|patch SDK
 ---
