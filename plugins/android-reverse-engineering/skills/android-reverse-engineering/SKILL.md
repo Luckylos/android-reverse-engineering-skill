@@ -6,7 +6,8 @@ trigger: decompile APK|decompile XAPK|reverse engineer Android|extract API|analy
 
 # Android Reverse Engineering
 
-**Path shorthand.** Wherever a command below reads `${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/<file>`, that means `<this skill's directory>/<file>`. Claude Code sets `CLAUDE_PLUGIN_ROOT`; on any other host substitute the directory that holds this SKILL.md.
+**Path shorthand.** Wherever a command below reads `${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/`, use this skill directory (the directory containing this SKILL.md). Resolve it explicitly; do not assume the Claude variable is defined.
+
 
 Decompile Android APK, XAPK, JAR, and AAR files using jadx and Fernflower/Vineflower, trace call flows through application code and libraries, and produce structured documentation of extracted APIs. Two decompiler engines are supported — jadx for broad Android coverage and Fernflower for higher-quality output on complex Java code — and can be used together for comparison.
 

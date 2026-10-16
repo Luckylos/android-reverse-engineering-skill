@@ -35,4 +35,4 @@ jobs:
             exit 0
           fi
           git merge --no-edit upstream/master
-          git push origin HEAD:master
+          git push origin "HEAD:${GITHUB_REF_NAME}"
