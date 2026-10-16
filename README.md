@@ -46,6 +46,35 @@ A Claude Code skill that decompiles Android APK/XAPK/JAR/AAR files and **extract
 
 See `plugins/android-reverse-engineering/skills/android-reverse-engineering/references/setup-guide.md` for detailed installation instructions.
 
+## Portable decompile Skill (magpie / other skill clients)
+
+This fork also provides a client-neutral task Skill. It reuses the Android skill's scripts instead of requiring a Claude Code plugin variable or a machine-specific prompt template.
+
+In magpie's App Library, import from **Luckylos/android-reverse-engineering-skill** (branch **master**) and select these two Skills:
+
+| Skill | Repository directory | Purpose |
+|---|---|---|
+| `decompile` | `plugins/android-reverse-engineering/skills/decompile` | Task entry point: preflight, decompilation, and initial analysis |
+| `android-reverse-engineering` | `plugins/android-reverse-engineering/skills/android-reverse-engineering` | Required companion: scripts and deeper references |
+
+If the companion is already installed, only add the new decompile entry. Updating an existing Skill does not automatically install a newly added Skill. Use magpie's App Library rather than a nonexistent CLI install command.
+
+On Pi with skill commands enabled:
+
+```text
+/skill:decompile /path/to/app.apk
+```
+
+Other skill clients can load the decompile Skill by name or match a natural-language request. This **does not create** a /decompile prompt alias in Pi and does not install dependencies automatically. The existing Claude Code command file is retained; its host-specific command handling is separate from this installation path. Missing required tools need explicit user approval before installation.
+
+Regression checks (Python standard library; the real JAR smoke also requires a Java JDK and jadx):
+
+```bash
+python3 -m unittest discover -s tests -p 'test_decompile_skill.py' -v
+```
+
+The smoke generates a tiny Java library and decompiles it with the wrapper using paths containing spaces. It is not an APK/XAPK, native Windows, or real-device compatibility guarantee.
+
 ## Installation
 
 ### From GitHub (recommended)
